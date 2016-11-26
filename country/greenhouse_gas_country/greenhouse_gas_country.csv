@@ -1,0 +1,1451 @@
+year,country,source_of_gas,emission_quantity
+2005,Malta,Managed agricultural soils,0.02900
+2005,Hungary,Manure management,1.1172
+2005,Italy,Livestock,19.952
+2005,Malta,Manure management,0.03361
+2005,Malta,Enteric fermentation,0.04029
+2005,Malta,Livestock,0.0739
+2005,Iceland,Manure management,0.08641
+2005,Luxembourg,Manure management,0.09557
+2005,Malta,Agriculture,0.1029
+2005,Estonia,Manure management,0.12723
+2005,Cyprus,Managed agricultural soils,0.14347
+2005,Luxembourg,Managed agricultural soils,0.15115
+2005,Latvia,Manure management,0.21136
+2005,Cyprus,Enteric fermentation,0.23508
+2005,Cyprus,Manure management,0.27228
+2005,Iceland,Enteric fermentation,0.27603
+2005,Iceland,Managed agricultural soils,0.31192
+2005,Iceland,Livestock,0.36244
+2005,Luxembourg,Enteric fermentation,0.38649
+2005,Slovenia,Manure management,0.38888
+2005,Croatia,Manure management,0.39287
+2005,Estonia,Managed agricultural soils,0.42423
+2005,Slovenia,Managed agricultural soils,0.44793
+2005,Lithuania,Manure management,0.4612
+2005,Luxembourg,Livestock,0.48206
+2005,Estonia,Enteric fermentation,0.50579
+2005,Cyprus,Livestock,0.50736
+2005,Slovakia,Manure management,0.59286
+2005,Sweden,Manure management,0.6062
+2005,Estonia,Livestock,0.63302
+2005,Luxembourg,Agriculture,0.63712
+2005,Cyprus,Agriculture,0.65202
+2005,Iceland,Agriculture,0.67443
+2005,Finland,Manure management,0.72438
+2005,Latvia,Enteric fermentation,0.75265
+2005,Bulgaria,Manure management,0.83738
+2005,Austria,Manure management,0.89476
+2005,Slovenia,Enteric fermentation,0.91389
+2005,Latvia,Livestock,0.96401
+2005,Estonia,Agriculture,1.08323
+2005,Slovakia,Enteric fermentation,1.13589
+2005,Greece,Manure management,1.16417
+2005,Croatia,Enteric fermentation,1.16947
+2005,Slovenia,Livestock,1.30277
+2005,Latvia,Managed agricultural soils,1.30379
+2005,Croatia,Managed agricultural soils,1.30982
+2005,Portugal,Manure management,1.37204
+2005,Slovakia,Managed agricultural soils,1.45484
+2005,Lithuania,Managed agricultural soils,1.54429
+2005,Croatia,Livestock,1.56234
+2005,Lithuania,Enteric fermentation,1.67597
+2005,Slovakia,Livestock,1.72875
+2005,Ireland,Manure management,1.77628
+2005,Slovenia,Agriculture,1.78197
+2005,Bulgaria,Enteric fermentation,1.80646
+2005,Austria,Managed agricultural soils,1.87468
+2005,Hungary,Enteric fermentation,1.91748
+2005,Belgium,Manure management,1.93322
+2005,Portugal,Managed agricultural soils,1.98853
+2005,Belgium,Agriculture,10.24399
+2005,Spain,Manure management,10.47875
+2005,Romania,Enteric fermentation,10.82645
+2005,Ireland,Enteric fermentation,10.84314
+2005,Germany,Manure management,10.86803
+2005,Italy,Managed agricultural soils,10.8793
+2005,Denmark,Agriculture,10.96576
+2005,Poland,Enteric fermentation,11.77806
+2005,Poland,Managed agricultural soils,12.08471
+2005,Netherlands,Livestock,12.49701
+2005,Ireland,Livestock,12.61942
+2005,Spain,Managed agricultural soils,12.65149
+2005,Spain,Enteric fermentation,13.60114
+2005,Romania,Livestock,13.80338
+2005,Italy,Enteric fermentation,13.89773
+2005,United Kingdom,Managed agricultural soils,14.52454
+2005,Poland,Livestock,15.91722
+2005,Netherlands,Agriculture,18.74644
+2005,Romania,Agriculture,19.0339
+2005,Ireland,Agriculture,19.19219
+2005,Finland,Enteric fermentation,2.06114
+2005,Lithuania,Livestock,2.13717
+2005,Latvia,Agriculture,2.27081
+2005,Bulgaria,Managed agricultural soils,2.30147
+2005,Czech Republic,Manure management,2.5215
+2005,Bulgaria,Livestock,2.64384
+2005,Finland,Livestock,2.78552
+2005,Czech Republic,Managed agricultural soils,2.82683
+2005,Czech Republic,Enteric fermentation,2.84841
+2005,Hungary,Managed agricultural soils,2.87988
+2005,Croatia,Agriculture,2.95762
+2005,Romania,Manure management,2.97693
+2005,Spain,Livestock,24.07988
+2005,Germany,Managed agricultural soils,24.50847
+2005,Germany,Enteric fermentation,24.9222
+2005,United Kingdom,Enteric fermentation,25.00086
+2005,Poland,Agriculture,29.32212
+2005,Hungary,Livestock,3.08948
+2005,Sweden,Managed agricultural soils,3.20276
+2005,Slovakia,Agriculture,3.21261
+2005,Sweden,Enteric fermentation,3.30322
+2005,Finland,Managed agricultural soils,3.33522
+2005,Denmark,Enteric fermentation,3.39028
+2005,Denmark,Manure management,3.50963
+2005,Greece,Managed agricultural soils,3.56768
+2005,Belgium,Managed agricultural soils,3.58745
+2005,Portugal,Enteric fermentation,3.71193
+2005,Lithuania,Agriculture,3.71983
+2005,Denmark,Managed agricultural soils,3.83939
+2005,Greece,Enteric fermentation,3.84027
+2005,Sweden,Livestock,3.90941
+2005,United Kingdom,Livestock,30.24021
+2005,Italy,Agriculture,33.1242
+2005,France,Enteric fermentation,33.72651
+2005,France,Managed agricultural soils,34.80042
+2005,Germany,Livestock,35.79023
+2005,Spain,Agriculture,38.08675
+2005,Poland,Manure management,4.13916
+2005,Austria,Enteric fermentation,4.14341
+2005,Romania,Managed agricultural soils,4.40071
+2005,Belgium,Enteric fermentation,4.58107
+2005,Netherlands,Manure management,4.89975
+2005,France,Livestock,41.71762
+2005,United Kingdom,Agriculture,45.81307
+2005,Greece,Livestock,5.00444
+2005,Bulgaria,Agriculture,5.0233
+2005,Austria,Livestock,5.03816
+2005,Portugal,Livestock,5.08397
+2005,United Kingdom,Manure management,5.23935
+2005,Czech Republic,Livestock,5.36992
+2005,Italy,Manure management,6.05427
+2005,Hungary,Agriculture,6.12752
+2005,Netherlands,Managed agricultural soils,6.17469
+2005,Ireland,Managed agricultural soils,6.27814
+2005,Finland,Agriculture,6.41381
+2005,Belgium,Livestock,6.51429
+2005,Denmark,Livestock,6.89991
+2005,Germany,Agriculture,62.91951
+2005,Austria,Agriculture,7.01707
+2005,Sweden,Agriculture,7.22867
+2005,Portugal,Agriculture,7.29763
+2005,Netherlands,Enteric fermentation,7.59726
+2005,France,Manure management,7.99111
+2005,France,Agriculture,78.48295
+2005,Czech Republic,Agriculture,8.3349
+2005,Greece,Agriculture,8.76953
+2006,Spain,Agriculture,38.767
+2006,Malta,Managed agricultural soils,0.02996
+2006,Malta,Manure management,0.03377
+2006,Malta,Enteric fermentation,0.04035
+2006,Malta,Livestock,0.07412
+2006,Iceland,Manure management,0.08863
+2006,Luxembourg,Manure management,0.0925
+2006,Malta,Agriculture,0.10408
+2006,Estonia,Manure management,0.12768
+2006,Luxembourg,Managed agricultural soils,0.14967
+2006,Cyprus,Managed agricultural soils,0.15973
+2006,Latvia,Manure management,0.21533
+2006,Cyprus,Enteric fermentation,0.22628
+2006,Cyprus,Manure management,0.27721
+2006,Iceland,Enteric fermentation,0.28011
+2006,Iceland,Managed agricultural soils,0.33713
+2006,Iceland,Livestock,0.36873
+2006,Slovenia,Manure management,0.38065
+2006,Luxembourg,Enteric fermentation,0.38334
+2006,Croatia,Manure management,0.40666
+2006,Estonia,Managed agricultural soils,0.42818
+2006,Slovenia,Managed agricultural soils,0.45354
+2006,Lithuania,Manure management,0.47217
+2006,Luxembourg,Livestock,0.47584
+2006,Cyprus,Livestock,0.50349
+2006,Estonia,Enteric fermentation,0.50741
+2006,Slovakia,Manure management,0.59446
+2006,Sweden,Manure management,0.59808
+2006,Luxembourg,Agriculture,0.62856
+2006,Estonia,Livestock,0.63508
+2006,Cyprus,Agriculture,0.6646
+2006,Iceland,Agriculture,0.70594
+2006,Finland,Manure management,0.72022
+2006,Latvia,Enteric fermentation,0.75671
+2006,Bulgaria,Manure management,0.87091
+2006,Austria,Manure management,0.8909
+2006,Slovenia,Enteric fermentation,0.91103
+2006,Latvia,Livestock,0.97204
+2006,Estonia,Agriculture,1.08699
+2006,Slovakia,Enteric fermentation,1.12402
+2006,Croatia,Enteric fermentation,1.14574
+2006,Hungary,Manure management,1.1485
+2006,Greece,Manure management,1.15012
+2006,Croatia,Managed agricultural soils,1.24002
+2006,Slovenia,Livestock,1.29168
+2006,Latvia,Managed agricultural soils,1.3039
+2006,Portugal,Manure management,1.36974
+2006,Slovakia,Managed agricultural soils,1.43843
+2006,Lithuania,Managed agricultural soils,1.47136
+2006,Croatia,Livestock,1.55239
+2006,Slovakia,Livestock,1.71848
+2006,Lithuania,Enteric fermentation,1.73237
+2006,Ireland,Manure management,1.75556
+2006,Bulgaria,Enteric fermentation,1.76098
+2006,Slovenia,Agriculture,1.77322
+2006,Austria,Managed agricultural soils,1.86124
+2006,Hungary,Enteric fermentation,1.8635
+2006,Portugal,Managed agricultural soils,1.90098
+2006,Belgium,Manure management,1.94258
+2006,Belgium,Agriculture,10.02877
+2006,Germany,Manure management,10.6098
+2006,Spain,Manure management,10.74951
+2006,Denmark,Agriculture,10.7758
+2006,Ireland,Enteric fermentation,10.78948
+2006,Italy,Managed agricultural soils,10.90841
+2006,Romania,Enteric fermentation,10.9576
+2006,Poland,Enteric fermentation,12.05981
+2006,Netherlands,Livestock,12.49672
+2006,Ireland,Livestock,12.54504
+2006,Poland,Managed agricultural soils,12.66245
+2006,Spain,Managed agricultural soils,13.08455
+2006,Spain,Enteric fermentation,13.48097
+2006,Italy,Enteric fermentation,13.63863
+2006,Romania,Livestock,14.24606
+2006,United Kingdom,Managed agricultural soils,14.25453
+2006,Poland,Livestock,16.37116
+2006,Netherlands,Agriculture,18.73393
+2006,Ireland,Agriculture,18.8836
+2006,Romania,Agriculture,19.03359
+2006,Italy,Livestock,19.52122
+2006,Finland,Enteric fermentation,2.0647
+2006,Lithuania,Livestock,2.20454
+2006,Bulgaria,Managed agricultural soils,2.2196
+2006,Latvia,Agriculture,2.2788
+2006,Czech Republic,Manure management,2.58393
+2006,Bulgaria,Livestock,2.63189
+2006,Finland,Livestock,2.78492
+2006,Czech Republic,Enteric fermentation,2.80651
+2006,Czech Republic,Managed agricultural soils,2.86813
+2006,Croatia,Agriculture,2.87308
+2006,Hungary,Managed agricultural soils,2.94189
+2006,Spain,Livestock,24.23048
+2006,Germany,Enteric fermentation,24.32399
+2006,Germany,Managed agricultural soils,24.35519
+2006,United Kingdom,Enteric fermentation,24.79948
+2006,United Kingdom,Livestock,29.99633
+2006,Hungary,Livestock,3.01199
+2006,Slovakia,Agriculture,3.18324
+2006,Finland,Managed agricultural soils,3.2608
+2006,Romania,Manure management,3.28846
+2006,Sweden,Enteric fermentation,3.30677
+2006,Denmark,Manure management,3.32412
+2006,Denmark,Enteric fermentation,3.39127
+2006,Sweden,Managed agricultural soils,3.41272
+2006,Belgium,Managed agricultural soils,3.42101
+2006,Greece,Managed agricultural soils,3.46501
+2006,Portugal,Enteric fermentation,3.68892
+2006,Lithuania,Agriculture,3.70202
+2006,Denmark,Managed agricultural soils,3.85966
+2006,Greece,Enteric fermentation,3.88995
+2006,Sweden,Livestock,3.90485
+2006,Romania,Managed agricultural soils,3.94506
+2006,Poland,Agriculture,30.0317
+2006,Italy,Agriculture,32.75468
+2006,France,Enteric fermentation,33.82469
+2006,France,Managed agricultural soils,34.45557
+2006,Germany,Livestock,34.93379
+2006,Austria,Enteric fermentation,4.12987
+2006,Poland,Manure management,4.31135
+2006,Belgium,Enteric fermentation,4.52422
+2006,Netherlands,Manure management,4.86586
+2006,Bulgaria,Agriculture,4.92965
+2006,France,Livestock,42.12395
+2006,United Kingdom,Agriculture,45.35006
+2006,Austria,Livestock,5.02077
+2006,Greece,Livestock,5.04007
+2006,Portugal,Livestock,5.05866
+2006,United Kingdom,Manure management,5.19684
+2006,Czech Republic,Livestock,5.39044
+2006,Italy,Manure management,5.88259
+2006,Ireland,Managed agricultural soils,6.05415
+2006,Hungary,Agriculture,6.11785
+2006,Netherlands,Managed agricultural soils,6.1561
+2006,Finland,Agriculture,6.36943
+2006,Belgium,Livestock,6.4668
+2006,Denmark,Livestock,6.71539
+2006,Austria,Agriculture,6.98796
+2006,Germany,Agriculture,62.02361
+2006,Portugal,Agriculture,7.19519
+2006,Sweden,Agriculture,7.40718
+2006,Netherlands,Enteric fermentation,7.63086
+2006,France,Agriculture,78.48105
+2006,France,Manure management,8.29926
+2006,Czech Republic,Agriculture,8.41895
+2006,Greece,Agriculture,8.69246
+2007,Malta,Managed agricultural soils,0.03143
+2007,Malta,Manure management,0.03526
+2007,Malta,Enteric fermentation,0.04153
+2007,Malta,Livestock,0.07678
+2007,Iceland,Manure management,0.09065
+2007,Luxembourg,Manure management,0.0938
+2007,Malta,Agriculture,0.10821
+2007,Estonia,Manure management,0.13498
+2007,Cyprus,Managed agricultural soils,0.14418
+2007,Luxembourg,Managed agricultural soils,0.14768
+2007,Latvia,Manure management,0.22253
+2007,Cyprus,Enteric fermentation,0.23701
+2007,Iceland,Enteric fermentation,0.28413
+2007,Cyprus,Manure management,0.28418
+2007,Iceland,Managed agricultural soils,0.3527
+2007,Iceland,Livestock,0.37478
+2007,Croatia,Manure management,0.37752
+2007,Slovenia,Manure management,0.39354
+2007,Luxembourg,Enteric fermentation,0.39813
+2007,Lithuania,Manure management,0.43731
+2007,Slovenia,Managed agricultural soils,0.45858
+2007,Estonia,Managed agricultural soils,0.46562
+2007,Luxembourg,Livestock,0.49193
+2007,Estonia,Enteric fermentation,0.50265
+2007,Cyprus,Livestock,0.52119
+2007,Slovakia,Manure management,0.55577
+2007,Sweden,Manure management,0.59996
+2007,Estonia,Livestock,0.63763
+2007,Luxembourg,Agriculture,0.64269
+2007,Cyprus,Agriculture,0.66668
+2007,Finland,Manure management,0.72462
+2007,Iceland,Agriculture,0.72761
+2007,Latvia,Enteric fermentation,0.79069
+2007,Bulgaria,Manure management,0.88644
+2007,Austria,Manure management,0.89872
+2007,Slovenia,Enteric fermentation,0.95068
+2007,Latvia,Livestock,1.01321
+2007,Croatia,Enteric fermentation,1.08329
+2007,Slovakia,Enteric fermentation,1.11285
+2007,Estonia,Agriculture,1.12617
+2007,Greece,Manure management,1.13875
+2007,Hungary,Manure management,1.15925
+2007,Croatia,Managed agricultural soils,1.26611
+2007,Slovenia,Livestock,1.34423
+2007,Latvia,Managed agricultural soils,1.35468
+2007,Portugal,Manure management,1.36162
+2007,Croatia,Livestock,1.4608
+2007,Slovakia,Managed agricultural soils,1.53222
+2007,Lithuania,Managed agricultural soils,1.60957
+2007,Slovakia,Livestock,1.66862
+2007,Bulgaria,Enteric fermentation,1.67399
+2007,Lithuania,Enteric fermentation,1.70277
+2007,Ireland,Manure management,1.71905
+2007,Slovenia,Agriculture,1.82753
+2007,Hungary,Enteric fermentation,1.86807
+2007,Austria,Managed agricultural soils,1.87261
+2007,Belgium,Manure management,1.98207
+2007,Belgium,Agriculture,10.2182
+2007,Ireland,Enteric fermentation,10.58699
+2007,Germany,Manure management,10.61562
+2007,Spain,Manure management,10.85753
+2007,Italy,Managed agricultural soils,10.87888
+2007,Denmark,Agriculture,10.93161
+2007,Romania,Enteric fermentation,11.17897
+2007,Poland,Enteric fermentation,12.20674
+2007,Ireland,Livestock,12.30603
+2007,Netherlands,Livestock,12.60842
+2007,Poland,Managed agricultural soils,13.30992
+2007,Spain,Managed agricultural soils,13.52538
+2007,Spain,Enteric fermentation,13.64915
+2007,United Kingdom,Managed agricultural soils,13.78493
+2007,Italy,Enteric fermentation,14.13934
+2007,Romania,Livestock,14.31053
+2007,Poland,Livestock,16.52463
+2007,Netherlands,Agriculture,18.48067
+2007,Ireland,Agriculture,18.59911
+2007,Romania,Agriculture,19.29812
+2007,Finland,Enteric fermentation,2.04434
+2007,Portugal,Managed agricultural soils,2.05275
+2007,Lithuania,Livestock,2.14009
+2007,Bulgaria,Managed agricultural soils,2.16711
+2007,Latvia,Agriculture,2.37442
+2007,Czech Republic,Manure management,2.56007
+2007,Bulgaria,Livestock,2.56043
+2007,Finland,Livestock,2.76896
+2007,Croatia,Agriculture,2.81624
+2007,Czech Republic,Enteric fermentation,2.83656
+2007,Hungary,Managed agricultural soils,2.91338
+2007,Czech Republic,Managed agricultural soils,2.9467
+2007,Italy,Livestock,20.16953
+2007,Germany,Managed agricultural soils,23.53349
+2007,Germany,Enteric fermentation,24.2975
+2007,Spain,Livestock,24.50668
+2007,United Kingdom,Enteric fermentation,24.50973
+2007,United Kingdom,Livestock,29.62913
+2007,Hungary,Livestock,3.02733
+2007,Sweden,Managed agricultural soils,3.07073
+2007,Romania,Manure management,3.13156
+2007,Slovakia,Agriculture,3.23027
+2007,Sweden,Enteric fermentation,3.24025
+2007,Finland,Managed agricultural soils,3.29801
+2007,Denmark,Manure management,3.33171
+2007,Denmark,Enteric fermentation,3.46983
+2007,Belgium,Managed agricultural soils,3.47679
+2007,Romania,Managed agricultural soils,3.53924
+2007,Greece,Managed agricultural soils,3.60573
+2007,Portugal,Enteric fermentation,3.63817
+2007,Lithuania,Agriculture,3.78783
+2007,Sweden,Livestock,3.8402
+2007,Greece,Enteric fermentation,3.86499
+2007,Denmark,Managed agricultural soils,3.93196
+2007,Poland,Agriculture,30.67178
+2007,Italy,Agriculture,33.42218
+2007,France,Enteric fermentation,34.09939
+2007,Germany,Livestock,34.91312
+2007,France,Managed agricultural soils,35.19763
+2007,Spain,Agriculture,39.46864
+2007,Austria,Enteric fermentation,4.14516
+2007,Poland,Manure management,4.31789
+2007,Belgium,Enteric fermentation,4.61966
+2007,Bulgaria,Agriculture,4.81398
+2007,Netherlands,Manure management,4.87907
+2007,Portugal,Livestock,4.99979
+2007,France,Livestock,42.32696
+2007,United Kingdom,Agriculture,44.66105
+2007,Greece,Livestock,5.00374
+2007,Austria,Livestock,5.04388
+2007,United Kingdom,Manure management,5.1194
+2007,Czech Republic,Livestock,5.39664
+2007,Netherlands,Managed agricultural soils,5.80117
+2007,Ireland,Managed agricultural soils,5.89295
+2007,Italy,Manure management,6.03018
+2007,Hungary,Agriculture,6.09795
+2007,Finland,Agriculture,6.34612
+2007,Belgium,Livestock,6.60173
+2007,Denmark,Livestock,6.80154
+2007,Germany,Agriculture,61.44557
+2007,Austria,Agriculture,7.02469
+2007,Sweden,Agriculture,7.02651
+2007,Portugal,Agriculture,7.28895
+2007,Netherlands,Enteric fermentation,7.72935
+2007,France,Agriculture,79.43662
+2007,France,Manure management,8.22757
+2007,Czech Republic,Agriculture,8.54517
+2007,Greece,Agriculture,8.81299
+2008,Finland,Manure management,0.708
+2008,Portugal,Managed agricultural soils,2.011
+2008,Malta,Managed agricultural soils,0.03039
+2008,Malta,Manure management,0.03193
+2008,Malta,Enteric fermentation,0.0395
+2008,Malta,Livestock,0.07144
+2008,Iceland,Manure management,0.0898
+2008,Luxembourg,Manure management,0.09472
+2008,Malta,Agriculture,0.10183
+2008,Cyprus,Managed agricultural soils,0.13421
+2008,Estonia,Manure management,0.13459
+2008,Luxembourg,Managed agricultural soils,0.1493
+2008,Latvia,Manure management,0.21527
+2008,Cyprus,Enteric fermentation,0.23008
+2008,Cyprus,Manure management,0.2763
+2008,Iceland,Enteric fermentation,0.28761
+2008,Croatia,Manure management,0.35468
+2008,Iceland,Managed agricultural soils,0.36714
+2008,Slovenia,Manure management,0.36784
+2008,Iceland,Livestock,0.37741
+2008,Luxembourg,Enteric fermentation,0.40978
+2008,Slovenia,Managed agricultural soils,0.42523
+2008,Lithuania,Manure management,0.42953
+2008,Estonia,Enteric fermentation,0.50031
+2008,Slovakia,Manure management,0.50156
+2008,Luxembourg,Livestock,0.5045
+2008,Cyprus,Livestock,0.50637
+2008,Estonia,Managed agricultural soils,0.54395
+2008,Sweden,Manure management,0.59067
+2008,Estonia,Livestock,0.63491
+2008,Cyprus,Agriculture,0.6413
+2008,Luxembourg,Agriculture,0.65665
+2008,Iceland,Agriculture,0.7447
+2008,Latvia,Enteric fermentation,0.76619
+2008,Bulgaria,Manure management,0.83841
+2008,Austria,Manure management,0.88766
+2008,Slovenia,Enteric fermentation,0.92878
+2008,Latvia,Livestock,0.98146
+2008,Croatia,Enteric fermentation,1.05484
+2008,Slovakia,Enteric fermentation,1.0787
+2008,Hungary,Manure management,1.10968
+2008,Greece,Manure management,1.12502
+2008,Estonia,Agriculture,1.19881
+2008,Slovenia,Livestock,1.29662
+2008,Croatia,Managed agricultural soils,1.30241
+2008,Latvia,Managed agricultural soils,1.36484
+2008,Portugal,Manure management,1.3671
+2008,Croatia,Livestock,1.40952
+2008,Slovakia,Managed agricultural soils,1.48029
+2008,Lithuania,Managed agricultural soils,1.54226
+2008,Slovakia,Livestock,1.58026
+2008,Bulgaria,Enteric fermentation,1.62907
+2008,Lithuania,Enteric fermentation,1.67762
+2008,Ireland,Manure management,1.71489
+2008,Slovenia,Agriculture,1.74075
+2008,Hungary,Enteric fermentation,1.8452
+2008,Belgium,Manure management,1.9831
+2008,Austria,Managed agricultural soils,1.99168
+2008,Belgium,Agriculture,10.07198
+2008,Italy,Managed agricultural soils,10.19651
+2008,Spain,Manure management,10.42362
+2008,Ireland,Enteric fermentation,10.54064
+2008,Germany,Manure management,10.61978
+2008,Denmark,Agriculture,10.88625
+2008,Romania,Enteric fermentation,11.04821
+2008,Spain,Managed agricultural soils,11.79586
+2008,Poland,Enteric fermentation,12.19524
+2008,Ireland,Livestock,12.25553
+2008,Netherlands,Livestock,12.83769
+2008,Spain,Enteric fermentation,13.03996
+2008,Poland,Managed agricultural soils,13.57324
+2008,United Kingdom,Managed agricultural soils,13.78374
+2008,Italy,Enteric fermentation,14.02015
+2008,Romania,Livestock,14.10156
+2008,Poland,Livestock,16.29044
+2008,Ireland,Agriculture,18.42865
+2008,Netherlands,Agriculture,18.54259
+2008,Romania,Agriculture,18.85646
+2008,Finland,Enteric fermentation,2.03033
+2008,Lithuania,Livestock,2.10715
+2008,Czech Republic,Manure management,2.32115
+2008,Latvia,Agriculture,2.35233
+2008,Bulgaria,Livestock,2.46748
+2008,Bulgaria,Managed agricultural soils,2.47338
+2008,Finland,Livestock,2.73833
+2008,Croatia,Agriculture,2.80854
+2008,Czech Republic,Enteric fermentation,2.8684
+2008,Hungary,Livestock,2.95488
+2008,Czech Republic,Managed agricultural soils,2.98425
+2008,Italy,Livestock,20.04459
+2008,Spain,Livestock,23.46358
+2008,United Kingdom,Enteric fermentation,23.93313
+2008,Germany,Enteric fermentation,24.75421
+2008,Germany,Managed agricultural soils,25.25829
+2008,United Kingdom,Livestock,28.93549
+2008,Romania,Manure management,3.05335
+2008,Hungary,Managed agricultural soils,3.06061
+2008,Slovakia,Agriculture,3.10865
+2008,Sweden,Managed agricultural soils,3.17281
+2008,Denmark,Manure management,3.17835
+2008,Sweden,Enteric fermentation,3.21932
+2008,Finland,Managed agricultural soils,3.36879
+2008,Belgium,Managed agricultural soils,3.37623
+2008,Greece,Managed agricultural soils,3.43215
+2008,Denmark,Enteric fermentation,3.50213
+2008,Portugal,Enteric fermentation,3.64195
+2008,Lithuania,Agriculture,3.6794
+2008,Sweden,Livestock,3.80999
+2008,Greece,Enteric fermentation,3.84285
+2008,Romania,Managed agricultural soils,3.96282
+2008,Denmark,Managed agricultural soils,3.97073
+2008,Poland,Agriculture,30.75045
+2008,Italy,Agriculture,32.42805
+2008,France,Enteric fermentation,34.55897
+2008,France,Managed agricultural soils,35.23891
+2008,Germany,Livestock,35.37399
+2008,Spain,Agriculture,36.51577
+2008,Poland,Manure management,4.0952
+2008,Austria,Enteric fermentation,4.13739
+2008,Belgium,Enteric fermentation,4.57431
+2008,Greece,Livestock,4.96787
+2008,Netherlands,Manure management,4.96905
+2008,France,Livestock,42.74913
+2008,United Kingdom,Agriculture,43.75599
+2008,United Kingdom,Manure management,5.00237
+2008,Portugal,Livestock,5.00905
+2008,Austria,Livestock,5.02505
+2008,Bulgaria,Agriculture,5.05558
+2008,Czech Republic,Livestock,5.18955
+2008,Netherlands,Managed agricultural soils,5.63429
+2008,Ireland,Managed agricultural soils,5.88015
+2008,Italy,Manure management,6.02444
+2008,Hungary,Agriculture,6.11557
+2008,Finland,Agriculture,6.43545
+2008,Belgium,Livestock,6.55741
+2008,Denmark,Livestock,6.68048
+2008,Germany,Agriculture,63.77592
+2008,Sweden,Agriculture,7.08739
+2008,Austria,Agriculture,7.12281
+2008,Portugal,Agriculture,7.26657
+2008,Netherlands,Enteric fermentation,7.86864
+2008,France,Agriculture,79.94964
+2008,France,Manure management,8.19016
+2008,Czech Republic,Agriculture,8.36875
+2008,Greece,Agriculture,8.60775
+2009,Malta,Enteric fermentation,0.03800
+2009,Spain,Manure management,10.339
+2009,Malta,Managed agricultural soils,0.02936
+2009,Malta,Manure management,0.03085
+2009,Malta,Livestock,0.06885
+2009,Iceland,Manure management,0.0911
+2009,Luxembourg,Manure management,0.09401
+2009,Malta,Agriculture,0.09821
+2009,Cyprus,Managed agricultural soils,0.13323
+2009,Estonia,Manure management,0.13716
+2009,Luxembourg,Managed agricultural soils,0.14987
+2009,Latvia,Manure management,0.21229
+2009,Cyprus,Enteric fermentation,0.22888
+2009,Cyprus,Manure management,0.27186
+2009,Iceland,Enteric fermentation,0.29092
+2009,Iceland,Managed agricultural soils,0.33914
+2009,Croatia,Manure management,0.35876
+2009,Slovenia,Manure management,0.37097
+2009,Iceland,Livestock,0.38202
+2009,Luxembourg,Enteric fermentation,0.41225
+2009,Lithuania,Manure management,0.42302
+2009,Slovenia,Managed agricultural soils,0.44436
+2009,Estonia,Managed agricultural soils,0.49462
+2009,Estonia,Enteric fermentation,0.49536
+2009,Slovakia,Manure management,0.49657
+2009,Cyprus,Livestock,0.50074
+2009,Luxembourg,Livestock,0.50626
+2009,Sweden,Manure management,0.58474
+2009,Estonia,Livestock,0.63252
+2009,Cyprus,Agriculture,0.63531
+2009,Luxembourg,Agriculture,0.66021
+2009,Iceland,Agriculture,0.72131
+2009,Finland,Manure management,0.73184
+2009,Latvia,Enteric fermentation,0.76335
+2009,Bulgaria,Manure management,0.79564
+2009,Austria,Manure management,0.89917
+2009,Slovenia,Enteric fermentation,0.91379
+2009,Latvia,Livestock,0.97564
+2009,Slovakia,Enteric fermentation,1.03008
+2009,Hungary,Manure management,1.05203
+2009,Croatia,Enteric fermentation,1.05277
+2009,Estonia,Agriculture,1.13004
+2009,Greece,Manure management,1.15129
+2009,Croatia,Managed agricultural soils,1.18986
+2009,Slovenia,Livestock,1.28477
+2009,Portugal,Manure management,1.37549
+2009,Latvia,Managed agricultural soils,1.40089
+2009,Croatia,Livestock,1.41153
+2009,Slovakia,Managed agricultural soils,1.42244
+2009,Slovakia,Livestock,1.52665
+2009,Bulgaria,Enteric fermentation,1.53786
+2009,Lithuania,Enteric fermentation,1.63754
+2009,Lithuania,Managed agricultural soils,1.65184
+2009,Ireland,Manure management,1.69855
+2009,Slovenia,Agriculture,1.7514
+2009,Hungary,Enteric fermentation,1.82178
+2009,Austria,Managed agricultural soils,1.94442
+2009,Portugal,Managed agricultural soils,1.96464
+2009,Belgium,Manure management,1.99305
+2009,Belgium,Agriculture,10.2235
+2009,Ireland,Enteric fermentation,10.3811
+2009,Denmark,Agriculture,10.55578
+2009,Germany,Manure management,10.60494
+2009,Romania,Enteric fermentation,10.78839
+2009,Spain,Managed agricultural soils,11.8719
+2009,Poland,Enteric fermentation,11.99899
+2009,Ireland,Livestock,12.07966
+2009,Spain,Enteric fermentation,12.93789
+2009,Netherlands,Livestock,12.98691
+2009,Poland,Managed agricultural soils,13.3279
+2009,Romania,Livestock,13.64081
+2009,United Kingdom,Managed agricultural soils,13.77599
+2009,Italy,Enteric fermentation,14.06059
+2009,Poland,Livestock,15.92414
+2009,Ireland,Agriculture,18.26911
+2009,Romania,Agriculture,18.32602
+2009,Netherlands,Agriculture,18.39694
+2009,Finland,Enteric fermentation,2.05219
+2009,Lithuania,Livestock,2.06057
+2009,Czech Republic,Manure management,2.23813
+2009,Bulgaria,Livestock,2.33349
+2009,Latvia,Agriculture,2.38502
+2009,Bulgaria,Managed agricultural soils,2.40959
+2009,Croatia,Agriculture,2.67835
+2009,Hungary,Managed agricultural soils,2.77819
+2009,Finland,Livestock,2.78404
+2009,Czech Republic,Enteric fermentation,2.79968
+2009,Romania,Manure management,2.85242
+2009,Hungary,Livestock,2.87381
+2009,Czech Republic,Managed agricultural soils,2.87762
+2009,Sweden,Managed agricultural soils,2.97346
+2009,Slovakia,Agriculture,2.98964
+2009,Italy,Livestock,20.15874
+2009,Spain,Livestock,23.27689
+2009,United Kingdom,Enteric fermentation,23.57033
+2009,Germany,Managed agricultural soils,24.26066
+2009,Germany,Enteric fermentation,24.8288
+2009,United Kingdom,Livestock,28.50783
+2009,Denmark,Manure management,3.09389
+2009,Sweden,Enteric fermentation,3.19765
+2009,Greece,Managed agricultural soils,3.29755
+2009,Finland,Managed agricultural soils,3.31817
+2009,Belgium,Managed agricultural soils,3.49946
+2009,Denmark,Enteric fermentation,3.50399
+2009,Portugal,Enteric fermentation,3.52902
+2009,Lithuania,Agriculture,3.75543
+2009,Denmark,Managed agricultural soils,3.76662
+2009,Sweden,Livestock,3.78239
+2009,Romania,Managed agricultural soils,3.84561
+2009,Poland,Manure management,3.92515
+2009,Greece,Enteric fermentation,3.99456
+2009,Poland,Agriculture,30.06406
+2009,Italy,Agriculture,31.75722
+2009,France,Enteric fermentation,34.1806
+2009,France,Managed agricultural soils,34.70102
+2009,Germany,Livestock,35.43374
+2009,Spain,Agriculture,36.70498
+2009,Austria,Enteric fermentation,4.19019
+2009,Belgium,Enteric fermentation,4.59399
+2009,Bulgaria,Agriculture,4.86527
+2009,Portugal,Livestock,4.90451
+2009,United Kingdom,Manure management,4.9375
+2009,France,Livestock,42.31534
+2009,United Kingdom,Agriculture,43.55669
+2009,Czech Republic,Livestock,5.03781
+2009,Netherlands,Manure management,5.07431
+2009,Austria,Livestock,5.08936
+2009,Greece,Livestock,5.14585
+2009,Netherlands,Managed agricultural soils,5.35031
+2009,Hungary,Agriculture,5.76433
+2009,Ireland,Managed agricultural soils,5.8412
+2009,Italy,Manure management,6.09815
+2009,Finland,Agriculture,6.44356
+2009,Belgium,Livestock,6.58704
+2009,Denmark,Livestock,6.59788
+2009,Sweden,Agriculture,6.87039
+2009,Germany,Agriculture,63.1049
+2009,Portugal,Agriculture,7.10106
+2009,Austria,Agriculture,7.14489
+2009,Netherlands,Enteric fermentation,7.9126
+2009,France,Agriculture,79.1072
+2009,Czech Republic,Agriculture,8.06489
+2009,France,Manure management,8.13473
+2009,Greece,Agriculture,8.6597
+2009,Italy,Managed agricultural soils,9.35594
+2010,Netherlands,Enteric fermentation,7.969
+2010,Malta,Managed agricultural soils,0.02797
+2010,Malta,Manure management,0.0303
+2010,Malta,Enteric fermentation,0.03662
+2010,Malta,Livestock,0.06692
+2010,Iceland,Manure management,0.09059
+2010,Malta,Agriculture,0.09489
+2010,Luxembourg,Manure management,0.09507
+2010,Estonia,Manure management,0.14201
+2010,Cyprus,Managed agricultural soils,0.14718
+2010,Luxembourg,Managed agricultural soils,0.15072
+2010,Latvia,Manure management,0.20771
+2010,Cyprus,Enteric fermentation,0.23936
+2010,Cyprus,Manure management,0.27443
+2010,Iceland,Enteric fermentation,0.29314
+2010,Iceland,Managed agricultural soils,0.32918
+2010,Croatia,Manure management,0.35198
+2010,Slovenia,Manure management,0.35821
+2010,Iceland,Livestock,0.38372
+2010,Luxembourg,Enteric fermentation,0.41957
+2010,Lithuania,Manure management,0.42458
+2010,Slovenia,Managed agricultural soils,0.43846
+2010,Slovakia,Manure management,0.48291
+2010,Estonia,Managed agricultural soils,0.49629
+2010,Estonia,Enteric fermentation,0.50564
+2010,Cyprus,Livestock,0.51379
+2010,Luxembourg,Livestock,0.51463
+2010,Sweden,Manure management,0.58584
+2010,Estonia,Livestock,0.64765
+2010,Cyprus,Agriculture,0.66197
+2010,Luxembourg,Agriculture,0.66954
+2010,Iceland,Agriculture,0.71304
+2010,Finland,Manure management,0.74503
+2010,Latvia,Enteric fermentation,0.77368
+2010,Bulgaria,Manure management,0.78092
+2010,Austria,Manure management,0.89586
+2010,Slovenia,Enteric fermentation,0.90145
+2010,Latvia,Livestock,0.98139
+2010,Slovakia,Enteric fermentation,1.02029
+2010,Hungary,Manure management,1.04832
+2010,Croatia,Enteric fermentation,1.05712
+2010,Croatia,Managed agricultural soils,1.10221
+2010,Greece,Manure management,1.15499
+2010,Estonia,Agriculture,1.16505
+2010,Slovenia,Livestock,1.25966
+2010,Portugal,Manure management,1.36687
+2010,Croatia,Livestock,1.4091
+2010,Latvia,Managed agricultural soils,1.44308
+2010,Slovakia,Managed agricultural soils,1.45518
+2010,Bulgaria,Enteric fermentation,1.49474
+2010,Slovakia,Livestock,1.5032
+2010,Lithuania,Enteric fermentation,1.61725
+2010,Ireland,Manure management,1.66505
+2010,Lithuania,Managed agricultural soils,1.67865
+2010,Slovenia,Agriculture,1.7153
+2010,Hungary,Enteric fermentation,1.80681
+2010,Austria,Managed agricultural soils,1.81339
+2010,Portugal,Managed agricultural soils,1.95255
+2010,Spain,Manure management,10.14906
+2010,Ireland,Enteric fermentation,10.16596
+2010,Belgium,Agriculture,10.17128
+2010,Germany,Manure management,10.27452
+2010,Denmark,Agriculture,10.59465
+2010,Ireland,Livestock,11.83102
+2010,Romania,Livestock,11.9177
+2010,Poland,Enteric fermentation,11.98933
+2010,Spain,Enteric fermentation,12.6962
+2010,Poland,Managed agricultural soils,12.77751
+2010,Spain,Managed agricultural soils,12.84384
+2010,Netherlands,Livestock,13.01893
+2010,Italy,Enteric fermentation,13.71176
+2010,United Kingdom,Managed agricultural soils,13.92614
+2010,Poland,Livestock,15.95227
+2010,Romania,Agriculture,16.27106
+2010,Ireland,Agriculture,18.31527
+2010,Netherlands,Agriculture,18.42111
+2010,Italy,Livestock,19.62644
+2010,Belgium,Manure management,2.01796
+2010,Lithuania,Livestock,2.04183
+2010,Finland,Enteric fermentation,2.0985
+2010,Czech Republic,Manure management,2.19967
+2010,Bulgaria,Livestock,2.27566
+2010,Latvia,Agriculture,2.43052
+2010,Romania,Manure management,2.50126
+2010,Croatia,Agriculture,2.59136
+2010,Hungary,Managed agricultural soils,2.71307
+2010,Czech Republic,Enteric fermentation,2.72002
+2010,Czech Republic,Managed agricultural soils,2.84073
+2010,Finland,Livestock,2.84353
+2010,Hungary,Livestock,2.85513
+2010,Bulgaria,Managed agricultural soils,2.89109
+2010,Spain,Livestock,22.84526
+2010,United Kingdom,Enteric fermentation,23.73072
+2010,Germany,Managed agricultural soils,24.05098
+2010,Germany,Enteric fermentation,24.64547
+2010,United Kingdom,Livestock,28.66003
+2010,Poland,Agriculture,29.55059
+2010,Slovakia,Agriculture,3.00472
+2010,Sweden,Managed agricultural soils,3.04425
+2010,Denmark,Manure management,3.14007
+2010,Sweden,Enteric fermentation,3.18817
+2010,Belgium,Managed agricultural soils,3.41686
+2010,Finland,Managed agricultural soils,3.42483
+2010,Portugal,Enteric fermentation,3.47793
+2010,Greece,Managed agricultural soils,3.51851
+2010,Denmark,Enteric fermentation,3.54875
+2010,Romania,Managed agricultural soils,3.70134
+2010,Lithuania,Agriculture,3.7425
+2010,Denmark,Managed agricultural soils,3.74638
+2010,Sweden,Livestock,3.77401
+2010,Poland,Manure management,3.96294
+2010,Italy,Agriculture,30.96258
+2010,France,Managed agricultural soils,33.91889
+2010,France,Enteric fermentation,34.01063
+2010,Germany,Livestock,34.91999
+2010,Spain,Agriculture,37.33231
+2010,Greece,Enteric fermentation,4.05055
+2010,Austria,Enteric fermentation,4.17856
+2010,Belgium,Enteric fermentation,4.60036
+2010,Portugal,Livestock,4.8448
+2010,Czech Republic,Livestock,4.9197
+2010,United Kingdom,Manure management,4.92931
+2010,France,Livestock,41.76753
+2010,United Kingdom,Agriculture,43.83094
+2010,Netherlands,Manure management,5.04994
+2010,Austria,Livestock,5.07442
+2010,Greece,Livestock,5.20555
+2010,Bulgaria,Agriculture,5.31884
+2010,Netherlands,Managed agricultural soils,5.34246
+2010,Hungary,Agriculture,5.68457
+2010,Italy,Manure management,5.91467
+2010,Ireland,Managed agricultural soils,6.01115
+2010,Finland,Agriculture,6.54806
+2010,Belgium,Livestock,6.61832
+2010,Denmark,Livestock,6.68883
+2010,Sweden,Agriculture,6.94206
+2010,Austria,Agriculture,6.99611
+2010,Germany,Agriculture,62.30875
+2010,Portugal,Agriculture,7.01521
+2010,France,Manure management,7.7569
+2010,Czech Republic,Agriculture,7.93315
+2010,France,Agriculture,77.72151
+2010,Greece,Agriculture,8.94517
+2010,Italy,Managed agricultural soils,9.14196
+2010,Romania,Enteric fermentation,9.41644
+2011,Malta,Manure management,0.02552
+2011,Malta,Managed agricultural soils,0.02695
+2011,Malta,Enteric fermentation,0.03618
+2011,Malta,Livestock,0.0617
+2011,Malta,Agriculture,0.08865
+2011,Iceland,Manure management,0.09195
+2011,Luxembourg,Manure management,0.09323
+2011,Cyprus,Managed agricultural soils,0.13258
+2011,Estonia,Manure management,0.14224
+2011,Luxembourg,Managed agricultural soils,0.15864
+2011,Latvia,Manure management,0.20596
+2011,Cyprus,Enteric fermentation,0.2456
+2011,Cyprus,Manure management,0.26537
+2011,Iceland,Enteric fermentation,0.29228
+2011,Iceland,Managed agricultural soils,0.32642
+2011,Croatia,Manure management,0.33829
+2011,Slovenia,Manure management,0.34601
+2011,Iceland,Livestock,0.38423
+2011,Lithuania,Manure management,0.40434
+2011,Luxembourg,Enteric fermentation,0.40663
+2011,Slovenia,Managed agricultural soils,0.43002
+2011,Slovakia,Manure management,0.45153
+2011,Luxembourg,Livestock,0.49986
+2011,Estonia,Managed agricultural soils,0.50257
+2011,Estonia,Enteric fermentation,0.50883
+2011,Cyprus,Livestock,0.51097
+2011,Sweden,Manure management,0.58745
+2011,Cyprus,Agriculture,0.64484
+2011,Estonia,Livestock,0.65107
+2011,Luxembourg,Agriculture,0.66339
+2011,Iceland,Agriculture,0.71083
+2011,Finland,Manure management,0.72664
+2011,Bulgaria,Manure management,0.75093
+2011,Latvia,Enteric fermentation,0.78312
+2011,Austria,Manure management,0.88199
+2011,Slovenia,Enteric fermentation,0.90158
+2011,Latvia,Livestock,0.98908
+2011,Slovakia,Enteric fermentation,1.02327
+2011,Croatia,Enteric fermentation,1.04066
+2011,Hungary,Manure management,1.0448
+2011,Greece,Manure management,1.14983
+2011,Estonia,Agriculture,1.1663
+2011,Croatia,Managed agricultural soils,1.18964
+2011,Slovenia,Livestock,1.24758
+2011,Portugal,Manure management,1.35368
+2011,Croatia,Livestock,1.37894
+2011,Latvia,Managed agricultural soils,1.45478
+2011,Slovakia,Managed agricultural soils,1.47062
+2011,Slovakia,Livestock,1.4748
+2011,Bulgaria,Enteric fermentation,1.49862
+2011,Lithuania,Enteric fermentation,1.60024
+2011,Ireland,Manure management,1.65068
+2011,Slovenia,Agriculture,1.69059
+2011,Lithuania,Managed agricultural soils,1.71261
+2011,Hungary,Enteric fermentation,1.81422
+2011,Austria,Managed agricultural soils,1.92306
+2011,Portugal,Managed agricultural soils,1.9485
+2011,Ireland,Enteric fermentation,10.05396
+2011,Belgium,Agriculture,10.0815
+2011,Germany,Manure management,10.11898
+2011,Spain,Manure management,10.23434
+2011,Denmark,Agriculture,10.55735
+2011,Ireland,Livestock,11.70464
+2011,Romania,Livestock,11.82471
+2011,Poland,Enteric fermentation,12.00858
+2011,Spain,Managed agricultural soils,12.18694
+2011,Spain,Enteric fermentation,12.22003
+2011,Netherlands,Livestock,12.88237
+2011,Poland,Managed agricultural soils,13.22994
+2011,Italy,Enteric fermentation,13.73536
+2011,United Kingdom,Managed agricultural soils,13.83543
+2011,Poland,Livestock,15.8703
+2011,Romania,Agriculture,16.42564
+2011,Ireland,Agriculture,17.72952
+2011,Netherlands,Agriculture,18.09706
+2011,Italy,Livestock,19.60269
+2011,Lithuania,Livestock,2.00459
+2011,Belgium,Manure management,2.00669
+2011,Finland,Enteric fermentation,2.07609
+2011,Czech Republic,Manure management,2.10195
+2011,Bulgaria,Livestock,2.24955
+2011,Romania,Manure management,2.43972
+2011,Latvia,Agriculture,2.45641
+2011,Bulgaria,Managed agricultural soils,2.55175
+2011,Croatia,Agriculture,2.6669
+2011,Czech Republic,Enteric fermentation,2.72601
+2011,Finland,Livestock,2.80273
+2011,Hungary,Livestock,2.85901
+2011,Hungary,Managed agricultural soils,2.91226
+2011,Czech Republic,Managed agricultural soils,2.96715
+2011,Spain,Livestock,22.45437
+2011,United Kingdom,Enteric fermentation,23.62682
+2011,Germany,Enteric fermentation,24.34176
+2011,Germany,Managed agricultural soils,25.61616
+2011,United Kingdom,Livestock,28.51584
+2011,Poland,Agriculture,29.93044
+2011,Slovakia,Agriculture,3.00574
+2011,Denmark,Manure management,3.10828
+2011,Sweden,Enteric fermentation,3.17121
+2011,Greece,Managed agricultural soils,3.32975
+2011,Finland,Managed agricultural soils,3.3652
+2011,Belgium,Managed agricultural soils,3.40854
+2011,Portugal,Enteric fermentation,3.41755
+2011,Sweden,Managed agricultural soils,3.4552
+2011,Denmark,Enteric fermentation,3.51114
+2011,Lithuania,Agriculture,3.74009
+2011,Sweden,Livestock,3.75867
+2011,Denmark,Managed agricultural soils,3.76966
+2011,Poland,Manure management,3.86171
+2011,Romania,Managed agricultural soils,3.95932
+2011,Italy,Agriculture,31.48621
+2011,France,Managed agricultural soils,33.36947
+2011,France,Enteric fermentation,33.45693
+2011,Germany,Livestock,34.46074
+2011,Spain,Agriculture,36.26245
+2011,Greece,Enteric fermentation,4.04019
+2011,Austria,Enteric fermentation,4.12482
+2011,Belgium,Enteric fermentation,4.53108
+2011,Portugal,Livestock,4.77123
+2011,Czech Republic,Livestock,4.82796
+2011,United Kingdom,Manure management,4.88903
+2011,Bulgaria,Agriculture,4.95957
+2011,France,Livestock,41.81404
+2011,United Kingdom,Agriculture,43.7346
+2011,Austria,Livestock,5.00681
+2011,Netherlands,Manure management,5.01963
+2011,Netherlands,Managed agricultural soils,5.14136
+2011,Greece,Livestock,5.19003
+2011,Ireland,Managed agricultural soils,5.63188
+2011,Italy,Manure management,5.86734
+2011,Hungary,Agriculture,5.92448
+2011,Finland,Agriculture,6.37035
+2011,Belgium,Livestock,6.53777
+2011,Denmark,Livestock,6.61942
+2011,Portugal,Agriculture,6.95812
+2011,Germany,Agriculture,63.93621
+2011,Austria,Agriculture,7.03634
+2011,Sweden,Agriculture,7.33773
+2011,Netherlands,Enteric fermentation,7.86274
+2011,Czech Republic,Agriculture,7.9857
+2011,France,Agriculture,77.27137
+2011,France,Manure management,8.35711
+2011,Greece,Agriculture,8.73811
+2011,Romania,Enteric fermentation,9.38499
+2011,Italy,Managed agricultural soils,9.68383
+2012,Malta,Manure management,0.02529
+2012,Malta,Managed agricultural soils,0.02613
+2012,Malta,Enteric fermentation,0.03613
+2012,Malta,Livestock,0.06142
+2012,Malta,Agriculture,0.08755
+2012,Iceland,Manure management,0.09105
+2012,Luxembourg,Manure management,0.0914
+2012,Cyprus,Managed agricultural soils,0.13548
+2012,Estonia,Manure management,0.14664
+2012,Luxembourg,Managed agricultural soils,0.15041
+2012,Latvia,Manure management,0.19761
+2012,Cyprus,Enteric fermentation,0.2402
+2012,Cyprus,Manure management,0.24356
+2012,Iceland,Enteric fermentation,0.28993
+2012,Croatia,Manure management,0.32908
+2012,Iceland,Managed agricultural soils,0.33729
+2012,Slovenia,Manure management,0.33751
+2012,Iceland,Livestock,0.38098
+2012,Luxembourg,Enteric fermentation,0.39709
+2012,Lithuania,Manure management,0.40717
+2012,Slovenia,Managed agricultural soils,0.42206
+2012,Slovakia,Manure management,0.47117
+2012,Cyprus,Livestock,0.48376
+2012,Luxembourg,Livestock,0.48849
+2012,Estonia,Enteric fermentation,0.52699
+2012,Estonia,Managed agricultural soils,0.56538
+2012,Sweden,Manure management,0.57099
+2012,Cyprus,Agriculture,0.62009
+2012,Luxembourg,Agriculture,0.64396
+2012,Estonia,Livestock,0.67363
+2012,Bulgaria,Manure management,0.69714
+2012,Iceland,Agriculture,0.71848
+2012,Finland,Manure management,0.73542
+2012,Latvia,Enteric fermentation,0.80861
+2012,Austria,Manure management,0.87383
+2012,Slovenia,Enteric fermentation,0.89806
+2012,Latvia,Livestock,1.00621
+2012,Croatia,Enteric fermentation,1.02433
+2012,Slovakia,Enteric fermentation,1.05066
+2012,Hungary,Manure management,1.06048
+2012,Greece,Manure management,1.14776
+2012,Croatia,Managed agricultural soils,1.14862
+2012,Slovenia,Livestock,1.23557
+2012,Estonia,Agriculture,1.25432
+2012,Portugal,Manure management,1.34384
+2012,Croatia,Livestock,1.35341
+2012,Bulgaria,Enteric fermentation,1.45267
+2012,Slovakia,Managed agricultural soils,1.51355
+2012,Slovakia,Livestock,1.52184
+2012,Latvia,Managed agricultural soils,1.55162
+2012,Lithuania,Enteric fermentation,1.57677
+2012,Slovenia,Agriculture,1.66953
+2012,Ireland,Manure management,1.72558
+2012,Lithuania,Managed agricultural soils,1.76979
+2012,Hungary,Enteric fermentation,1.87614
+2012,Austria,Managed agricultural soils,1.88622
+2012,Lithuania,Livestock,1.98394
+2012,Germany,Manure management,10.15175
+2012,Italy,Managed agricultural soils,10.17161
+2012,Ireland,Enteric fermentation,10.39037
+2012,Denmark,Agriculture,10.46391
+2012,Spain,Enteric fermentation,11.85621
+2012,Spain,Managed agricultural soils,11.87208
+2012,Romania,Livestock,11.92926
+2012,Poland,Enteric fermentation,12.07323
+2012,Ireland,Livestock,12.11595
+2012,Netherlands,Livestock,12.82224
+2012,Poland,Managed agricultural soils,13.26605
+2012,United Kingdom,Managed agricultural soils,13.65146
+2012,Italy,Enteric fermentation,13.66393
+2012,Poland,Livestock,15.74741
+2012,Romania,Agriculture,16.44656
+2012,Netherlands,Agriculture,17.88994
+2012,Ireland,Agriculture,18.06013
+2012,Italy,Livestock,19.3704
+2012,Belgium,Manure management,2.00409
+2012,Portugal,Managed agricultural soils,2.03257
+2012,Czech Republic,Manure management,2.0479
+2012,Finland,Enteric fermentation,2.05772
+2012,Bulgaria,Livestock,2.14981
+2012,Romania,Manure management,2.3932
+2012,Latvia,Agriculture,2.57392
+2012,Croatia,Agriculture,2.59849
+2012,Bulgaria,Managed agricultural soils,2.74554
+2012,Czech Republic,Enteric fermentation,2.75854
+2012,Finland,Livestock,2.79315
+2012,Hungary,Managed agricultural soils,2.86536
+2012,Hungary,Livestock,2.93662
+2012,Czech Republic,Managed agricultural soils,2.94396
+2012,Sweden,Managed agricultural soils,2.98826
+2012,Spain,Livestock,21.83243
+2012,United Kingdom,Enteric fermentation,23.55986
+2012,Germany,Enteric fermentation,24.33884
+2012,Germany,Managed agricultural soils,25.19992
+2012,United Kingdom,Livestock,28.43149
+2012,Poland,Agriculture,29.80724
+2012,Denmark,Manure management,3.00649
+2012,Slovakia,Agriculture,3.09624
+2012,Sweden,Enteric fermentation,3.12311
+2012,Belgium,Managed agricultural soils,3.24462
+2012,Greece,Managed agricultural soils,3.29565
+2012,Finland,Managed agricultural soils,3.33591
+2012,Portugal,Enteric fermentation,3.39579
+2012,Romania,Managed agricultural soils,3.43515
+2012,Denmark,Enteric fermentation,3.5967
+2012,Denmark,Managed agricultural soils,3.66498
+2012,Poland,Manure management,3.67419
+2012,Sweden,Livestock,3.69409
+2012,Lithuania,Agriculture,3.78038
+2012,Italy,Agriculture,31.91752
+2012,France,Enteric fermentation,33.15634
+2012,France,Managed agricultural soils,33.81454
+2012,Germany,Livestock,34.49059
+2012,Spain,Agriculture,35.02131
+2012,Greece,Enteric fermentation,4.03389
+2012,Austria,Enteric fermentation,4.09608
+2012,Belgium,Enteric fermentation,4.46312
+2012,Portugal,Livestock,4.73963
+2012,Czech Republic,Livestock,4.80644
+2012,United Kingdom,Manure management,4.87163
+2012,Netherlands,Manure management,4.94908
+2012,Austria,Livestock,4.96991
+2012,Netherlands,Managed agricultural soils,4.99726
+2012,France,Livestock,41.01807
+2012,United Kingdom,Agriculture,43.24155
+2012,Bulgaria,Agriculture,5.04014
+2012,Greece,Livestock,5.18164
+2012,Ireland,Managed agricultural soils,5.69346
+2012,Italy,Manure management,5.70647
+2012,Hungary,Agriculture,5.96014
+2012,Finland,Agriculture,6.33315
+2012,Belgium,Livestock,6.4672
+2012,Denmark,Livestock,6.60318
+2012,Sweden,Agriculture,6.82447
+2012,Austria,Agriculture,6.96523
+2012,Germany,Agriculture,63.4983
+2012,Portugal,Agriculture,7.00903
+2012,France,Manure management,7.86173
+2012,Netherlands,Enteric fermentation,7.87317
+2012,France,Agriculture,77.04597
+2012,Czech Republic,Agriculture,8.00187
+2012,Greece,Agriculture,8.69563
+2012,Romania,Enteric fermentation,9.53606
+2012,Belgium,Agriculture,9.84611
+2012,Spain,Manure management,9.97622
+2013,Austria,Managed agricultural soils,0.01877
+2013,Malta,Manure management,0.02642
+2013,Malta,Managed agricultural soils,0.02747
+2013,Malta,Enteric fermentation,0.03623
+2013,Malta,Livestock,0.06265
+2013,Iceland,Manure management,0.08765
+2013,Malta,Agriculture,0.09011
+2013,Luxembourg,Manure management,0.09382
+2013,Cyprus,Managed agricultural soils,0.12069
+2013,Estonia,Manure management,0.15057
+2013,Luxembourg,Managed agricultural soils,0.15339
+2013,Latvia,Manure management,0.19625
+2013,Cyprus,Manure management,0.22567
+2013,Cyprus,Enteric fermentation,0.22941
+2013,Iceland,Enteric fermentation,0.27613
+2013,Croatia,Manure management,0.31804
+2013,Iceland,Managed agricultural soils,0.32375
+2013,Slovenia,Manure management,0.33613
+2013,Iceland,Livestock,0.36379
+2013,Lithuania,Manure management,0.40169
+2013,Luxembourg,Enteric fermentation,0.40665
+2013,Slovenia,Managed agricultural soils,0.41847
+2013,Cyprus,Livestock,0.45508
+2013,Slovakia,Manure management,0.46867
+2013,Luxembourg,Livestock,0.50047
+2013,Estonia,Managed agricultural soils,0.54768
+2013,Estonia,Enteric fermentation,0.5553
+2013,Cyprus,Agriculture,0.57681
+2013,Sweden,Manure management,0.59529
+2013,Luxembourg,Agriculture,0.65966
+2013,Iceland,Agriculture,0.6878
+2013,Bulgaria,Manure management,0.69893
+2013,Estonia,Livestock,0.70587
+2013,Finland,Manure management,0.73231
+2013,Latvia,Enteric fermentation,0.84306
+2013,Austria,Manure management,0.87135
+2013,Slovenia,Enteric fermentation,0.8871
+2013,Croatia,Enteric fermentation,0.99604
+2013,Latvia,Livestock,1.03931
+2013,Slovakia,Enteric fermentation,1.04679
+2013,Croatia,Managed agricultural soils,1.04963
+2013,Hungary,Manure management,1.07168
+2013,Greece,Manure management,1.15247
+2013,Slovenia,Livestock,1.22323
+2013,Estonia,Agriculture,1.26293
+2013,Croatia,Livestock,1.31408
+2013,Portugal,Manure management,1.33794
+2013,Bulgaria,Enteric fermentation,1.46759
+2013,Slovakia,Livestock,1.51545
+2013,Lithuania,Enteric fermentation,1.55527
+2013,Latvia,Managed agricultural soils,1.58258
+2013,Slovakia,Managed agricultural soils,1.60564
+2013,Slovenia,Agriculture,1.6527
+2013,Ireland,Manure management,1.74306
+2013,Lithuania,Managed agricultural soils,1.7578
+2013,Hungary,Enteric fermentation,1.93447
+2013,Lithuania,Livestock,1.95697
+2013,Germany,Manure management,10.11098
+2013,Denmark,Agriculture,10.53553
+2013,Ireland,Enteric fermentation,10.54537
+2013,Spain,Enteric fermentation,11.63642
+2013,Romania,Livestock,12.08346
+2013,Poland,Enteric fermentation,12.15074
+2013,Ireland,Livestock,12.28843
+2013,Spain,Managed agricultural soils,12.72983
+2013,Netherlands,Livestock,13.10127
+2013,Poland,Managed agricultural soils,13.70915
+2013,United Kingdom,Managed agricultural soils,13.8412
+2013,Italy,Enteric fermentation,13.84877
+2013,Poland,Livestock,15.77544
+2013,Romania,Agriculture,16.86021
+2013,Netherlands,Agriculture,18.20351
+2013,Ireland,Agriculture,18.90548
+2013,Italy,Livestock,19.19514
+2013,Czech Republic,Manure management,2.00952
+2013,Belgium,Manure management,2.01329
+2013,Finland,Enteric fermentation,2.06041
+2013,Portugal,Managed agricultural soils,2.1276
+2013,Bulgaria,Livestock,2.16652
+2013,Romania,Manure management,2.38314
+2013,Croatia,Agriculture,2.4337
+2013,Latvia,Agriculture,2.63974
+2013,Czech Republic,Enteric fermentation,2.75852
+2013,Finland,Livestock,2.79272
+2013,Denmark,Manure management,2.92955
+2013,Spain,Livestock,21.55653
+2013,United Kingdom,Enteric fermentation,23.48638
+2013,Germany,Enteric fermentation,24.71063
+2013,Germany,Managed agricultural soils,25.66031
+2013,United Kingdom,Livestock,28.38614
+2013,Hungary,Livestock,3.00615
+2013,Czech Republic,Managed agricultural soils,3.0114
+2013,Sweden,Enteric fermentation,3.12207
+2013,Bulgaria,Managed agricultural soils,3.17376
+2013,Sweden,Managed agricultural soils,3.18927
+2013,Slovakia,Agriculture,3.18931
+2013,Hungary,Managed agricultural soils,3.19173
+2013,Belgium,Managed agricultural soils,3.26191
+2013,Portugal,Enteric fermentation,3.33733
+2013,Greece,Managed agricultural soils,3.34621
+2013,Finland,Managed agricultural soils,3.35618
+2013,Denmark,Enteric fermentation,3.59789
+2013,Poland,Manure management,3.62471
+2013,Sweden,Livestock,3.71736
+2013,Lithuania,Agriculture,3.7472
+2013,Denmark,Managed agricultural soils,3.75762
+2013,Poland,Agriculture,30.40102
+2013,Italy,Agriculture,30.79211
+2013,France,Enteric fermentation,33.23168
+2013,France,Managed agricultural soils,33.40839
+2013,Germany,Livestock,34.82162
+2013,Spain,Agriculture,36.03644
+2013,Greece,Enteric fermentation,4.06654
+2013,Austria,Enteric fermentation,4.10179
+2013,Romania,Managed agricultural soils,4.10773
+2013,Belgium,Enteric fermentation,4.42792
+2013,Portugal,Livestock,4.67526
+2013,Czech Republic,Livestock,4.76804
+2013,United Kingdom,Manure management,4.89976
+2013,Netherlands,Manure management,4.96271
+2013,Austria,Livestock,4.97314
+2013,France,Livestock,40.3669
+2013,United Kingdom,Agriculture,43.50965
+2013,Netherlands,Managed agricultural soils,5.0318
+2013,Greece,Livestock,5.21902
+2013,Italy,Manure management,5.34637
+2013,Bulgaria,Agriculture,5.50179
+2013,Ireland,Managed agricultural soils,6.0797
+2013,Hungary,Agriculture,6.38479
+2013,Belgium,Livestock,6.44121
+2013,Finland,Agriculture,6.45648
+2013,Denmark,Livestock,6.52744
+2013,Austria,Agriculture,6.95864
+2013,Germany,Agriculture,64.64992
+2013,Portugal,Agriculture,7.03817
+2013,Sweden,Agriculture,7.04919
+2013,France,Manure management,7.13522
+2013,France,Agriculture,75.8713
+2013,Czech Republic,Agriculture,8.04063
+2013,Netherlands,Enteric fermentation,8.13856
+2013,Greece,Agriculture,8.78514
+2013,Italy,Managed agricultural soils,9.45262
+2013,Romania,Enteric fermentation,9.70032
+2013,Belgium,Agriculture,9.83652
+2013,Spain,Manure management,9.92011
+2014,Croatia,Manure management,0.312
+2014,Austria,Agriculture,1.7074
+2014,Malta,Manure management,0.02582
+2014,Malta,Managed agricultural soils,0.02734
+2014,Malta,Enteric fermentation,0.0357
+2014,Malta,Livestock,0.06152
+2014,Malta,Agriculture,0.08886
+2014,Iceland,Manure management,0.0922
+2014,Luxembourg,Manure management,0.09573
+2014,Cyprus,Managed agricultural soils,0.12009
+2014,Estonia,Manure management,0.1518
+2014,Luxembourg,Managed agricultural soils,0.15449
+2014,Latvia,Manure management,0.2038
+2014,Cyprus,Manure management,0.22553
+2014,Cyprus,Enteric fermentation,0.23252
+2014,Iceland,Enteric fermentation,0.29419
+2014,Slovenia,Manure management,0.34035
+2014,Iceland,Managed agricultural soils,0.3609
+2014,Iceland,Livestock,0.38639
+2014,Lithuania,Manure management,0.40482
+2014,Luxembourg,Enteric fermentation,0.4159
+2014,Slovakia,Manure management,0.42397
+2014,Slovenia,Managed agricultural soils,0.44266
+2014,Cyprus,Livestock,0.45805
+2014,Luxembourg,Livestock,0.51163
+2014,Estonia,Enteric fermentation,0.56065
+2014,Cyprus,Agriculture,0.57877
+2014,Estonia,Managed agricultural soils,0.59239
+2014,Sweden,Manure management,0.59564
+2014,Luxembourg,Agriculture,0.67193
+2014,Bulgaria,Manure management,0.70177
+2014,Estonia,Livestock,0.71245
+2014,Finland,Manure management,0.73664
+2014,Iceland,Agriculture,0.74767
+2014,Austria,Manure management,0.87127
+2014,Latvia,Enteric fermentation,0.87267
+2014,Slovenia,Enteric fermentation,0.90588
+2014,Croatia,Enteric fermentation,0.95384
+2014,Croatia,Managed agricultural soils,0.97067
+2014,Slovakia,Enteric fermentation,1.04351
+2014,Latvia,Livestock,1.07646
+2014,Hungary,Manure management,1.11127
+2014,Greece,Manure management,1.14732
+2014,Slovenia,Livestock,1.24623
+2014,Croatia,Livestock,1.26584
+2014,Estonia,Agriculture,1.31793
+2014,Portugal,Manure management,1.35401
+2014,Slovakia,Livestock,1.46748
+2014,Bulgaria,Enteric fermentation,1.4886
+2014,Slovakia,Managed agricultural soils,1.59188
+2014,Latvia,Managed agricultural soils,1.62554
+2014,Lithuania,Enteric fermentation,1.6374
+2014,Slovenia,Agriculture,1.69898
+2014,Ireland,Manure management,1.74329
+2014,Lithuania,Managed agricultural soils,1.80562
+2014,Austria,Managed agricultural soils,1.97099
+2014,Belgium,Manure management,1.98934
+2014,Hungary,Enteric fermentation,1.99458
+2014,Germany,Manure management,10.12863
+2014,Spain,Manure management,10.18092
+2014,Denmark,Agriculture,10.56988
+2014,Ireland,Enteric fermentation,10.61463
+2014,Spain,Enteric fermentation,11.70375
+2014,Romania,Livestock,12.22549
+2014,Poland,Enteric fermentation,12.29452
+2014,Ireland,Livestock,12.35793
+2014,Netherlands,Livestock,13.2328
+2014,Poland,Managed agricultural soils,13.46146
+2014,Spain,Managed agricultural soils,13.67821
+2014,Italy,Enteric fermentation,13.76211
+2014,United Kingdom,Managed agricultural soils,14.36253
+2014,Poland,Livestock,15.8394
+2014,Romania,Agriculture,16.84463
+2014,Netherlands,Agriculture,18.39535
+2014,Ireland,Agriculture,18.75432
+2014,Italy,Livestock,18.96925
+2014,Lithuania,Livestock,2.04222
+2014,Czech Republic,Manure management,2.08021
+2014,Finland,Enteric fermentation,2.08919
+2014,Portugal,Managed agricultural soils,2.18422
+2014,Bulgaria,Livestock,2.19036
+2014,Croatia,Agriculture,2.29558
+2014,Romania,Manure management,2.32201
+2014,Latvia,Agriculture,2.72642
+2014,Bulgaria,Managed agricultural soils,2.73745
+2014,Czech Republic,Enteric fermentation,2.81727
+2014,Finland,Livestock,2.82583
+2014,Denmark,Manure management,2.94694
+2014,Spain,Livestock,21.88468
+2014,United Kingdom,Enteric fermentation,23.84601
+2014,Germany,Enteric fermentation,24.87519
+2014,Germany,Managed agricultural soils,26.53122
+2014,United Kingdom,Livestock,28.80447
+2014,Hungary,Livestock,3.10585
+2014,Slovakia,Agriculture,3.13293
+2014,Sweden,Enteric fermentation,3.13815
+2014,Czech Republic,Managed agricultural soils,3.18235
+2014,Hungary,Managed agricultural soils,3.26305
+2014,Sweden,Managed agricultural soils,3.28631
+2014,Greece,Managed agricultural soils,3.3343
+2014,Belgium,Managed agricultural soils,3.35368
+2014,Finland,Managed agricultural soils,3.42445
+2014,Portugal,Enteric fermentation,3.42631
+2014,Poland,Manure management,3.54488
+2014,Denmark,Enteric fermentation,3.63625
+2014,Sweden,Livestock,3.73379
+2014,Denmark,Managed agricultural soils,3.7425
+2014,Lithuania,Agriculture,3.88826
+2014,Romania,Managed agricultural soils,3.98597
+2014,Poland,Agriculture,30.24457
+2014,Italy,Agriculture,30.33763
+2014,France,Enteric fermentation,33.73769
+2014,France,Managed agricultural soils,34.66357
+2014,Germany,Livestock,35.00382
+2014,Spain,Agriculture,37.40586
+2014,Greece,Enteric fermentation,4.0408
+2014,Austria,Enteric fermentation,4.11971
+2014,Belgium,Enteric fermentation,4.46624
+2014,Portugal,Livestock,4.78032
+2014,Czech Republic,Livestock,4.89749
+2014,United Kingdom,Manure management,4.95846
+2014,Austria,Livestock,4.99099
+2014,France,Livestock,42.05851
+2014,United Kingdom,Agriculture,44.55592
+2014,Netherlands,Manure management,5.00969
+2014,Netherlands,Managed agricultural soils,5.0921
+2014,Bulgaria,Agriculture,5.09229
+2014,Greece,Livestock,5.18812
+2014,Italy,Manure management,5.20715
+2014,Ireland,Managed agricultural soils,5.98899
+2014,Belgium,Livestock,6.45558
+2014,Finland,Agriculture,6.47537
+2014,Hungary,Agriculture,6.53159
+2014,Denmark,Livestock,6.58319
+2014,Germany,Agriculture,66.06981
+2014,Sweden,Agriculture,7.14342
+2014,Portugal,Agriculture,7.20196
+2014,France,Agriculture,78.86942
+2014,Netherlands,Enteric fermentation,8.22311
+2014,Czech Republic,Agriculture,8.28716
+2014,France,Manure management,8.32082
+2014,Greece,Agriculture,8.7431
+2014,Italy,Managed agricultural soils,9.32826
+2014,Romania,Enteric fermentation,9.90349
+2014,Belgium,Agriculture,9.94176

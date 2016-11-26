@@ -1,0 +1,39 @@
+"DATASET: Labour force: number of persons and farm work (AWU) by sex of workers and NUTS 2 regions [ef_olfreg]"
+
+"LAST UPDATE: 18.11.15 12:41:54"
+
+"EXTRACTION DATE: 16.11.16 07:37:00"
+
+"SOURCE OF DATA: Eurostat"
+
+"TIME"
+"2005"
+"2007"
+"2010"
+"2013"
+
+"GEO"
+"Anatoliki Makedonia, Thraki (NUTS 2010)"
+"Kentriki Makedonia (NUTS 2010)"
+"Dytiki Makedonia (NUTS 2010)"
+"Thessalia (NUTS 2010)"
+"Ipeiros (NUTS 2010)"
+"Ionia Nisia (NUTS 2010)"
+"Dytiki Ellada (NUTS 2010)"
+"Sterea Ellada (NUTS 2010)"
+"Peloponnisos (NUTS 2010)"
+"Attiki"
+"Voreio Aigaio"
+"Notio Aigaio"
+"Kriti"
+
+"INDIC_EF"
+"pers: Sole holders working on the farm"
+"pers: Female: Sole holders working on the farm"
+"pers: Male: Sole holders working on the farm"
+"pers: Family labour force"
+"AWU: Sole holders"
+
+"Special value:"
+":","not available"
+
