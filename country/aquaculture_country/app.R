@@ -13,6 +13,7 @@ ui <- fluidPage(
                      selectInput('year', 'Έτος', choices = unique(mydata$year), selected = "2011"))
   ),
   mainPanel(
+    tags$body(tags$script(src="iframeResizer.contentWindow.min.js")),
     tabsetPanel(
       tabPanel("Διάγραμμα", htmlOutput("view")),
       tabPanel("Χάρτης", htmlOutput("map")), 
