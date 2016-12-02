@@ -1,12 +1,23 @@
 library(shiny)
 library(googleVis)
 library(shinythemes)
+library(eurostat)
+library(countrycode)
 
-mydata<-read.csv("./greenhouse_gas_country.csv", sep=",")
+mydata<-get_eurostat("aei_pr_ghg", time_format = "raw")
+mydata$geo<-as.character(mydata$geo)
+mydata<-mydata[which(mydata$unit=='MIO_T' & mydata$airemsect=='CRF3'), ]
+for (i in 1:nrow(mydata)) { 
+    if(as.character(mydata$geo[i])=="EL") {
+        mydata$geo[i] <- "GR"}
+    if(as.character(mydata$geo[i])=="UK") {
+        mydata$geo[i] <- "GB"}}
+mydata$countryname <- countrycode(mydata$geo, "iso2c", "country.name")
+mydata<-mydata[which(!is.na(mydata$countryname)), c("countryname", "time", "values")]
+colnames(mydata)<-c("country", "year", "quantity")
 
 ui <- fluidPage(
     theme = shinytheme("spacelab"), 
-    #headerPanel("Εκπομπές ρύπων"),
     sidebarPanel(
         conditionalPanel(condition="input.conditionedPanels == 'Διάγραμμα'",
                          selectInput('country', 'Χώρα', choices = unique(mydata$country), selected = "Greece")),
@@ -22,29 +33,28 @@ ui <- fluidPage(
         )))
 
 server <- function(input, output) {
-    # Add reactive data information
     data_country <- reactive({
-        data_country<-mydata[mydata$country==input$country & mydata$emission_quantity>0, c("year", "emission_quantity")]
-        data_country<-aggregate(data_country$emission_quantity, by=list(Year=data_country$year), FUN=sum)
+        data_country<-mydata[mydata$country==input$country & mydata$quantity>0, c("year", "quantity")]
+        data_country<-aggregate(data_country$quantity, by=list(Year=data_country$year), FUN=sum)
+        colnames(data_country)<-c("Έτος", "Παραγωγή ρύπων")
+        data_country
     })
     data_year <- reactive({
-        data_year<-mydata[mydata$year==input$year & mydata$emission_quantity>0, c("country", "emission_quantity")]
-        data_year<-aggregate(data_year$emission_quantity, by=list(Country=data_year$country), FUN=sum)
+        data_year<-mydata[mydata$year==input$year & mydata$quantity>0,  c("country", "quantity")]
+        data_year<-aggregate(data_year$quantity, by=list(Country=data_year$country), FUN=sum)
+        colnames(data_year)<-c("Χώρα", "Παραγωγή ρύπων")
+        data_year
     })
     output$view <- renderGvis({
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", backgroundColor="#d9ffb3", width=900, height=950))
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Παραγωγή ρύπων (εκατ. τόνοι)'}", hAxis="{title:'Έτος'}",
+                                                     backgroundColor="#d9ffb3", width=800, height=700, legend='none'))
     })
     output$map <- renderGvis({
-        #mapdata<-mydata[mydata$year==2013 & mydata$area>0, c("country", "area")]
-        #mapdata<-aggregate(mapdata$area, by=list(Country=mapdata$country), FUN=sum)
-        GeoStates <- gvisGeoChart(data_year(), "Country", "x", 
-                                  options=list(region="150", 
-                                               displayMode="regions", 
-                                               datamode='regions',
-                                               width=900, height=700))
+        GeoStates <- gvisGeoChart(data_year(), "Χώρα", "Παραγωγή ρύπων", options=list(region="150", displayMode="regions", 
+                                                                                datamode='regions', width=800, height=700))
     })
-    # Generate an HTML table view of the data
     output$table <- renderDataTable({
+        colnames(mydata)<-c("Χώρα", "Έτος", "Παραγωγή ρύπων")
         mydata
     })
 }

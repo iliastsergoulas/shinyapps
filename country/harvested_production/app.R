@@ -1,45 +1,61 @@
 library(shiny)
-library(ggplot2)
-library(ggthemes)
+library(googleVis)
 library(shinythemes)
+library(eurostat)
+library(countrycode)
 
-mydata <- read.csv("./harvested_production.csv", sep=",")
-# Define server logic required to plot various variables against mpg
+mydata<-get_eurostat("apro_acs_a", time_format = "raw")
+mydata$geo<-as.character(mydata$geo)
+mydata<-mydata[which(mydata$strucpro=='PR'), ]
+for (i in 1:nrow(mydata)) { 
+    if(as.character(mydata$geo[i])=="EL") {
+        mydata$geo[i] <- "GR"}
+    if(as.character(mydata$geo[i])=="UK") {
+        mydata$geo[i] <- "GB"}}
+mydata$countryname <- countrycode(mydata$geo, "iso2c", "country.name")
+mydata<-mydata[which(!is.na(mydata$countryname)), c("countryname", "time", "values")]
+colnames(mydata)<-c("country", "year", "quantity")
 
 ui <- fluidPage(
     theme = shinytheme("spacelab"), 
-    headerPanel("Harvested production per country"),
     sidebarPanel(
-        selectInput('country', 'Χώρα', choices = unique(mydata$country), selected = "Greece")
-        # selectInput('y', 'Έτος', choices = unique(mydata$year), selected = "2007")
-        # sliderInput('plotHeight', 'Height of plot (in pixels)', min = 100, max = 2000, value = 1000)
+        conditionalPanel(condition="input.conditionedPanels == 'Διάγραμμα'",
+                         selectInput('country', 'Χώρα', choices = unique(mydata$country), selected = "Greece")),
+        conditionalPanel(condition="input.conditionedPanels == 'Χάρτης'",
+                         selectInput('year', 'Έτος', choices = unique(mydata$year), selected = "2013"))
     ),
     mainPanel(
         tabsetPanel(
-            tabPanel("Διάγραμμα", plotOutput("trendPlot")),
-            tabPanel("Περίληψη", verbatimTextOutput("summary")), 
-            tabPanel("Πίνακας Δεδομένων", dataTableOutput("table"))
-        )
-    ))
+            tabPanel("Διάγραμμα", htmlOutput("view")),
+            tabPanel("Χάρτης", htmlOutput("map")), 
+            tabPanel("Πίνακας Δεδομένων", dataTableOutput("table")),
+            id = "conditionedPanels"
+        )))
 
 server <- function(input, output) {
-    #add reactive data information
-    dataset <- reactive({
-        dataset<-subset(mydata, country==input$country, select=c(year, sum))
+    data_country <- reactive({
+        data_country<-mydata[mydata$country==input$country & mydata$quantity>0, c("year", "quantity")]
+        data_country<-aggregate(data_country$quantity, by=list(Year=data_country$year), FUN=sum)
+        colnames(data_country)<-c("Έτος", "Παραγωγή")
+        data_country
     })
-    output$trendPlot <- renderPlot({
-        # build graph with ggplot syntax
-        ggplot(dataset(), aes(x=dataset()$year, y=dataset()$sum)) + 
-            geom_bar(stat="identity", fill="royal blue") + 
-            theme_solarized() + scale_colour_solarized() + 
-            labs(x="Harvested", y="Hello")
+    data_year <- reactive({
+        data_year<-mydata[mydata$year==input$year & mydata$quantity>0,  c("country", "quantity")]
+        data_year<-aggregate(data_year$quantity, by=list(Country=data_year$country), FUN=sum)
+        colnames(data_year)<-c("Χώρα", "Παραγωγή")
+        data_year
     })
-    output$summary <- renderPrint({
-        summary(dataset()$sum)
+    output$view <- renderGvis({
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Παραγωγή (τόνοι)'}", hAxis="{title:'Έτος'}",
+                                                     backgroundColor="#d9ffb3", width=800, height=700, legend='none'))
     })
-    # Generate an HTML table view of the data
+    output$map <- renderGvis({
+        GeoStates <- gvisGeoChart(data_year(), "Χώρα", "Παραγωγή", options=list(region="150", displayMode="regions", 
+                                                                                datamode='regions', width=800, height=700))
+    })
     output$table <- renderDataTable({
-        dataset()
+        colnames(mydata)<-c("Χώρα", "Έτος", "Παραγωγή")
+        mydata
     })
 }
 shinyApp(ui, server)
