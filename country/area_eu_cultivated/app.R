@@ -8,6 +8,9 @@ library(googleVis)
 library(shinythemes)
 library(eurostat)
 library(countrycode)
+library(ggplot2)
+library(directlabels)
+library(scales)
 
 mydata<-get_eurostat("ef_oluaareg", time_format = "raw") # Downloading raw data from Eurostat
 mydata$geo<-as.character(mydata$geo)
@@ -27,15 +30,20 @@ ui <- fluidPage(
         conditionalPanel(condition="input.conditionedPanels == 'Διάγραμμα'",
                          selectInput('country', 'Χώρα', choices = unique(mydata$country), selected = "Greece")),
         conditionalPanel(condition="input.conditionedPanels == 'Χάρτης'",
-                         selectInput('year', 'Έτος', choices = unique(mydata$year), selected = "2013"))
-    ),
+                         selectInput('year', 'Έτος', choices = unique(mydata$year), selected = "2013")),
+        conditionalPanel(condition="input.conditionedPanels == 'Δεδομένα'", downloadButton("downloadData")),
+        conditionalPanel(condition="input.conditionedPanels == 'Χρονοσειρά' || input.conditionedPanels == 'Σύνοψη'", 
+                         sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+                                     value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")),
+        width=2),
     mainPanel(
         tabsetPanel( # Create tabs
             tabPanel("Διάγραμμα", htmlOutput("view")),
             tabPanel("Χάρτης", htmlOutput("map")), 
-            tabPanel("Πίνακας Δεδομένων", dataTableOutput("table")),
-            id = "conditionedPanels"
-        ),
+            tabPanel("Χρονοσειρά", plotOutput("timeline")),
+            tabPanel("Δεδομένα", dataTableOutput("table")),
+            tabPanel("Σύνοψη", dataTableOutput("summary")),
+            id = "conditionedPanels"),
         print("Πηγή: (C) EuroGeographics for the administrative boundaries")))
 
 server <- function(input, output) {
@@ -51,19 +59,52 @@ server <- function(input, output) {
         colnames(data_year)<-c("Χώρα", "Έκταση καλλιεργημένης γης")
         data_year
     })
+    mydata_top_five<-reactive({ # Subset data according to year interval and getting top five countries
+        # Filtering out groups of countries
+        mydata_top_five<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),]
+        data_year_temp<-aggregate(mydata_top_five$area, by=list(Country=mydata_top_five$country), FUN=mean)
+        data_year_temp<-data_year_temp[order(-data_year_temp$x),]
+        data_year_temp<-data_year_temp[1:5,] # Keeping top five countries
+        mydata_top_five<-mydata_top_five[which(mydata_top_five$country %in% data_year_temp$Country),]
+    })
+    mydata_summary<-reactive({ # Subsetting data according to year interval
+        mydata_summary<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),] 
+    })
     output$view <- renderGvis({ # Creating chart
         gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Έκταση καλλιεργημένης γης (εκτάρια)'}", 
-                                                     hAxis="{title:'Έτος'}",backgroundColor="#d9ffb3", width=700, height=600, legend='none'))
+                        hAxis="{title:'Έτος'}",backgroundColor="#d9ffb3", width=700, height=500, legend='none'))
     })
     output$map <- renderGvis({
-        #mapdata<-mydata[mydata$year==2013 & mydata$area>0, c("country", "area")]
-        #mapdata<-aggregate(mapdata$area, by=list(Country=mapdata$country), FUN=sum)
-        GeoStates <- gvisGeoChart(data_year(), "Χώρα", "Έκταση καλλιεργημένης γης", options=list(region="150", displayMode="regions", 
-                                                                                                 datamode='regions',width=700, height=600))
+        gvisGeoChart(data_year(), "Χώρα", "Έκταση καλλιεργημένης γης", options=list(region="150", 
+                                displayMode="regions", datamode='regions',width=700, height=500))
     })
     output$table <- renderDataTable({ # Creating data table
         colnames(mydata)<-c("Χώρα", "Έτος", "Έκταση καλλιεργήσιμης γης")
         mydata
+    })
+    output$summary <- renderDataTable({ # Creating data table
+        mysummary <- data.frame(
+            aggregate(area~country, mydata_summary(), min),
+            aggregate(area~country, mydata_summary(), max),
+            aggregate(area~country, mydata_summary(), mean))
+        mysummary <- mysummary[,c(1,2,4,6)]
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστη έκταση", "Μέγιστη έκταση", "Μέση έκταση")
+        mysummary
+    })
+    output$timeline<-renderPlot({
+        ggplot(mydata_top_five(), aes(x = year, y = area, group = country, colour = country)) + 
+            geom_line() +
+            scale_x_discrete(expand=c(0, 0.5)) + 
+            scale_y_continuous(labels = comma) + 
+            xlab("Έτος") + ylab("Έκταση καλλιεργημένης γης (εκτάρια)") + ggtitle("5 χώρες με μεγαλύτερη έκταση καλλιεργημένης γης") + 
+            theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
+            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
+            geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 
+    })
+    output$downloadData <- downloadHandler(
+        filename = function() { paste('mydata', '.csv', sep='') },
+        content = function(file) {
+            write.csv(mydata, file)
     })
 }
 shinyApp(ui, server)
