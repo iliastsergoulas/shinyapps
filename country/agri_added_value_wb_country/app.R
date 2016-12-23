@@ -19,40 +19,40 @@ mydata<-mydata[which(!is.na(mydata$total_agri_exports)),] # Filtering for NA val
 
 ui <- fluidPage(
     theme = shinytheme("spacelab"), 
-    sidebarPanel( # Create sidebar panel with conditions
+    sidebarPanel( # Creating sidebar panel with conditions
         conditionalPanel(condition="input.conditionedPanels == 'Διάγραμμα'",
                          selectInput('country', 'Χώρα', choices = unique(mydata$country), selected = "Greece")),
         conditionalPanel(condition="input.conditionedPanels == 'Χάρτης'",
                          selectInput('year', 'Έτος', choices = unique(mydata$year), selected = "2013")),
         conditionalPanel(condition="input.conditionedPanels == 'Δεδομένα'", downloadButton("downloadData")),
-        conditionalPanel(condition="input.conditionedPanels == 'Χρονοσειρά' || input.conditionedPanels == 'Σύνοψη'", 
+        conditionalPanel(condition="input.conditionedPanels == 'Χρονοσειρά' || input.conditionedPanels == 'Σύνοψη ανά χώρα'", 
                          sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
                                      value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")),
         width=2),
     mainPanel(
-        tabsetPanel( # Create tabs
+        tabsetPanel( # Creating tabs
             tabPanel("Διάγραμμα", htmlOutput("view")),
             tabPanel("Χάρτης", htmlOutput("map")), 
             tabPanel("Χρονοσειρά", plotOutput("timeline")),
             tabPanel("Δεδομένα", dataTableOutput("table")),
-            tabPanel("Σύνοψη", dataTableOutput("summary")),
+            tabPanel("Σύνοψη ανά χώρα", dataTableOutput("summary")),
             id = "conditionedPanels"),
         print("Πηγή: World Bank")))
 
 server <- function(input, output) {
-    data_country <- reactive({ # Add reactive data information
+    data_country <- reactive({ # Adding reactive data information
         data_country<-mydata[mydata$country==input$country, c("year", "total_agri_exports")]
         data_country<-aggregate(data_country$total_agri_exports, by=list(Year=data_country$year), FUN=sum)
         colnames(data_country)<-c("Έτος", "Προστιθέμενη αξία γεωργίας (δολάρια)")
         data_country
     })
-    data_year <- reactive({ # Add reactive data information
+    data_year <- reactive({ # Addding reactive data information
         data_year<-mydata[mydata$year==input$year,  c("country", "total_agri_exports")]
         data_year<-aggregate(data_year$total_agri_exports, by=list(Country=data_year$country), FUN=sum)
         colnames(data_year)<-c("Χώρα", "Προστιθέμενη αξία γεωργίας (δολάρια)")
         data_year
     })
-    mydata_top_five<-reactive({ # Subset data according to year interval and getting top five countries
+    mydata_top_five<-reactive({ # Subsetingt data according to year interval and getting top five countries
         # Filtering out groups of countries
         mydata_top_five<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),]
         mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Euro")),]
@@ -83,17 +83,18 @@ server <- function(input, output) {
         mydata_summary<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Προστιθέμενη αξία γεωργίας (δολάρια)'}", 
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", title="Προστιθέμενη αξία γεωργίας", 
+                        titleTextStyle="{color:'#336600',fontSize:14}", vAxis="{title:'Αξία (δολάρια)'}", 
                         hAxis="{title:'Έτος'}",backgroundColor="#d9ffb3", width=700, height=500, legend='none'))
     })
-    output$map <- renderGvis({
+    output$map <- renderGvis({ # Creating map
         gvisGeoChart(data_year(), "Χώρα", "Προστιθέμενη αξία γεωργίας (δολάρια)", options=list(displayMode="regions", datamode='regions',width=700, height=500))
     })
     output$table <- renderDataTable({ # Creating data table
         colnames(mydata)<-c("Κωδικός", "Χώρα", "Προστιθέμενη αξία γεωργίας", "Έτος")
         mydata[c("Χώρα", "Προστιθέμενη αξία γεωργίας", "Έτος")]
     })
-    output$summary <- renderDataTable({ # Creating data table
+    output$summary <- renderDataTable({ # Creating summary by country
         mysummary <- data.frame(
             aggregate(total_agri_exports~country, mydata_summary(), min),
             aggregate(total_agri_exports~country, mydata_summary(), max),
@@ -102,7 +103,7 @@ server <- function(input, output) {
         colnames(mysummary) <- c("Χώρα", "Ελάχιστη προστιθέμενη αξία εξαγωγών", "Μέγιστη προστιθέμενη αξία εξαγωγών", "Μέση προστιθέμενη αξία εξαγωγών")
         mysummary
     })
-    output$timeline<-renderPlot({
+    output$timeline<-renderPlot({ # Creating timeline for top 5 countries
         ggplot(mydata_top_five(), aes(x = year, y = total_agri_exports, group = country, colour = country)) + 
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
@@ -112,7 +113,7 @@ server <- function(input, output) {
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 
     })
-    output$downloadData <- downloadHandler(
+    output$downloadData <- downloadHandler( # Creating download button
         filename = function() { paste('mydata', '.csv', sep='') },
         content = function(file) {
             write.csv(mydata, file)

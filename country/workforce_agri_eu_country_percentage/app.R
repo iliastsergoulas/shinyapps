@@ -66,7 +66,8 @@ server <- function(input, output) {
         data_timeline<-na.omit(data_timeline)
     })
     output$view <- renderGvis({
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", backgroundColor="#d9ffb3", width=900, height=950))
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", title="Ποσοστό αγροτικής απασχόλησης στις χώρες της Ε.Ε.", 
+                                                     titleTextStyle="{color:'#336600',fontSize:14}", backgroundColor="#d9ffb3", width=900, height=950))
     })
     output$map <- renderGvis({
         geochart <- gvisGeoChart(data_year(), "Country", "x", 
