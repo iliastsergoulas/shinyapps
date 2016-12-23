@@ -12,7 +12,7 @@ library(scales)
 library(dplyr)
 library(lubridate)
 
-mydata<-read.csv("C:\\Users\\Ilias Tsergoulas\\Dropbox\\Website\\shiny\\subsidies\\payments_paa_20142020\\payments.csv", sep=",", encoding="UTF-8", stringsAsFactors = FALSE)
+mydata<-read.csv("./payments.csv", sep=",", encoding="UTF-8", stringsAsFactors = FALSE)
 mydata<-mydata[which(mydata$category=='Μέτρα Αγοράς'), ] # Filtering data
 mydata<-mydata[c("date", "measure", "payment_amount")]
 mydata$date <- dmy(mydata$date) # Converting character to date
