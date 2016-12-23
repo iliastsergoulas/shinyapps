@@ -12,29 +12,28 @@ library(ggplot2)
 library(directlabels)
 library(scales)
 
-mydata<-get_eurostat("apro_acs_a", time_format = "raw") # Downloading raw data from Eurostat
+mydata<-get_eurostat("fish_aq_q", time_format = "raw") # Downloading raw data from Eurostat
 mydata$geo<-as.character(mydata$geo)
-mydata<-mydata[which(mydata$strucpro=='PR' & mydata$crops=='C0000'), ] # Filtering data
+mydata<-mydata[which(mydata$unit=='TLW' & mydata$aquaenv=='TOTAL'& mydata$fishreg==0 & mydata$species=='F00'), ] # Filtering data
 for (i in 1:nrow(mydata)) { # Replacing country codes in order to get correct country names
-    if(as.character(mydata$geo[i])=="EL") {
-        mydata$geo[i] <- "GR"}
-    if(as.character(mydata$geo[i])=="UK") {
-        mydata$geo[i] <- "GB"}}
+  if(as.character(mydata$geo[i])=="EL") {
+    mydata$geo[i] <- "GR"}
+  if(as.character(mydata$geo[i])=="UK") {
+    mydata$geo[i] <- "GB"}}
 mydata$countryname <- countrycode(mydata$geo, "iso2c", "country.name") # Getting country names
 mydata<-mydata[which(!is.na(mydata$countryname)), c("countryname", "time", "values")] # Filtering for country names not found
 colnames(mydata)<-c("country", "year", "quantity")
-
 ui <- fluidPage(
     theme = shinytheme("spacelab"), 
     sidebarPanel( # Creating sidebar panel with conditions
         conditionalPanel(condition="input.conditionedPanels == 'Διάγραμμα'",
                          selectInput('country', 'Χώρα', choices = unique(mydata$country), selected = "Greece")),
         conditionalPanel(condition="input.conditionedPanels == 'Χάρτης'",
-                         selectInput('year', 'Έτος', choices = unique(mydata$year), selected = "2013")),
+                         selectInput('year', 'Έτος', choices = unique(mydata$year), selected = "2011")),
         conditionalPanel(condition="input.conditionedPanels == 'Δεδομένα'", downloadButton("downloadData")),
         conditionalPanel(condition="input.conditionedPanels == 'Χρονοσειρά' || input.conditionedPanels == 'Σύνοψη ανά χώρα'", 
-                         sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
-                                     value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")),
+                                     sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+                                                 value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")),
         width=2),
     mainPanel(
         tabsetPanel( # Creating tabs
@@ -43,7 +42,8 @@ ui <- fluidPage(
             tabPanel("Χρονοσειρά", plotOutput("timeline")),
             tabPanel("Δεδομένα", dataTableOutput("table")),
             tabPanel("Σύνοψη ανά χώρα", dataTableOutput("summary")),
-            id = "conditionedPanels"),
+            id = "conditionedPanels"
+        ),
         print("Πηγή: (C) EuroGeographics for the administrative boundaries")))
 
 server <- function(input, output) {
@@ -59,7 +59,7 @@ server <- function(input, output) {
         colnames(data_year)<-c("Χώρα", "Παραγωγή")
         data_year
     })
-    mydata_top_five<-reactive({ # Subsetingt data according to year interval and getting top five countries
+    mydata_top_five<-reactive({ # Subsetting data according to year interval and getting top five countries
         # Filtering out groups of countries
         mydata_top_five<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),]
         data_year_temp<-aggregate(mydata_top_five$quantity, by=list(Country=mydata_top_five$country), FUN=mean)
@@ -71,13 +71,13 @@ server <- function(input, output) {
         mydata_summary<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", title="Παραγωγή δημητριακών στις χώρες της Ε.Ε.", 
-                                        titleTextStyle="{color:'#336600',fontSize:14}", vAxis="{title:'Παραγωγή (τόνοι)'}", hAxis="{title:'Έτος'}",
-                                                     backgroundColor="#d9ffb3", width=700, height=500, legend='none'))
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", title="Παραγωγή από ιχθυοκαλλιέργειες στις χώρες της Ε.Ε. την περίοδο 1984-2007", 
+                                        titleTextStyle="{color:'#336600',fontSize:14}", vAxis="{title:'Παραγωγή (χιλ. τόνοι)'}", 
+                                        hAxis="{title:'Έτος'}", backgroundColor="#d9ffb3", width=700, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map
         gvisGeoChart(data_year(), "Χώρα", "Παραγωγή", options=list(region="150", displayMode="regions", 
-                                                                                datamode='regions', width=700, height=500))
+                                                                         datamode='regions', width=700, height=500))
     })
     output$table <- renderDataTable({ # Creating data table
         colnames(mydata)<-c("Χώρα", "Έτος", "Παραγωγή")
@@ -97,7 +97,7 @@ server <- function(input, output) {
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Παραγωγή ρύπων (εκατ. τόνοι)") + ggtitle("5 χώρες με τη μεγαλύτερη παραγωγή δημητριακών") + 
+            xlab("Έτος") + ylab("Παραγωγή (χιλ. τόνοι)") + ggtitle("5 κορυφαίες χώρες στις ιχθυοκαλλιέργειες") + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 
@@ -108,4 +108,4 @@ server <- function(input, output) {
             write.csv(mydata, file)
     })
 }
-shinyApp(ui, server)
+app<-shinyApp(ui, server)

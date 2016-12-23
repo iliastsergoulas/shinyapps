@@ -12,9 +12,9 @@ library(ggplot2)
 library(directlabels)
 library(scales)
 
-mydata<-get_eurostat("apro_acs_a", time_format = "raw") # Downloading raw data from Eurostat
+mydata<-get_eurostat("apro_cpb_wine", time_format = "raw") # Downloading raw data from Eurostat
 mydata$geo<-as.character(mydata$geo)
-mydata<-mydata[which(mydata$strucpro=='PR' & mydata$crops=='C0000'), ] # Filtering data
+mydata<-mydata[which(mydata$bal_item=='10HL' & mydata$prod_bal=='B2200'), ] # Filtering data
 for (i in 1:nrow(mydata)) { # Replacing country codes in order to get correct country names
     if(as.character(mydata$geo[i])=="EL") {
         mydata$geo[i] <- "GR"}
@@ -59,7 +59,7 @@ server <- function(input, output) {
         colnames(data_year)<-c("Χώρα", "Παραγωγή")
         data_year
     })
-    mydata_top_five<-reactive({ # Subsetingt data according to year interval and getting top five countries
+    mydata_top_five<-reactive({ # Subsetting data according to year interval and getting top five countries
         # Filtering out groups of countries
         mydata_top_five<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),]
         data_year_temp<-aggregate(mydata_top_five$quantity, by=list(Country=mydata_top_five$country), FUN=mean)
@@ -71,13 +71,13 @@ server <- function(input, output) {
         mydata_summary<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", title="Παραγωγή δημητριακών στις χώρες της Ε.Ε.", 
-                                        titleTextStyle="{color:'#336600',fontSize:14}", vAxis="{title:'Παραγωγή (τόνοι)'}", hAxis="{title:'Έτος'}",
-                                                     backgroundColor="#d9ffb3", width=700, height=500, legend='none'))
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", title="Παραγωγή οίνου στις χώρες της Ε.Ε.", 
+                                        titleTextStyle="{color:'#336600',fontSize:14}", vAxis="{title:'Παραγωγή (1.000 hl)'}", 
+                        hAxis="{title:'Έτος'}", backgroundColor="#d9ffb3", width=700, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map
         gvisGeoChart(data_year(), "Χώρα", "Παραγωγή", options=list(region="150", displayMode="regions", 
-                                                                                datamode='regions', width=700, height=500))
+                                  datamode='regions', width=700, height=500))
     })
     output$table <- renderDataTable({ # Creating data table
         colnames(mydata)<-c("Χώρα", "Έτος", "Παραγωγή")
@@ -97,10 +97,10 @@ server <- function(input, output) {
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Παραγωγή ρύπων (εκατ. τόνοι)") + ggtitle("5 χώρες με τη μεγαλύτερη παραγωγή δημητριακών") + 
+            xlab("Έτος") + ylab("Παραγωγή (1.000 hl)") + ggtitle("5 χώρες με τη μεγαλύτερη παραγωγή οίνου") + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
-            geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 
+            geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8))  
     })
     output$downloadData <- downloadHandler( # Creating download button
         filename = function() { paste('mydata', '.csv', sep='') },

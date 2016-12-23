@@ -15,7 +15,7 @@ library(lubridate)
 mydata<-read.csv("./payments.csv", sep=",", encoding="UTF-8", stringsAsFactors = FALSE)
 mydata<-mydata[which(mydata$fund=='ΕΓΤΑΑ'), ] # Filtering data
 mydata<-mydata[c("date", "measure", "payment_amount")]
-mydata$date <- dmy(mydata$date) # Converting character to date
+mydata$date<-dmy(mydata$date) # Converting character to date
 
 ui <- fluidPage(
     theme = shinytheme("spacelab"), 
@@ -24,9 +24,7 @@ ui <- fluidPage(
                          selectInput('measure', 'Μέτρο', choices = unique(mydata$measure), selected = "Greece")),
         conditionalPanel(condition="input.conditionedPanels == 'Δεδομένα'", downloadButton("downloadData")),
         conditionalPanel(condition="input.conditionedPanels == 'Χρονοσειρά' || input.conditionedPanels == 'Σύνοψη ανά Μέτρο'", 
-                         dateRangeInput("mydate", "Ημερομηνία:",
-                                        start = min(mydata$date),
-                                        end = Sys.Date())),
+                         dateRangeInput("mydate", "Ημερομηνία:", start = min(mydata$date), end = Sys.Date())),
         width=2),
     mainPanel(
         tabsetPanel( # Creating tabs
@@ -38,7 +36,7 @@ ui <- fluidPage(
         print("Πηγή: Δελτία τύπου ΟΠΕΚΕΠΕ")))
 
 server <- function(input, output) {
-    data_measure <- reactive({ # Adding reactive data information
+    data_measure<-reactive({ # Adding reactive data information
         data_measure<-mydata[mydata$measure==input$measure, c("date", "payment_amount")]
         data_measure<-mutate(data_measure, cumsum=cumsum(payment_amount))
         data_measure<-data_measure[c("date", "cumsum")]
@@ -58,7 +56,7 @@ server <- function(input, output) {
     mydata_summary<-reactive({ # Subsetting data according to year interval
         mydata_summary<-mydata[which(mydata$date>=input$mydate[1] & mydata$date<=input$mydate[2]),]
     })
-    output$view <- renderGvis({ # Creating chart
+    output$view<-renderGvis({ # Creating chart
         gvisLineChart(data_measure(), options=list(colors="['#336600']", title="Απορρόφηση πόρων Προγράμματος Αγροτικής Ανάπτυξης 2007-2013 ανά Μέτρο", 
                                                    titleTextStyle="{color:'#336600',fontSize:14}", vAxis="{title:'Πληρωμές (Ευρώ)'}", 
                                                    hAxis="{title:'Ημερομηνία'}",backgroundColor="#d9ffb3", width=700, height=500, legend='none'))
