@@ -94,6 +94,7 @@ frow3 <- fluidRow(
         theme = shinytheme("spacelab"), 
         mainPanel(
             dataTableOutput("summary"),
+            width=550,
             print("Πηγή: World Bank"),
             sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
                         value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")))
