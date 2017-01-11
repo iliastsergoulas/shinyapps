@@ -1,3 +1,4 @@
+# Data: Agricultural Labour Input Statistics: absolute figures (1 000 annual work units)
 # This R script is created as a Shiny application to download raw data from Eurostat ((C) EuroGeographics for the administrative boundaries), 
 # process it and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
@@ -92,9 +93,10 @@ server <- function(input, output) {
         mysummary <- data.frame(
             aggregate(number~country, mydata_summary(), min),
             aggregate(number~country, mydata_summary(), max),
-            aggregate(number~country, mydata_summary(), mean))
-        mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστο ποσοστό αγροτικής απασχόλησης", "Μέγιστο ποσοστό αγροτικής απασχόλησης", "Μέσο ποσοστό αγροτικής απασχόλησης")
+            aggregate(number~country, mydata_summary(), mean),
+            aggregate(number~country, mydata_summary(), median))
+        mysummary <- mysummary[,c(1,2,4,6,8)]
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστο ποσοστό αγροτικής απασχόλησης", "Μέγιστο ποσοστό αγροτικής απασχόλησης", "Μέσο ποσοστό αγροτικής απασχόλησης", "Διάμεσος")
         mysummary
     })
     output$timeline<-renderPlot({ # Creating timeline for top 5 countries

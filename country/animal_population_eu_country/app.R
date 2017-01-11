@@ -1,3 +1,4 @@
+# Data: Animal population
 # This R script is created as a Shiny application to download raw data from Eurostat ((C) EuroGeographics for the administrative boundaries), 
 # process it and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
@@ -88,9 +89,10 @@ server <- function(input, output) {
         mysummary <- data.frame(
             aggregate(number~country, mydata_summary(), min),
             aggregate(number~country, mydata_summary(), max),
-            aggregate(number~country, mydata_summary(), mean))
-        mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστο μέγεθος ζωικού κεφαλαίου", "Μέγιστο μέγεθος ζωικού κεφαλαίου", "Μέσο μέγεθος ζωικού κεφαλαίου")
+            aggregate(number~country, mydata_summary(), mean),
+            aaggregate(number~country, mydata_summary(), median))
+        mysummary <- mysummary[,c(1,2,4,6,8)]
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστο μέγεθος ζωικού κεφαλαίου", "Μέγιστο μέγεθος ζωικού κεφαλαίου", "Μέσο μέγεθος ζωικού κεφαλαίου", "Διάμεσος")
         mysummary
     })
     output$timeline<-renderPlot({ # Creating timeline for top 5 countries

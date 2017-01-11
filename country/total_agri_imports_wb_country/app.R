@@ -1,3 +1,4 @@
+# Data: Total agricultural imports (FAO, current US$)
 # This R script is created as a Shiny application to download raw data from World Bank through WDI package, 
 # process it and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
@@ -16,6 +17,28 @@ mydata<-WDI(country = "all", indicator = "BM.GSR.AGRI.CD", extra = FALSE, cache 
 mydata$year<-as.character(mydata$year)
 names(mydata)[names(mydata)=="BM.GSR.AGRI.CD"] <- "total_agri_imports"
 mydata<-mydata[which(!is.na(mydata$total_agri_imports)),] # Filtering for NA values
+# Filtering out groups of countries
+mydata_filtered<-mydata[which(!startsWith(mydata$country, "Euro")),]
+mydata_filtered<-mydata_filtered[which(!endsWith(mydata_filtered$country, "income")),]
+mydata_filtered<-mydata_filtered[which(!endsWith(mydata_filtered$country, "dividend")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "East Asia")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "IDA")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Latin")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Sub")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "OECD")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "South Asia")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Least")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Middle")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "World")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "IBRD")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Arab")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Heavily")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Fragile")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Central Europe")),]
+mydata_filtered<-mydata_filtered[which(!endsWith(mydata_filtered$country, "states")),]
+mydata_filtered<-mydata_filtered[which(!endsWith(mydata_filtered$country, "America")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Africa")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "North Africa")),]
 
 ui <- fluidPage(
     theme = shinytheme("spacelab"), 
@@ -47,35 +70,13 @@ server <- function(input, output) {
         data_country
     })
     data_year <- reactive({ # Adding reactive data information
-        data_year<-mydata[mydata$year==input$year,  c("country", "total_agri_imports")]
+        data_year<-mydata_filtered[mydata_filtered$year==input$year,  c("country", "total_agri_imports")]
         data_year<-aggregate(data_year$total_agri_imports, by=list(Country=data_year$country), FUN=sum)
         colnames(data_year)<-c("Χώρα", "Συνολικές εισαγωγές (δολάρια)")
         data_year
     })
     mydata_top_five<-reactive({ # Subsetting data according to year interval and getting top five countries
-        # Filtering out groups of countries
-        mydata_top_five<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Euro")),]
-        mydata_top_five<-mydata_top_five[which(!endsWith(mydata_top_five$country, "income")),]
-        mydata_top_five<-mydata_top_five[which(!endsWith(mydata_top_five$country, "dividend")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "East Asia")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "IDA")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Latin")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Sub")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "OECD")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "South Asia")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Least")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Middle")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "World")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "IBRD")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Arab")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Heavily")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Fragile")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Central Europe")),]
-        mydata_top_five<-mydata_top_five[which(!endsWith(mydata_top_five$country, "states")),]
-        mydata_top_five<-mydata_top_five[which(!endsWith(mydata_top_five$country, "America")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "North")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Africa")),]
+        mydata_top_five<-mydata_filtered[which(mydata_filtered$year>=input$myyear[1] & mydata_filtered$year<=input$myyear[2]),]
         data_year_temp<-aggregate(mydata_top_five$total_agri_imports, by=list(Country=mydata_top_five$country), FUN=mean)
         data_year_temp<-data_year_temp[order(-data_year_temp$x),]
         data_year_temp<-data_year_temp[1:5,] # Keeping top five countries
@@ -100,9 +101,10 @@ server <- function(input, output) {
         mysummary <- data.frame(
             aggregate(total_agri_imports~country, mydata_summary(), min),
             aggregate(total_agri_imports~country, mydata_summary(), max),
-            aggregate(total_agri_imports~country, mydata_summary(), mean))
-        mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστη αξία εισαγωγών", "Μέγιστη αξία εισαγωγών", "Μέση αξία εισαγωγών")
+            aggregate(total_agri_imports~country, mydata_summary(), mean),
+            aggregate(total_agri_imports~country, mydata_summary(), median))
+        mysummary <- mysummary[,c(1,2,4,6,8)]
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστη αξία εισαγωγών", "Μέγιστη αξία εισαγωγών", "Μέση αξία εισαγωγών", "Διάμεσος")
         mysummary
     })
     output$timeline<-renderPlot({ # Creating timeline for top 5 countries

@@ -1,3 +1,4 @@
+# Data: Agricultural land (% of land area)
 # This R script is created as a Shiny application to download raw data from World Bank through WDI package, 
 # process it and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
@@ -16,6 +17,28 @@ mydata<-WDI(country = "all", indicator = "AG.LND.AGRI.ZS", extra = FALSE, cache 
 mydata$year<-as.character(mydata$year)
 names(mydata)[names(mydata)=="AG.LND.AGRI.ZS"] <- "agri_area_percentage"
 mydata<-mydata[which(!is.na(mydata$agri_area_percentage)),] # Filtering for NA values
+# Filtering out groups of countries
+mydata_filtered<-mydata[which(!startsWith(mydata$country, "Euro")),]
+mydata_filtered<-mydata_filtered[which(!endsWith(mydata_filtered$country, "income")),]
+mydata_filtered<-mydata_filtered[which(!endsWith(mydata_filtered$country, "dividend")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "East Asia")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "IDA")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Latin")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Sub")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "OECD")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "South Asia")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Least")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Middle")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "World")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "IBRD")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Arab")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Heavily")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Fragile")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Central Europe")),]
+mydata_filtered<-mydata_filtered[which(!endsWith(mydata_filtered$country, "states")),]
+mydata_filtered<-mydata_filtered[which(!endsWith(mydata_filtered$country, "America")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Africa")),]
+mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "North Africa")),]
 
 ui <- fluidPage(
     theme = shinytheme("spacelab"), 
@@ -41,7 +64,7 @@ ui <- fluidPage(
 
 server <- function(input, output) {
     data_country <- reactive({ # Adding reactive data information
-        data_country<-mydata[mydata$country==input$country, c("year", "agri_area_percentage")]
+        data_country<-mydata_filtered[mydata_filtered$country==input$country, c("year", "agri_area_percentage")]
         data_country<-aggregate(data_country$agri_area_percentage, by=list(Year=data_country$year), FUN=sum)
         colnames(data_country)<-c("Έτος", "Ποσοστό αγροτικής γης")
         data_country
@@ -53,27 +76,7 @@ server <- function(input, output) {
         data_year
     })
     mydata_top_five<-reactive({ # Subsetting data according to year interval and getting top five countries
-        # Filtering out groups of countries
         mydata_top_five<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Euro")),]
-        mydata_top_five<-mydata_top_five[which(!endsWith(mydata_top_five$country, "income")),]
-        mydata_top_five<-mydata_top_five[which(!endsWith(mydata_top_five$country, "dividend")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "East Asia")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "IDA")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Latin")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Sub")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "OECD")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "South Asia")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Least")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Middle")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "World")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "IBRD")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Arab")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Heavily")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Fragile")),]
-        mydata_top_five<-mydata_top_five[which(!startsWith(mydata_top_five$country, "Central Europe")),]
-        mydata_top_five<-mydata_top_five[which(!endsWith(mydata_top_five$country, "states")),]
-        mydata_top_five<-mydata_top_five[which(!endsWith(mydata_top_five$country, "America")),]
         data_year_temp<-aggregate(mydata_top_five$agri_area_percentage, by=list(Country=mydata_top_five$country), FUN=mean)
         data_year_temp<-data_year_temp[order(-data_year_temp$x),]
         data_year_temp<-data_year_temp[1:5,] # Keeping top five countries
@@ -98,9 +101,10 @@ server <- function(input, output) {
         mysummary <- data.frame(
             aggregate(agri_area_percentage~country, mydata_summary(), min),
             aggregate(agri_area_percentage~country, mydata_summary(), max),
-            aggregate(agri_area_percentage~country, mydata_summary(), mean))
-        mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστο ποσοστό αγροτικής γης", "Μέγιστο ποσοστό αγροτικής γης", "Μέσο ποσοστό αγροτικής γης")
+            aggregate(agri_area_percentage~country, mydata_summary(), mean),
+            aggregate(agri_area_percentage~country, mydata_summary(), median))
+        mysummary <- mysummary[,c(1,2,4,6,8)]
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστο ποσοστό αγροτικής γης", "Μέγιστο ποσοστό αγροτικής γης", "Μέσο ποσοστό αγροτικής γης", "Διάμεσος")
         mysummary
     })
     output$timeline<-renderPlot({ # Creating timeline for top 5 countries

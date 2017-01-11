@@ -1,3 +1,4 @@
+# Data: Land use
 # This R script is created as a Shiny application to download raw data from Eurostat ((C) EuroGeographics for the administrative boundaries), 
 # process it and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
@@ -87,9 +88,10 @@ server <- function(input, output) {
         mysummary <- data.frame(
             aggregate(area~country, mydata_summary(), min),
             aggregate(area~country, mydata_summary(), max),
-            aggregate(area~country, mydata_summary(), mean))
-        mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστη έκταση", "Μέγιστη έκταση", "Μέση έκταση")
+            aggregate(area~country, mydata_summary(), mean),
+            aggregate(area~country, mydata_summary(), median))
+        mysummary <- mysummary[,c(1,2,4,6,8)]
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστη έκταση", "Μέγιστη έκταση", "Μέση έκταση", "Διάμεσος")
         mysummary
     })
     output$timeline<-renderPlot({ # Creating timeline for top 5 countries
