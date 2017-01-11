@@ -134,11 +134,11 @@ server <- function(input, output) {
     })
     output$view <- renderGvis({ # Creating chart
         gvisColumnChart(data_country(), options=list(colors="['#008d4c']", vAxis="{title:'Αξία (δολάρια σε τιμές 2000)'}", 
-                        hAxis="{title:'Έτος'}",backgroundColor="#d9ffb3", width=800, height=500, legend='none'))
+                        hAxis="{title:'Έτος'}",backgroundColor="#d9ffb3", width=600, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map
         gvisGeoChart(data_year(), "Χώρα", "Προστιθέμενη αξία γεωργίας (δολάρια σε τιμές 2000)", 
-                     options=list(displayMode="regions", datamode='regions',width=800, height=500))
+                     options=list(displayMode="regions", datamode='regions',width=600, height=500))
     })
     output$totaladdedvalue <- renderValueBox({
         valueBox(
