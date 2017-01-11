@@ -57,7 +57,7 @@ frow1 <- fluidRow(
 
 frow2 <- fluidRow(
     box(
-        title = "Προστιθέμενη αξία γεωργίας ανά χώρα",
+        title = "Ανά χώρα",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -66,7 +66,7 @@ frow2 <- fluidRow(
             print("Πηγή: World Bank"),
             selectInput('country', 'Χώρα', choices = unique(mydata$country)), width='98%')),
     box(
-        title = "Προστιθέμενη αξία γεωργίας ανά έτος",
+        title = "Ανά έτος",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -87,7 +87,7 @@ frow3 <- fluidRow(
             sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
                         value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep=""))),
     box(
-        title = "Σύνοψη δεδομένων",
+        title = "Σύνοψη δεδομένων ανά χώρα",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -158,10 +158,9 @@ server <- function(input, output) {
         mysummary <- data.frame(
             aggregate(total_added_value~country, mydata_summary(), min),
             aggregate(total_added_value~country, mydata_summary(), max),
-            aggregate(total_added_value~country, mydata_summary(), mean),
-            aggregate(total_added_value~country, mydata_summary(), median))
-        mysummary <- mysummary[,c(1,2,4,6,8)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστη προστιθέμενη αξία", "Μέγιστη προστιθέμενη αξία", "Μέση προστιθέμενη αξία", "Διάμεσος")
+            aggregate(total_added_value~country, mydata_summary(), mean))
+        mysummary <- mysummary[,c(1,2,4,6)]
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστη προστιθέμενη αξία", "Μέγιστη προστιθέμενη αξία", "Μέση προστιθέμενη αξία")
         mysummary
         }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5)
     )
