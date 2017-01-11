@@ -51,8 +51,8 @@ topc<-mydata_filtered[which.max(mydata_filtered$total_added_value),]
 header <- dashboardHeader(title = "Προστιθέμενη αξία γεωργίας", titleWidth=500)
 sidebar <- dashboardSidebar(disable = TRUE)
 frow1 <- fluidRow(
-    valueBoxOutput("totaladdedvalue"),
-    valueBoxOutput("topcountry")
+    valueBoxOutput("totaladdedvalue", width=6),
+    valueBoxOutput("topcountry", width=6)
 )
 
 frow2 <- fluidRow(
