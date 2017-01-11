@@ -52,8 +52,7 @@ header <- dashboardHeader(title = "Προστιθέμενη αξία γεωργ�
 sidebar <- dashboardSidebar(disable = TRUE)
 frow1 <- fluidRow(
     valueBoxOutput("totaladdedvalue"),
-    valueBoxOutput("topcountry"),
-    valueBoxOutput("profitMargin")
+    valueBoxOutput("topcountry")
 )
 
 frow2 <- fluidRow(
