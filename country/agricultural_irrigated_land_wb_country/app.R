@@ -12,11 +12,17 @@ library(countrycode)
 library(ggplot2)
 library(directlabels)
 library(scales)
+library(shinydashboard)
+
+printMoney <- function(x){ # A function to show number as currency
+    format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
+}
+specify_decimal <- function(x, k) format(round(x, k), nsmall=k) # A function to show number with k decimal places
 
 mydata<-WDI(country = "all", indicator = "AG.LND.IRIG.AG.ZS", extra = FALSE, cache = NULL) # Downloading raw data from World Bank
 mydata$year<-as.character(mydata$year)
-names(mydata)[names(mydata)=="AG.LND.IRIG.AG.ZS"] <- "agri_area__irrigated_percentage"
-mydata<-mydata[which(!is.na(mydata$agri_area__irrigated_percentage)),] # Filtering for NA values
+names(mydata)[names(mydata)=="AG.LND.IRIG.AG.ZS"] <- "agri_area_irrigated_percentage"
+mydata<-mydata[which(!is.na(mydata$agri_area_irrigated_percentage)),] # Filtering for NA values
 # Filtering out groups of countries
 mydata_filtered<-mydata[which(!startsWith(mydata$country, "Euro")),]
 mydata_filtered<-mydata_filtered[which(!endsWith(mydata_filtered$country, "income")),]
@@ -40,54 +46,94 @@ mydata_filtered<-mydata_filtered[which(!endsWith(mydata_filtered$country, "Ameri
 mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Africa")),]
 mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "North Africa")),]
 
-ui <- fluidPage(
-    theme = shinytheme("spacelab"), 
-    sidebarPanel( # Creating sidebar panel with conditions
-        conditionalPanel(condition="input.conditionedPanels == 'Διάγραμμα'",
-                         selectInput('country', 'Χώρα', choices = unique(mydata$country), selected = "Greece")),
-        conditionalPanel(condition="input.conditionedPanels == 'Χάρτης'",
-                         selectInput('year', 'Έτος', choices = unique(mydata$year), selected = "2013")),
-        conditionalPanel(condition="input.conditionedPanels == 'Δεδομένα'", downloadButton("downloadData")),
-        conditionalPanel(condition="input.conditionedPanels == 'Χρονοσειρά' || input.conditionedPanels == 'Σύνοψη ανά χώρα'", 
-                         sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
-                                     value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")),
-        width=2),
-    mainPanel(
-        tabsetPanel( # Creating tabs
-            tabPanel("Διάγραμμα", htmlOutput("view")),
-            tabPanel("Χάρτης", htmlOutput("map")), 
-            tabPanel("Χρονοσειρά", plotOutput("timeline")),
-            tabPanel("Δεδομένα", dataTableOutput("table")),
-            tabPanel("Σύνοψη ανά χώρα", dataTableOutput("summary")),
-            id = "conditionedPanels"),
-        print("Πηγή: World Bank")))
+meanvalue<-mean((aggregate(mydata_filtered$agri_area_irrigated_percentage, by=list(year=mydata_filtered$year), FUN=mean)$x)) # Mean value
+topc<-mydata_filtered[which.max(mydata_filtered$agri_area_irrigated_percentage),] # Top country
+header <- dashboardHeader(title = "Ποσοστό αρδευόμενης αγροτικής γης", titleWidth=500) # Header of dashboard
+sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
+frow1 <- fluidRow( # Creating row of valueboxes
+    valueBoxOutput("agri_area_irrigated_percentage", width=6),
+    valueBoxOutput("topcountry", width=6)
+)
+frow2 <- fluidRow( # Creating row of two diagrams
+    box(
+        title = "Ανά χώρα",
+        status="success",
+        collapsible = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(
+            htmlOutput("view"),
+            print("Πηγή: World Bank"),
+            selectInput('country', 'Χώρα', choices = unique(mydata$country)), width='98%')),
+    box(
+        title = "Ανά έτος",
+        status="success",
+        collapsible = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(
+            htmlOutput("map"),
+            print("Πηγή: World Bank"),
+            selectInput('year', 'Έτος', choices = unique(mydata$year)), width='98%'))
+)
+frow3 <- fluidRow(# Creating row of diagram and summary
+    box(
+        title = "5 χώρες με μεγαλύτερο ποσοστό αρδευόμενης αγροτικής γης",
+        status="success",
+        collapsible = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(
+            plotOutput("timeline", width = "150%"),
+            print("Πηγή: World Bank"),
+            sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+                        value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep=""))),
+    box(
+        title = "Σύνοψη δεδομένων ανά χώρα",
+        status="success",
+        collapsible = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(
+            dataTableOutput("summary"),
+            width=550,
+            print("Πηγή: World Bank"),
+            sliderInput("myyearsummary", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+                        value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")))
+)
+frow4 <- fluidRow( # Creating row of download button
+    box(
+        title = "Λήψη δεδομένων",
+        status="success",
+        collapsed = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(downloadButton("downloadData")))
+)
+
+body <- dashboardBody(frow1, frow2, frow3, frow4) # Binding rows to body of dashboard
+ui <- dashboardPage(header, sidebar, body, skin="green") # Binding elements of dashboard
 
 server <- function(input, output) {
     data_country <- reactive({ # Adding reactive data information
-        data_country<-mydata_filtered[mydata_filtered$country==input$country, c("year", "agri_area__irrigated_percentage")]
-        data_country<-aggregate(data_country$agri_area__irrigated_percentage, by=list(Year=data_country$year), FUN=sum)
+        data_country<-mydata[mydata$country==input$country, c("year", "agri_area_irrigated_percentage")]
+        data_country<-aggregate(data_country$agri_area_irrigated_percentage, by=list(Year=data_country$year), FUN=sum)
         colnames(data_country)<-c("Έτος", "Ποσοστό αρδευόμενης αγροτικής γης")
         data_country
     })
     data_year <- reactive({ # Adding reactive data information
-        data_year<-mydata[mydata$year==input$year,  c("country", "agri_area__irrigated_percentage")]
-        data_year<-aggregate(data_year$agri_area__irrigated_percentage, by=list(Country=data_year$country), FUN=sum)
+        data_year<-mydata[mydata$year==input$year,  c("country", "agri_area_irrigated_percentage")]
+        data_year<-aggregate(data_year$agri_area_irrigated_percentage, by=list(Country=data_year$country), FUN=sum)
         colnames(data_year)<-c("Χώρα", "Ποσοστό αρδευόμενης αγροτικής γης")
         data_year
     })
     mydata_top_five<-reactive({ # Subsetting data according to year interval and getting top five countries
         mydata_top_five<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),]
-        data_year_temp<-aggregate(mydata_top_five$agri_area__irrigated_percentage, by=list(Country=mydata_top_five$country), FUN=mean)
+        data_year_temp<-aggregate(mydata_top_five$agri_area_irrigated_percentage, by=list(Country=mydata_top_five$country), FUN=mean)
         data_year_temp<-data_year_temp[order(-data_year_temp$x),]
         data_year_temp<-data_year_temp[1:5,] # Keeping top five countries
         mydata_top_five<-mydata_top_five[which(mydata_top_five$country %in% data_year_temp$Country),]
     })
     mydata_summary<-reactive({ # Subsetting data according to year interval
-        mydata_summary<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),] 
+        mydata_summary<-mydata[which(mydata$year>=input$myyearsummary[1] & mydata$year<=input$myyearsummary[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", title="Ποσοστό αρδευόμενης αγροτικής γης", 
-                        titleTextStyle="{color:'#336600',fontSize:14}", vAxis="{title:'Ποσοστό αρδευόμενης αγροτικής γης (%)'}", 
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Ποσοστό αρδευόμενης αγροτικής γης (%)'}", 
                         hAxis="{title:'Έτος'}",backgroundColor="#d9ffb3", width=700, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map
@@ -99,20 +145,33 @@ server <- function(input, output) {
     })
     output$summary <- renderDataTable({ # Creating summary by country
         mysummary <- data.frame(
-            aggregate(agri_area__irrigated_percentage~country, mydata_summary(), min),
-            aggregate(agri_area__irrigated_percentage~country, mydata_summary(), max),
-            aggregate(agri_area__irrigated_percentage~country, mydata_summary(), mean),
-            aggregate(agri_area__irrigated_percentage~country, mydata_summary(), median))
-        mysummary <- mysummary[,c(1,2,4,6,8)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστο ποσοστό αρδευόμενης αγροτικής γης", "Μέγιστο ποσοστό αρδευόμενης αγροτικής γης", "Μέσο ποσοστό αρδευόμενης αγροτικής γης", "Διάμεσος")
+            aggregate(agri_area_irrigated_percentage~country, mydata_summary(), min),
+            aggregate(agri_area_irrigated_percentage~country, mydata_summary(), max),
+            aggregate(agri_area_irrigated_percentage~country, mydata_summary(), mean))
+        mysummary <- mysummary[,c(1,2,4,6)]
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστο ποσοστό αρδευόμενης αγροτικής γης", "Μέγιστο ποσοστό αρδευόμενης αγροτικής γης", "Μέσο ποσοστό αρδευόμενης αγροτικής γης")
         mysummary
+    }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
+    output$agri_area_irrigated_percentage <- renderValueBox({ # Filling valuebox
+        valueBox(
+            paste0(specify_decimal(meanvalue,2), " %"),
+            "Μέσο ποσοστό αρδευόμενης αγροτικής γης παγκοσμίως",
+            icon = icon("user"),
+            color = "olive")
+    })
+    output$topcountry <- renderValueBox({ # Filling valuebox
+        valueBox(
+            paste0(topc$country," - ", topc$year),
+            "Χώρα με μεγαλύτερο ποσοστό αρδευόμενης αγροτικής γης (%)",
+            icon = icon("globe"),
+            color = "olive")
     })
     output$timeline<-renderPlot({ # Creating timeline for top 5 countries
-        ggplot(mydata_top_five(), aes(x = year, y = agri_area__irrigated_percentage, group = country, colour = country)) + 
+        ggplot(mydata_top_five(), aes(x = year, y = agri_area_irrigated_percentage, group = country, colour = country)) + 
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Ποσοστό αρδευόμενης αγροτικής γης") + ggtitle("5 χώρες με υψηλότερο ποσοστό αρδευόμενης αγροτικής γης") + 
+            xlab("Έτος") + ylab("Ποσοστό αρδευόμενης αγροτικής γης") + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 

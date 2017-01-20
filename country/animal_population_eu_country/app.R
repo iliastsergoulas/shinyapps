@@ -12,6 +12,12 @@ library(countrycode)
 library(ggplot2)
 library(directlabels)
 library(scales)
+library(shinydashboard)
+
+printMoney <- function(x){ # A function to show number as currency
+    format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
+}
+specify_decimal <- function(x, k) format(round(x, k), nsmall=k) # A function to show number with k decimal places
 
 mydata<-get_eurostat("agr_r_animal", time_format = "raw") # Downloading raw data from Eurostat
 mydata$geo<-as.character(mydata$geo)
@@ -25,28 +31,68 @@ mydata$countryname <- countrycode(mydata$geo, "iso2c", "country.name") # Getting
 mydata<-mydata[which(!is.na(mydata$countryname)), c("countryname", "time", "values")] # Filtering for country names not found
 colnames(mydata)<-c("country", "year", "number")
 
-ui <- fluidPage(
-    theme = shinytheme("spacelab"), 
-    sidebarPanel( # Creating sidebar panel with conditions
-        conditionalPanel(condition="input.conditionedPanels == 'Διάγραμμα'",
-                         selectInput('country', 'Χώρα', choices = unique(mydata$country), selected = "Greece")),
-        conditionalPanel(condition="input.conditionedPanels == 'Χάρτης'",
-                         selectInput('year', 'Έτος', choices = unique(mydata$year), selected = "2011")),
-        conditionalPanel(condition="input.conditionedPanels == 'Δεδομένα'", downloadButton("downloadData")),
-        conditionalPanel(condition="input.conditionedPanels == 'Χρονοσειρά' || input.conditionedPanels == 'Σύνοψη ανά χώρα'", 
-                         sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
-                                     value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")),
-        width=2),
-    mainPanel(
-        tabsetPanel( # Create tabs
-            tabPanel("Διάγραμμα", htmlOutput("view")),
-            tabPanel("Χάρτης", htmlOutput("map")), 
-            tabPanel("Χρονοσειρά", plotOutput("timeline")),
-            tabPanel("Δεδομένα", dataTableOutput("table")),
-            tabPanel("Σύνοψη ανά χώρα", dataTableOutput("summary")),
-            id = "conditionedPanels"),
-        print("Πηγή: (C) EuroGeographics for the administrative boundaries"))
+meanvalue<-mean((aggregate(mydata$number, by=list(year=mydata$year), FUN=mean)$x)) # Mean value
+topc<-mydata[which.max(mydata$number),] # Top country
+header <- dashboardHeader(title = "Μέγεθος ζωικού κεφαλαίου (χιλιάδες)", titleWidth=500) # Header of dashboard
+sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
+frow1 <- fluidRow( # Creating row of valueboxes
+    valueBoxOutput("number", width=6),
+    valueBoxOutput("topcountry", width=6)
 )
+frow2 <- fluidRow( # Creating row of two diagrams
+    box(
+        title = "Ανά χώρα",
+        status="success",
+        collapsible = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(
+            htmlOutput("view"),
+            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
+            selectInput('country', 'Χώρα', choices = unique(mydata$country)), width='98%')),
+    box(
+        title = "Ανά έτος",
+        status="success",
+        collapsible = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(
+            htmlOutput("map"),
+            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
+            selectInput('year', 'Έτος', choices = unique(mydata$year)), width='98%'))
+)
+frow3 <- fluidRow(# Creating row of diagram and summary
+    box(
+        title = "5 χώρες με υψηλότερο μέγεθος ζωικού κεφαλαίου",
+        status="success",
+        collapsible = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(
+            plotOutput("timeline", width = "150%"),
+            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
+            sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+                        value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep=""))),
+    box(
+        title = "Σύνοψη δεδομένων ανά χώρα",
+        status="success",
+        collapsible = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(
+            dataTableOutput("summary"),
+            width=550,
+            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
+            sliderInput("myyearsummary", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+                        value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")))
+)
+frow4 <- fluidRow( # Creating row of download button
+    box(
+        title = "Λήψη δεδομένων",
+        status="success",
+        collapsed = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(downloadButton("downloadData")))
+)
+
+body <- dashboardBody(frow1, frow2, frow3, frow4) # Binding rows to body of dashboard
+ui <- dashboardPage(header, sidebar, body, skin="green") # Binding elements of dashboard
 
 server <- function(input, output) {
     data_country <- reactive({ # Adding reactive data information
@@ -70,11 +116,10 @@ server <- function(input, output) {
         mydata_top_five<-mydata_top_five[which(mydata_top_five$country %in% data_year_temp$Country),]
     })
     mydata_summary<-reactive({ # Subsetting data according to year interval
-        mydata_summary<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),] 
+        mydata_summary<-mydata[which(mydata$year>=input$myyearsummary[1] & mydata$year<=input$myyearsummary[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", title="Μέγεθος ζωικού κεφαλαίου", 
-                        titleTextStyle="{color:'#336600',fontSize:14}", vAxis="{title:'Αριθμός κεφαλών (χιλιάδες)'}", hAxis="{title:'Έτος'}",
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Αριθμός κεφαλών (χιλιάδες)'}", hAxis="{title:'Έτος'}",
                         backgroundColor="#d9ffb3", width=700, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map
@@ -89,18 +134,31 @@ server <- function(input, output) {
         mysummary <- data.frame(
             aggregate(number~country, mydata_summary(), min),
             aggregate(number~country, mydata_summary(), max),
-            aggregate(number~country, mydata_summary(), mean),
-            aaggregate(number~country, mydata_summary(), median))
-        mysummary <- mysummary[,c(1,2,4,6,8)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστο μέγεθος ζωικού κεφαλαίου", "Μέγιστο μέγεθος ζωικού κεφαλαίου", "Μέσο μέγεθος ζωικού κεφαλαίου", "Διάμεσος")
+            aggregate(number~country, mydata_summary(), mean))
+        mysummary <- mysummary[,c(1,2,4,6)]
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστο μέγεθος ζωικού κεφαλαίου", "Μέγιστο μέγεθος ζωικού κεφαλαίου", "Μέσο μέγεθος ζωικού κεφαλαίου")
         mysummary
+    }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
+    output$number <- renderValueBox({ # Filling valuebox
+        valueBox(
+            paste0(specify_decimal(meanvalue,2), " χιλιάδες κεφαλές"),
+            "Μέσο ζωικό κεφάλαιο παγκοσμίως",
+            icon = icon("user"),
+            color = "olive")
+    })
+    output$topcountry <- renderValueBox({ # Filling valuebox
+        valueBox(
+            paste0(topc$country," - ", topc$year),
+            "Χώρα με μεγαλύτερο ζωικό κεφάλαιο",
+            icon = icon("globe"),
+            color = "olive")
     })
     output$timeline<-renderPlot({ # Creating timeline for top 5 countries
         ggplot(mydata_top_five(), aes(x = year, y = number, group = country, colour = country)) + 
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Μέγεθος ζωικού κεφαλαίου") + ggtitle("5 χώρες με υψηλότερο μέγεθος ζωικού κεφαλαίου") + 
+            xlab("Έτος") + ylab("Μέγεθος ζωικού κεφαλαίου") + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 

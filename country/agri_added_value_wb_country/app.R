@@ -14,9 +14,10 @@ library(directlabels)
 library(scales)
 library(shinydashboard)
 
-printMoney <- function(x){
+printMoney <- function(x){ # A function to show number as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
 }
+specify_decimal <- function(x, k) format(round(x, k), nsmall=k) # A function to show number with k decimal places
 
 mydata<-WDI(country = "all", indicator = "NV.AGR.TOTL.KD", extra = FALSE, cache = NULL) # Downloading raw data from World Bank
 mydata$year<-as.character(mydata$year)
@@ -45,17 +46,15 @@ mydata_filtered<-mydata_filtered[which(!endsWith(mydata_filtered$country, "Ameri
 mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Africa")),]
 mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "North Africa")),]
 
-tav<-mean((aggregate(mydata_filtered$total_added_value, by=list(year=mydata_filtered$year), FUN=sum)$x))
-topc<-mydata_filtered[which.max(mydata_filtered$total_added_value),]
-
-header <- dashboardHeader(title = "Προστιθέμενη αξία γεωργίας", titleWidth=500)
-sidebar <- dashboardSidebar(disable = TRUE)
-frow1 <- fluidRow(
+meanvalue<-mean((aggregate(mydata_filtered$total_added_value, by=list(year=mydata_filtered$year), FUN=sum)$x)) # Mean value
+topc<-mydata_filtered[which.max(mydata_filtered$total_added_value),] # Top country
+header <- dashboardHeader(title = "Προστιθέμενη αξία γεωργίας", titleWidth=500) # Header of dashboard
+sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
+frow1 <- fluidRow( # Creating row of valueboxes
     valueBoxOutput("totaladdedvalue", width=6),
     valueBoxOutput("topcountry", width=6)
 )
-
-frow2 <- fluidRow(
+frow2 <- fluidRow( # Creating row of two diagrams
     box(
         title = "Ανά χώρα",
         status="success",
@@ -75,7 +74,7 @@ frow2 <- fluidRow(
             print("Πηγή: World Bank"),
             selectInput('year', 'Έτος', choices = unique(mydata$year)), width='98%'))
 )
-frow3 <- fluidRow(
+frow3 <- fluidRow(# Creating row of diagram and summary
     box(
         title = "5 χώρες με μεγαλύτερη προστιθέμενη αξία γεωργίας",
         status="success",
@@ -95,10 +94,10 @@ frow3 <- fluidRow(
             dataTableOutput("summary"),
             width=550,
             print("Πηγή: World Bank"),
-            sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+            sliderInput("myyearsummary", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
                         value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")))
 )
-frow4 <- fluidRow(
+frow4 <- fluidRow( # Creating row of download button
     box(
         title = "Λήψη δεδομένων",
         status="success",
@@ -106,8 +105,8 @@ frow4 <- fluidRow(
         theme = shinytheme("spacelab"), 
         mainPanel(downloadButton("downloadData"))))
     
-body <- dashboardBody(frow1, frow2, frow3, frow4)
-ui <- dashboardPage(header, sidebar, body, skin="green")
+body <- dashboardBody(frow1, frow2, frow3, frow4) # Binding rows to body of dashboard
+ui <- dashboardPage(header, sidebar, body, skin="green") # Binding elements of dashboard
 
 server <- function(input, output) {
     data_country <- reactive({ # Adding reactive data information
@@ -130,7 +129,7 @@ server <- function(input, output) {
         mydata_top_five<-mydata_top_five[which(mydata_top_five$country %in% data_year_temp$Country),]
     })
     mydata_summary<-reactive({ # Subsetting data according to year interval
-        mydata_summary<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),] 
+        mydata_summary<-mydata[which(mydata$year>=input$myyearsummary[1] & mydata$year<=input$myyearsummary[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
         gvisColumnChart(data_country(), options=list(colors="['#008d4c']", vAxis="{title:'Αξία (δολάρια σε τιμές 2000)'}", 
@@ -140,14 +139,14 @@ server <- function(input, output) {
         gvisGeoChart(data_year(), "Χώρα", "Προστιθέμενη αξία γεωργίας (δολάρια σε τιμές 2000)", 
                      options=list(displayMode="regions", datamode='regions',width=550, height=500))
     })
-    output$totaladdedvalue <- renderValueBox({
+    output$totaladdedvalue <- renderValueBox({ # Filling valuebox
         valueBox(
-            paste0(printMoney(tav)," $"),
-            "Μέση προστιθέμενη αξία γεωργίας ανά έτος (δολάρια σε τιμές 2000)",
+            paste0(printMoney(meanvalue)," $"),
+            "Μέση προστιθέμενη αξία γεωργίας συνόλου χωρών ανά έτος (τιμές 2000)",
             icon = icon("money"),
             color = "olive")
     })
-    output$topcountry <- renderValueBox({
+    output$topcountry <- renderValueBox({ # Filling valuebox
         valueBox(
             paste0(topc$country," - ", topc$year),
             "Χώρα με μεγαλύτερη προστιθέμενη αξία γεωργίας",
@@ -171,7 +170,7 @@ server <- function(input, output) {
             scale_y_continuous(labels = comma) + 
             xlab("Έτος") + ylab("Προστιθέμενη αξία γεωργίας (δολάρια σε τιμές 2000)") + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
-            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
+            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=12)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 
     })
     output$downloadData <- downloadHandler( # Creating download button
