@@ -22,7 +22,7 @@ percent <- function(x, digits = 2, format = "f", ...) { # A function to show num
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k) # A function to show number with k decimal places
 
-Quandl.api_key("....") # Setting API key to have unlimited access to databases
+Quandl.api_key("KCo4sXzWEzSAb81ff3VP") # Setting API key to have unlimited access to databases
 data_codes<-c("COM/WLD_SUGAR_EU", "COM/WLD_SUGAR_WLD", "COM/WLD_SUGAR_US", "COM/PSUGAEEC_USD", # Setting wanted Quandl database codes
               "COM/COFFEE_BRZL", "COM/COFFEE_CLMB", "COM/WLD_COFFEE_ROBUS", "COM/WLD_COFFEE_ARABIC",
               "COM/RICE_2", "COM/WLD_RICE_25", "COM/WLD_RICE_05", "COM/WLD_RICE_05_VNM", "COM/PRICENPQ_USD", 
