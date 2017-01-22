@@ -1,13 +1,3 @@
-# This R script is created as a Shiny application to generate a wordcloud out of tweets of Greek agricultural press. 
-# The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
-# Author: Ilias Tsergoulas, Website: www.agristats.eu
-
-library(shiny)
-library(googleVis)
-library(shinythemes)
-library(ggplot2)
-library(directlabels)
-library(scales)
 library(twitteR)
 library(wordcloud)
 library(tm)
@@ -38,7 +28,7 @@ myDtm <- TermDocumentMatrix(myCorpus, control =
                                "που","στα","κάθε","λέει","στο","στη",
                                "ζωντανά","αγρότες","αγροτικής","μήνα",
                                "ημέρες","μέρες","στον", "έως", "λόγω",
-                               "αγροτικό","ζητά","αλλά","χωρίς", "προ",
+                               "αγροτικό",
                                stopwords("english")),
                  removeNumbers = TRUE, tolower = TRUE))
 
@@ -49,15 +39,6 @@ myNames <- names(v)
 k <- which(names(v)=="miners")
 myNames[k] <- "mining"
 d <- data.frame(word=myNames, freq=v)
-
-ui <- fluidPage(
-    theme = shinytheme("spacelab"), 
-    mainPanel(plotOutput("view"))
-)
-
-server <- function(input, output) {
-    output$view <- renderPlot({ # Creating chart
-        wordcloud(d$word, d$freq, min.freq=3, colors=brewer.pal(8, "Dark2"))
-    })
-}
-shinyApp(ui, server)
+png("MachineLearningCloud.png", width=12, height=8, units="in", res=300)
+wordcloud(d$word, d$freq, min.freq=3, colors=brewer.pal(8, "Dark2"))
+dev.off()
