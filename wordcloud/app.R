@@ -17,10 +17,10 @@ library(RWeka)
 library(rJava)
 library(RWekajars)
 
-setup_twitter_oauth("", 
-                    "", 
-                    "", 
-                    "")
+setup_twitter_oauth("mBT6s3eZaNUT8D6WVXakDvf8R", 
+                    "u1J8XAQu0BAZensQZBOehelUG0I9wPklgmmaTZ7vQ3yLjM2yAy", 
+                    "801401824855072772-sZjXHFGWvJvcBZGK8n88kmvbBhUEzjv", 
+                    "Dr8TpgfJx8Q1NZXiJGIW91hnMzpzQyHekqfamOk3VEepW")
 # retrieve the first 100 tweets (or all tweets if fewer than 100)
 # from the user timeline of @rdatammining
 rdmTweets <- userTimeline("ypaithros", n=200)
@@ -43,6 +43,12 @@ myDtm <- TermDocumentMatrix(myCorpus, control =
                  removeNumbers = TRUE, tolower = TRUE))
 
 m <- as.matrix(myDtm)
+# calculate the frequency of words
+v <- sort(rowSums(m), decreasing=TRUE)
+myNames <- names(v)
+k <- which(names(v)=="miners")
+myNames[k] <- "mining"
+d <- data.frame(word=myNames, freq=v)
 
 ui <- fluidPage(
     theme = shinytheme("spacelab"), 
