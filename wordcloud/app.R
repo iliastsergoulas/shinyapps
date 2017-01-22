@@ -1,4 +1,5 @@
-# This R script is created as a Shiny application to generate a wordcloud out of tweets of Greek agricultural press. 
+# This R script is created as a Shiny application to generate a wordcloud out of tweets 
+# of Greek agricultural press. 
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
 # Author: Ilias Tsergoulas, Website: www.agristats.eu
 
