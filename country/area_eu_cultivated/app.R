@@ -17,7 +17,7 @@ library(shinydashboard)
 printMoney <- function(x){ # A function to show area as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
 }
-specify_decimal <- function(x, k) format(round(x, k), nsmall=k) # A function to show area with k decimal places
+specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show area with k decimal places
 
 mydata<-get_eurostat("ef_oluaareg", time_format = "raw") # Downloading raw data from Eurostat
 mydata$geo<-as.character(mydata$geo)
@@ -140,6 +140,20 @@ server <- function(input, output) {
         colnames(mysummary) <- c("Χώρα", "Ελάχιστη έκταση", "Μέγιστη έκταση", "Μέση έκταση")
         mysummary
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
+    output$area <- renderValueBox({ # Filling valuebox
+        valueBox(
+            paste0(printMoney(meanvalue), " εκτάρια"),
+            "Μέση έκταση καλλιεργημένης γης παγκοσμίως",
+            icon = icon("user"),
+            color = "olive")
+    })
+    output$topcountry <- renderValueBox({ # Filling valuebox
+        valueBox(
+            paste0(topc$country," - ", topc$year),
+            "Χώρα με μεγαλύτερη έκταση καλλιεργημένης γης",
+            icon = icon("globe"),
+            color = "olive")
+    })
     output$timeline<-renderPlot({ # Creating timeline for top 5 countries
         ggplot(mydata_top_five(), aes(x = year, y = area, group = country, colour = country)) + 
             geom_line() +

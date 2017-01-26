@@ -17,7 +17,7 @@ library(shinydashboard)
 printMoney <- function(x){ # A function to show number as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
 }
-specify_decimal <- function(x, k) format(round(x, k), nsmall=k) # A function to show number with k decimal places
+specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show number with k decimal places
 
 mydata<-WDI(country = "all", indicator = "SP.RUR.TOTL.ZG", extra = FALSE, cache = NULL) # Downloading raw data from World Bank
 mydata$year<-as.character(mydata$year)
