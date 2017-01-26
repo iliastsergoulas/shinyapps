@@ -1,3 +1,4 @@
+# Data: Production from aquaculture excluding hatcheries and nurseries (from 2008 onwards) 
 # This R script is created as a Shiny application to download raw data from Eurostat ((C) EuroGeographics for the administrative boundaries), 
 # process it and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
@@ -90,8 +91,8 @@ server <- function(input, output) {
             aggregate(quantity~country, mydata_summary(), min),
             aggregate(quantity~country, mydata_summary(), max),
             aggregate(quantity~country, mydata_summary(), mean))
-        mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστη Παραγωγή", "Μέγιστη Παραγωγή", "Μέση Παραγωγή")
+        mysummary <- mysummary[,c(1,2,4,6,8)]
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστη Παραγωγή", "Μέγιστη Παραγωγή", "Μέση Παραγωγή", "Διάμεσος")
         mysummary
     })
     output$timeline<-renderPlot({ # Creating timeline for top 5 countries
