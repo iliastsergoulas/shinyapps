@@ -155,9 +155,9 @@ server <- function(input, output) {
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
     output$agri_econ_population <- renderValueBox({ # Filling valuebox
         valueBox(
-            printMoney(humem),
+            printMoney(meanvalue),
             "Μέσος οικονομικά ενεργός πληθυσμός γεωργίας παγκοσμίως",
-            icon = icon("female"),
+            icon = icon("user"),
             color = "olive")
     })
     output$topcountry <- renderValueBox({ # Filling valuebox

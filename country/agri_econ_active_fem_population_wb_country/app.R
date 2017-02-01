@@ -132,7 +132,7 @@ server <- function(input, output) {
         mydata_summary<-mydata[which(mydata$year>=input$myyearsummary[1] & mydata$year<=input$myyearsummary[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Ποσοστό'}", 
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Πληθυσμός'}", 
                         hAxis="{title:'Έτος'}",backgroundColor="#d9ffb3", width=700, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map
@@ -144,7 +144,7 @@ server <- function(input, output) {
     })
     output$agri_econ_fem_population <- renderValueBox({ # Filling valuebox
         valueBox(
-            paste0(specify_decimal(femem, 2), " %"),
+            paste0(specify_decimal(femem, 2), ""),
             "Μέσος οικονομικά ενεργός γυναικείος πληθυσμός γεωργίας παγκοσμίως",
             icon = icon("female"),
             color = "olive")
