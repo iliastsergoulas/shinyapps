@@ -12,30 +12,27 @@ mydata<-read.csv("./eggs_plants.csv", sep=",")
 
 ui <- fluidPage(
     theme = shinytheme("spacelab"),
-    sidebarPanel( # Create sidebar panel with conditions
-        conditionalPanel(condition="input.conditionedPanels == 'Διάγραμμα'", selectInput("variable", "Μεταβλητή:",
-                         list("Περιφέρεια" = "region", "Περιφερειακή Ενότητα" = "prefecture")))),
     mainPanel(
         tabsetPanel( # Create tabs
-            tabPanel("Διάγραμμα", htmlOutput("view")),
+            tabPanel("Ανά Περιφέρεια", htmlOutput("view_region")),
+            tabPanel("Ανά Περιφερειακή Ενότητα", htmlOutput("view_prefecture")),
             tabPanel("Πίνακας Δεδομένων", dataTableOutput("table")),
             id = "conditionedPanels"
         ),
         print("Πηγή: Υπουργείο Αγροτικής Ανάπτυξης και Τροφίμων (http://www.minagric.gr/images/stories/docs/agrotis/kthn_egkatastaseis/kentra_sysk_typ_avgwn021216.xls)")))
 
 server <- function(input, output) {
-    data_geographic <- reactive({ # Add reactive data information
-        if (input$variable=="region"){
-            data_geographic<-aggregate(cbind("Αριθμός μονάδων" = approval_code) ~ region_name_gr, 
-                                       data = mydata, FUN = function(x){NROW(x)})}
-        else if (input$variable=="prefecture"){
-            data_geographic<-aggregate(cbind("Αριθμός μονάδων" = approval_code) ~ prefecture_name_gr, 
-                                       data = mydata, FUN = function(x){NROW(x)})}
+    data_region<-aggregate(cbind("Αριθμός μονάδων" = approval_code) ~ region_name_gr, 
+                                       data = mydata, FUN = function(x){NROW(x)})
+    data_prefecture<-aggregate(cbind("Αριθμός μονάδων" = approval_code) ~ prefecture_name_gr, 
+                           data = mydata, FUN = function(x){NROW(x)})
+    output$view_region <- renderGvis({ # Creating chart
+        gvisColumnChart(data_region, options=list(colors="['#336600']", vAxis="{title:'Αριθμός μονάδων'}", 
+                        hAxis="{title:'Περιφέρεια'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
-    output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_geographic(), options=list(colors="['#336600']", vAxis="{title:'Αριθμός μονάδων'}", 
-                                                        hAxis="{title:'Περιφερειακή Ενότητα'}",backgroundColor="#d9ffb3", 
-                                                        width=550, height=500, legend='none'))
+    output$view_prefecture <- renderGvis({ # Creating chart
+        gvisColumnChart(data_prefecture, options=list(colors="['#336600']", vAxis="{title:'Αριθμός μονάδων'}", 
+                        hAxis="{title:'Περιφερειακή Ενότητα'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$table <- renderDataTable({ # Creating data table
         mydat<-mydata[c("approval_code", "business_name", "location", "prefecture_name_gr", "region_name_gr")]
