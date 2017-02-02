@@ -18,7 +18,6 @@ ui <- fluidPage(
     mainPanel(
         tabsetPanel( # Create tabs
             tabPanel("Διάγραμμα", htmlOutput("view")),
-            tabPanel("Χάρτης", leafletOutput("mymap")), 
             tabPanel("Πίνακας Δεδομένων", dataTableOutput("table")),
             id = "conditionedPanels"
         ),
@@ -34,23 +33,14 @@ server <- function(input, output) {
                                        data = mydata, FUN = function(x){NROW(x)})}
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_geographic(), options=list(colors="['#336600']", vAxis="{title:'Αριθμός μονάδων αυγοπαραγωγής'}", 
+        gvisColumnChart(data_geographic(), options=list(colors="['#336600']", vAxis="{title:'Αριθμός μονάδων'}", 
                                                         hAxis="{title:'Περιφερειακή Ενότητα'}",backgroundColor="#d9ffb3", 
-                                                        width=800, height=700, legend='none'))
-    })
-    output$map <- renderGvis({ # Creating map
-        gvisGeoChart(data_geographic(), locationvar="region_name_gr",  
-                     options=list(width=800, height=850, region="GR", displayMode="regions", 
-                                  resolution="provinces", dataMode="regions"))
+                                                        width=550, height=500, legend='none'))
     })
     output$table <- renderDataTable({ # Creating data table
         mydat<-mydata[c("approval_code", "business_name", "location", "prefecture_name_gr", "region_name_gr")]
         colnames(mydat) <- c("Κωδικός Έγκρισης", "Επωνυμία", "Τοποθεσία", "Περιφερειακή Ενότητα", "Περιφέρεια")
         mydat
     })
-    output$mymap <- renderLeaflet({
-        leaflet() %>%
-            addTiles() %>%
-            addMarkers(lng=mydata$longitude, lat=mydata$latitude, popup=mydata$business_name)
-    })}
+}
 shinyApp(ui, server)
