@@ -44,6 +44,7 @@ myDtm <- TermDocumentMatrix(myCorpus, control =
                                "αγροτικού", "δείτε", "πριν", "πού",
                                "πιο", "όλοι", "φωτό","νέα", "δισ", "δεν", 
                                "ειδήσεις","αγροτικές", "μέχρι","μετά","γίνει",
+                               "είναι","ανά","νέο","αγροτική","αγροτών","κιλό",
                                stopwords("english")),
                  removeNumbers = TRUE, tolower = TRUE))
 m <- as.matrix(myDtm)
