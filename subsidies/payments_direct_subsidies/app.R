@@ -110,11 +110,11 @@ server <- function(input, output) {
     })
     output$view <- renderGvis({ # Creating chart
         gvisLineChart(data_measure(), options=list(colors="['#336600']", vAxis="{title:'Πληρωμές (Ευρώ)'}", 
-                    hAxis="{title:'Ημερομηνία'}",backgroundColor="#d9ffb3", width=500, height=500, legend='none'))
+                    hAxis="{title:'Ημερομηνία'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$view_total <- renderGvis({ # Creating chart
         gvisLineChart(data_total(), options=list(colors="['#336600']", vAxis="{title:'Πληρωμές (Ευρώ)'}", 
-                                                   hAxis="{title:'Ημερομηνία'}",backgroundColor="#d9ffb3", width=500, height=500, legend='none'))
+                                                   hAxis="{title:'Ημερομηνία'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$table <- renderDataTable({ # Creating data table
         colnames(mydata)<-c("Ημερομηνία", "Μέτρο", "Πληρωμές")
