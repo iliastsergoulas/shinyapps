@@ -27,17 +27,17 @@ server <- function(input, output) {
     data_prefecture<-aggregate(cbind("Αριθμός μονάδων" = approval_code) ~ prefecture_name_gr, 
                            data = mydata, FUN = function(x){NROW(x)})
     output$view_region <- renderGvis({ # Creating chart
-        gvisColumnChart(data_region, options=list(colors="['#336600']", vAxis="{title:'Αριθμός μονάδων'}", 
-                        hAxis="{title:'Περιφέρεια'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
+        gvisColumnChart(data_region, options=list(colors="['#ae4e89']", vAxis="{title:'Αριθμός μονάδων'}", 
+                        hAxis="{title:'Περιφέρεια'}",backgroundColor="#b5d0d0", width=550, height=500, legend='none'))
     })
     output$view_prefecture <- renderGvis({ # Creating chart
-        gvisColumnChart(data_prefecture, options=list(colors="['#336600']", vAxis="{title:'Αριθμός μονάδων'}", 
-                        hAxis="{title:'Περιφερειακή Ενότητα'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
+        gvisColumnChart(data_prefecture, options=list(colors="['#ae4e89']", vAxis="{title:'Αριθμός μονάδων'}", 
+                        hAxis="{title:'Περιφερειακή Ενότητα'}",backgroundColor="#b5d0d0", width=550, height=500, legend='none'))
     })
     output$table <- renderDataTable({ # Creating data table
         mydat<-mydata[c("approval_code", "business_name", "location", "prefecture_name_gr", "region_name_gr")]
         colnames(mydat) <- c("Κωδικός Έγκρισης", "Επωνυμία", "Τοποθεσία", "Περιφερειακή Ενότητα", "Περιφέρεια")
         mydat
-    })
+    }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
 }
 shinyApp(ui, server)
