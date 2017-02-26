@@ -21,7 +21,7 @@ specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=","
 
 mydata<-get_eurostat("apro_acs_a", time_format = "raw") # Downloading raw data from Eurostat
 mydata$geo<-as.character(mydata$geo)
-mydata<-mydata[which(mydata$strucpro=='PR' & mydata$crops=='C0000'), ] # Filtering data
+mydata<-mydata[which(mydata$strucpro=='PR' & mydata$crops=='V0000'), ] # Filtering data
 for (i in 1:nrow(mydata)) { # Replacing country codes in order to get correct country names
     if(as.character(mydata$geo[i])=="EL") {
         mydata$geo[i] <- "GR"}
@@ -33,7 +33,7 @@ colnames(mydata)<-c("country", "year", "quantity")
 
 meanvalue<-mean((aggregate(mydata$quantity, by=list(year=mydata$year), FUN=mean)$x)) # Mean value
 topc<-mydata[which.max(mydata$quantity),] # Top country
-header <- dashboardHeader(title = "Παραγωγή δημητριακών στις χώρες της Ε.Ε.", titleWidth=500) # Header of dashboard
+header <- dashboardHeader(title = "Παραγωγή νωπών λαχανικών στις χώρες της Ε.Ε.", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
     valueBoxOutput("quantity", width=6),
@@ -61,7 +61,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 χώρες με τη μεγαλύτερη παραγωγή δημητριακών",
+        title = "5 χώρες με τη μεγαλύτερη παραγωγή νωπών λαχανικών",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 

@@ -10,7 +10,6 @@ library(shinythemes)
 library(eurostat)
 library(countrycode)
 library(ggplot2)
-library(ggplot2)
 library(directlabels)
 library(scales)
 library(shinydashboard)
@@ -34,7 +33,7 @@ colnames(mydata)<-c("country", "year", "number")
 
 meanvalue<-mean((aggregate(mydata$number, by=list(year=mydata$year), FUN=mean)$x)) # Mean value
 topc<-mydata[which.max(mydata$number),] # Top country
-header <- dashboardHeader(title = "Ποσοστό αγροτικής απασχόλησης στις χώρες της Ε.Ε.", titleWidth=500) # Header of dashboard
+header <- dashboardHeader(title = "Εργατικό δυναμικό αγροτικού τομέα (χιλ. εργαζόμενοι)", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
     valueBoxOutput("number", width=6),
