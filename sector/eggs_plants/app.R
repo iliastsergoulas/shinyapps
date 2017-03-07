@@ -1,43 +1,73 @@
-# This R script is created as a Shiny application to download raw data from Eurostat ((C) EuroGeographics for the administrative boundaries), 
-# process it and create plots and maps.
-# The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
-# Author: Ilias Tsergoulas, Website: www.agristats.eu
-
 library(shiny)
 library(shinythemes)
-library(googleVis)
 library(leaflet)
+library(rgdal)
+library(maptools)
+library(htmltools)
+library(ggplot2)
+library(directlabels)
+library(scales)
+library(shinydashboard)
 
-mydata<-read.csv("./eggs_plants.csv", sep=",")
+plants <- readShapePoints("/home/iliastsergoulas/Dropbox/Website/shapefiles/eggs/eggs.shp")
+plants_edited <- as.data.frame(plants)
+plants_per_region <- plants_edited[c("region_nam", "id")]
+plants_per_pref <- plants_edited[c("prefecture", "id")]
 
-ui <- fluidPage(
-    theme = shinytheme("spacelab"),
-    mainPanel(
-        tabsetPanel( # Create tabs
-            tabPanel("Ανά Περιφέρεια", htmlOutput("view_region")),
-            tabPanel("Ανά Περιφερειακή Ενότητα", htmlOutput("view_prefecture")),
-            tabPanel("Πίνακας Δεδομένων", dataTableOutput("table")),
-            id = "conditionedPanels"
+header <- dashboardHeader(title = "Μονάδες τυποποίησης και συσκευασίας αυγών", titleWidth=500) # Header of dashboard
+sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
+frow1 <- fluidRow( # Creating row of valueboxes
+    leafletOutput("map_points")
+)
+frow2 <- fluidRow( # Creating row of two diagrams
+    box(
+        title = "Ανά Περιφέρεια",
+        status="primary",
+        collapsible = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(
+            plotOutput("regions"))
         ),
-        print("Πηγή: Υπουργείο Αγροτικής Ανάπτυξης και Τροφίμων (http://www.minagric.gr/images/stories/docs/agrotis/kthn_egkatastaseis/kentra_sysk_typ_avgwn021216.xls)")))
+    box(
+        title = "Ανά Περιφερειακή Ενότητα",
+        status="primary",
+        collapsible = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(
+            plotOutput("prefectures")
+        ))
+)
+body <- dashboardBody(frow1, frow2) # Binding rows to body of dashboard
+ui <- dashboardPage(header, sidebar, body, skin="blue") # Binding elements of dashboard
 
-server <- function(input, output) {
-    data_region<-aggregate(cbind("Αριθμός μονάδων" = approval_code) ~ region_name_gr, 
-                                       data = mydata, FUN = function(x){NROW(x)})
-    data_prefecture<-aggregate(cbind("Αριθμός μονάδων" = approval_code) ~ prefecture_name_gr, 
-                           data = mydata, FUN = function(x){NROW(x)})
-    output$view_region <- renderGvis({ # Creating chart
-        gvisColumnChart(data_region, options=list(colors="['#ae4e89']", vAxis="{title:'Αριθμός μονάδων'}", 
-                        hAxis="{title:'Περιφέρεια'}",backgroundColor="#b5d0d0", width=550, height=500, legend='none'))
+server <- function(input, output, session) {
+    output$map_points <- renderLeaflet({
+        leaflet() %>%
+            addProviderTiles("OpenStreetMap.Mapnik",
+                             options = providerTileOptions(noWrap = TRUE)
+            ) %>%
+            addMarkers(data = plants, popup = ~htmlEscape(business_n))
     })
-    output$view_prefecture <- renderGvis({ # Creating chart
-        gvisColumnChart(data_prefecture, options=list(colors="['#ae4e89']", vAxis="{title:'Αριθμός μονάδων'}", 
-                        hAxis="{title:'Περιφερειακή Ενότητα'}",backgroundColor="#b5d0d0", width=550, height=500, legend='none'))
+    output$regions<-renderPlot({ # Per region
+        ggplot(plants_per_region, aes(x = factor(region_nam))) + 
+            geom_bar(stat="count", fill="steelblue") + 
+            xlab("Περιφέρεια") + ylab("Αριθμός μονάδων") + 
+            theme(axis.text.x=element_text(angle=90, hjust=1)) + 
+            geom_text(stat='count',aes(label=..count..),vjust=-1) + 
+            theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
+            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)
+        )  
     })
-    output$table <- renderDataTable({ # Creating data table
-        mydat<-mydata[c("approval_code", "business_name", "location", "prefecture_name_gr", "region_name_gr")]
-        colnames(mydat) <- c("Κωδικός Έγκρισης", "Επωνυμία", "Τοποθεσία", "Περιφερειακή Ενότητα", "Περιφέρεια")
-        mydat
-    }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
+    output$prefectures<-renderPlot({ # Per prefecture
+        ggplot(plants_per_pref, aes(x = factor(prefecture))) + 
+            geom_bar(stat="count", fill="steelblue") + 
+            xlab("Περιφερειακή ενότητα") + ylab("Αριθμός μονάδων") + 
+            theme(axis.text.x=element_text(angle=90, hjust=1)) + 
+            geom_text(stat='count',aes(label=..count..),vjust=-1) + 
+            theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
+            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)
+        )  
+    })
 }
+
 shinyApp(ui, server)
