@@ -46,7 +46,11 @@ server <- function(input, output, session) {
             addProviderTiles("OpenStreetMap.Mapnik",
                              options = providerTileOptions(noWrap = TRUE)
             ) %>%
-            addMarkers(data = plants, popup = ~htmlEscape(business_n))
+            addMarkers(data = plants, 
+                       icon = ~ icons(
+                           iconUrl = "./egg.ico",
+                           iconWidth = 20, iconHeight = 20, shadowWidth = 15, shadowHeight = 15),
+                       popup = ~htmlEscape(business_n))
     })
     output$regions<-renderPlot({ # Per region
         ggplot(plants_per_region, aes(x = factor(region_nam))) + 

@@ -18,6 +18,7 @@ printMoney <- function(x){ # A function to show quantity as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show quantity with k decimal places
+windowsFonts(Arial=windowsFont("TT Arial"))
 
 mydata<-get_eurostat("aei_pr_ghg", time_format = "raw") # Downloading raw data from Eurostat
 mydata$geo<-as.character(mydata$geo)
@@ -154,14 +155,13 @@ server <- function(input, output) {
             color = "olive")
     })
     output$timeline<-renderPlot({ # Creating timeline for top 5 countries
-        print(mydata_top_five())
         ggplot(mydata_top_five(), aes(x = year, y = quantity, group = country, colour = country)) + 
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
             xlab("Έτος") + ylab("Παραγωγή ρύπων (εκατ. τόνοι)") + 
-            theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
-            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
+            theme(plot.title = element_text(family = "Arial", color="#666666", face="bold", size=20)) +
+            theme(axis.title = element_text(family = "Arial", color="#666666", face="bold", size=14)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 
     })
     output$downloadData <- downloadHandler( # Creating download button

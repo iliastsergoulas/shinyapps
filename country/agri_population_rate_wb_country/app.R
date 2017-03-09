@@ -18,6 +18,7 @@ printMoney <- function(x){ # A function to show number as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show number with k decimal places
+windowsFonts(Arial=windowsFont("TT Arial"))
 
 mydata<-WDI(country = "all", indicator = "SP.RUR.TOTL.ZG", extra = FALSE, cache = NULL) # Downloading raw data from World Bank
 mydata$year<-as.character(mydata$year)
@@ -172,8 +173,8 @@ server <- function(input, output) {
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
             xlab("Έτος") + ylab("Πληθυσμός") + 
-            theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
-            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
+            theme(plot.title = element_text(family = "Arial", color="#666666", face="bold", size=20)) +
+            theme(axis.title = element_text(family = "Arial", color="#666666", face="bold", size=14)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 
     })
     output$downloadData <- downloadHandler( # Creating download button
