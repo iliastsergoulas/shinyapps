@@ -12,6 +12,7 @@ library(scales)
 library(dplyr)
 library(lubridate)
 library(shinydashboard)
+library(corrplot)
 library(Quandl)
 
 printMoney <- function(x){ # A function to show number as currency
@@ -21,90 +22,165 @@ percent <- function(x, digits = 2, format = "f", ...) { # A function to show num
     paste0(formatC(100 * x, format = format, digits = digits, ...), "%")
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k) # A function to show number with k decimal places
+windowsFonts(Arial=windowsFont("TT Arial"))
 
 Quandl.api_key("KCo4sXzWEzSAb81ff3VP") # Setting API key to have unlimited access to databases
-data_codes<-c("COM/WLD_SUGAR_EU", "COM/WLD_SUGAR_WLD", "COM/WLD_SUGAR_US", "COM/PSUGAEEC_USD", # Setting wanted Quandl database codes
-              "COM/COFFEE_BRZL", "COM/COFFEE_CLMB", "COM/WLD_COFFEE_ROBUS", "COM/WLD_COFFEE_ARABIC",
-              "COM/RICE_2", "COM/WLD_RICE_25", "COM/WLD_RICE_05", "COM/WLD_RICE_05_VNM", "COM/PRICENPQ_USD", 
-              "COM/WLD_RICE_A1") 
-
-data_descr<-c("Sugar Price, EU, cents/kg", "Sugar Price, world, cents/kg", "Sugar Price, US, cents/kg", # Setting Quandl codes respective description
-              "Sugar, European import price, CIF Europe, US cents per pound", "Coffee, Brazilian, Comp.", "Coffee, Colombian, NY lb.",
-              "Coffee Price, Robusta, cents/kg", "Coffee Price, Arabica, cents/kg",
-              "Rice, Long Grain Milled, No. 2 AR", "Rice Price, Thailand, 25%, $/mt", "Rice Price, Thailand, 5%, $/mt",
-              "Rice Price, Vietnamese, 5%, $/mt", "Rice, 5 percent broken milled white rice, Thailand nominal price quote, US$ per metric ton",
-              "Rice Price, Thai, A1.Special, $/mt")
-data_quandl<-data.frame(data_descr, data_codes) # Binding codes and description to dataframe
+data_codes<-c("COM/WLD_SUGAR_EU", "COM/WLD_SUGAR_WLD", "COM/WLD_SUGAR_US", # Setting wanted Quandl database codes
+              "COM/COFFEE_BRZL", "COM/COFFEE_CLMB", "COM/WLD_COFFEE_ARABIC",
+              "COM/RICE_2", "COM/WLD_RICE_05", "COM/WLD_RICE_05_VNM") 
+# Setting Quandl codes respective description
+data_descr<-c("Sugar Price, EU, cents/kg", "Sugar Price, world, cents/kg", "Sugar Price, US, cents/kg", 
+              "Coffee, Brazilian, Comp.", "Coffee, Colombian, NY lb.", "Coffee Price, Arabica, cents/kg",
+              "Rice, Long Grain Milled, No. 2 AR", "Rice Price, Thailand, 5%, $/mt", "Rice Price, Vietnamese, 5%, $/mt")
+data_product<-c("Sugar","Sugar","Sugar", 
+                "Coffee","Coffee","Coffee", 
+                "Rice","Rice","Rice")
+data_quandl<-data.frame(data_descr, data_codes, data_product) # Binding codes and description to dataframe
 
 header <- dashboardHeader(title = "Τιμές αγροτικών προϊόντων", titleWidth=600) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
-frow1 <- fluidRow( # Creating row of infoBoxes
-    infoBoxOutput("last_price", width=3),
-    infoBoxOutput("diff_yday", width=3),
-    infoBoxOutput("highest_price", width=3),
-    infoBoxOutput("lowest_price", width=3)
-)
-frow2 <- fluidRow( # Creating row of two diagrams
+frow1 <- fluidRow( # Creating row of two diagrams
     title = "Συνολικά",
     status="success",
-    collapsible = TRUE,
-    theme = shinytheme("darkly"), 
+    collapsible = TRUE, 
     mainPanel(
-        htmlOutput("view"),
+        plotOutput("timeline"),
         print("Πηγή: Quandl"), 
-        selectInput('commodity', 'Προϊόν', choices = unique(data_quandl$data_descr)), 
+        selectInput('commodity', 'Προϊόν', choices = unique(data_quandl$data_product)), 
         dateRangeInput("mydate", "Ημερομηνία:", start = "01-01-1960", end = Sys.Date()), width='98%')
 )
+#frow2 <- fluidRow( # Creating row of infoBoxes
+    #infoBoxOutput("last_price", width=3),
+    #infoBoxOutput("diff_yday", width=3),
+    #infoBoxOutput("highest_price", width=3),
+    #infoBoxOutput("lowest_price", width=3)
+#)
+frow2 <- fluidRow( # Creating row of two diagrams
+  status="success",
+  collapsible = TRUE, 
+  mainPanel(
+    plotOutput("timeline_1"),
+    print("Πηγή: Quandl"), width='98%')
+)
+frow3 <- fluidRow( # Creating row of two diagrams
+  status="success",
+  collapsible = TRUE, 
+  mainPanel(
+    plotOutput("timeline_2"),
+    print("Πηγή: Quandl"), width='98%')
+)
+frow4 <- fluidRow( # Creating row of two diagrams
+  status="success",
+  collapsible = TRUE, 
+  mainPanel(
+    plotOutput("timeline_3"),
+    print("Πηγή: Quandl"), width='98%')
+)
 
-body <- dashboardBody(frow1, frow2) # Binding rows to body of dashboard
-ui <- dashboardPage(header, sidebar, body, skin="green") # Binding elements of dashboard
+body <- dashboardBody(frow1, frow2, frow3, frow4) # Binding rows to body of dashboard
+ui <- dashboardPage(header, sidebar, body, skin="yellow") # Binding elements of dashboard
 
 server <- function(input, output) {
     mydata <- reactive({ # Adding reactive data information
-        mydata<-Quandl(as.character(data_quandl[which(data_quandl$data_descr==input$commodity),]$data_codes))
-        mydata<-mydata[which(mydata$Date>=input$mydate[1] & mydata$Date<=input$mydate[2]),]
-        mydata$Date<-strptime(as.character(mydata$Date), "%Y-%m-%d")
-        mydata$Date<-format(mydata$Date, "%d/%m/%Y")
-        colnames(mydata)<-c("Date", "Price")
-        mydata
+      data_filtered<-as.data.frame(data_quandl[which(data_quandl$data_product==input$commodity),])
+      mydata<-data.frame(Date= character(0), Value= character(0), Description=character(0))
+      for (i in 1:nrow(data_filtered)){
+        temp<-Quandl(as.character(data_filtered[i,2]))
+        temp$Description<-as.character(data_filtered[i,1])
+        colnames(temp)<-c("Date", "Value", "Description")
+        mydata<-rbind(mydata, temp)
+      }
+      mydata<-mydata_1[which(mydata$Date>=input$mydate[1] & mydata$Date<=input$mydate[2]),]
+      mydata<-mydata_1[which(mydata$Description==""),]
+      mydata$Date<-strptime(as.character(mydata$Date), "%Y-%m-%d")
+      mydata$Date<-format(mydata$Date, "%d/%m/%Y")
+      mydata
     })
+    mydata_1_product <- unique(mydata()$Description)[1]
+    mydata_2_product <- unique(mydata()$Description)[2]
+    mydata_3_product <- unique(mydata()$Description)[3]
+    
+    mydata_1 <- reactive({
+      mydata()[which(mydata()$Description==mydata_1_product),]
+    }) 
+    mydata_2 <- reactive({
+      mydata()[which(mydata()$Description==mydata_2_product),]
+    }) 
+    mydata_3 <- reactive({
+      mydata()[which(mydata()$Description==mydata_3_product),]
+    }) 
+    
     output$view <- renderGvis({ # Creating chart
         gvisLineChart(mydata()[rev(rownames(mydata())),], options=list(colors="['#336600']", vAxis="{title:'Τιμή'}", 
-                hAxis="{title:'Ημερομηνία'}",backgroundColor="#d9ffb3", width=1350, height=500, legend='none'))
+                hAxis="{title:'Ημερομηνία'}",width=1350, height=500, legend='none'))
+    })
+    output$timeline_1<-renderPlot({ # Creating timeline for commodities
+        ggplot(mydata_1[rev(rownames(mydata_1)),], 
+            aes(x = as.Date(Date, "%d/%m/%Y"), y = Value, group=Description, colour=Description)) + 
+            geom_line() + 
+            ggtitle(mydata_1[1,3]) + 
+            scale_x_discrete(expand=c(0, 0.5)) + 
+            scale_y_continuous(labels = comma) + 
+            xlab("Ημερομηνία") + ylab("Τιμή") + 
+            theme(plot.title = element_text(family = "Arial", color="#666666", face="bold", size=20)) +
+            theme(axis.title = element_text(family = "Arial", color="#666666", face="bold", size=14)) 
+    })
+    output$timeline_2<-renderPlot({ # Creating timeline for commodities
+      ggplot(mydata_2[rev(rownames(mydata_2)),], 
+             aes(x = as.Date(Date, "%d/%m/%Y"), y = Value, group=Description, colour=Description)) + 
+        geom_line() + 
+        ggtitle(mydata_2[1,3]) + 
+        scale_x_discrete(expand=c(0, 0.5)) + 
+        scale_y_continuous(labels = comma) + 
+        xlab("Ημερομηνία") + ylab("Τιμή") + 
+        theme(plot.title = element_text(family = "Arial", color="#666666", face="bold", size=20)) +
+        theme(axis.title = element_text(family = "Arial", color="#666666", face="bold", size=14)) 
+    })
+    output$timeline_3<-renderPlot({ # Creating timeline for commodities
+      ggplot(mydata_3[rev(rownames(mydata_3)),], 
+             aes(x = as.Date(Date, "%d/%m/%Y"), y = Value, group=Description, colour=Description)) + 
+        geom_line() + 
+        ggtitle(mydata_3[1,3]) + 
+        scale_x_discrete(expand=c(0, 0.5)) + 
+        scale_y_continuous(labels = comma) + 
+        xlab("Ημερομηνία") + ylab("Τιμή") + 
+        theme(plot.title = element_text(family = "Arial", color="#666666", face="bold", size=20)) +
+        theme(axis.title = element_text(family = "Arial", color="#666666", face="bold", size=14)) 
     })
     output$last_price <- renderInfoBox({ # Filling infoBox
+        print(mydata())
         infoBox(
             "ΣΗΜΕΡΙΝΗ ΤΙΜΗ",
-            value = tags$p(style = "font-size: 20px;", paste0(specify_decimal(mydata()[1,2], 3), " $ - ", mydata()[1,1])),
+            value = tags$p(style = "font-size: 20px;", paste0(specify_decimal(mydata_1[1,2], 3), " $ - ", mydata_1[1,1], " - ", mydata_1[1,3])),
             fill=TRUE,
             icon = icon("money"),
-            color = "olive")
+            color = "aqua")
     })
     output$diff_yday <- renderInfoBox({ # Filling infoBox
         infoBox(
             "ΜΕΤΑΒΟΛΗ ΑΠΟ ΤΕΛΕΥΤΑΙΑ ΤΙΜΗ",
-            value = tags$p(style = "font-size: 20px;", percent(((mydata()[1,2]-mydata()[2,2])/mydata()[2,2]))), 
+            value = tags$p(style = "font-size: 20px;", percent(((mydata_1[1,2]-mydata_1[2,2])/mydata_1[2,2]))), 
             fill=TRUE,
-            icon = icon("globe"),
-            color = "olive")
+            icon = icon("percent"),
+            color = "aqua")
     })
     output$highest_price <- renderInfoBox({ # Filling infoBox
         infoBox(
             "ΧΑΜΗΛΟΤΕΡΗ ΤΙΜΗ",
             value = tags$p(style = "font-size: 20px;", 
-                           paste0(specify_decimal(mydata()[which.min(mydata()[,2]),][,2], 3), " $ - ", mydata()[which.min(mydata()[,2]),][,1])),
+                           paste0(specify_decimal(mydata()[which.min(mydata_1[,2]),][,2], 3), " $ - ", mydata_1[which.min(mydata_1[,2]),][,1])),
             fill=TRUE,
-            icon = icon("money"),
-            color = "olive")
+            icon = icon("level-down"),
+            color = "aqua")
     })
     output$lowest_price <- renderInfoBox({ # Filling infoBox
         infoBox(
             "ΥΨΗΛΟΤΕΡΗ ΤΙΜΗ",
             value = tags$p(style = "font-size: 20px;", 
-                           paste0(specify_decimal(mydata()[which.max(mydata()[,2]),][,2],3), " $ - ", mydata()[which.max(mydata()[,2]),][,1])),
+                           paste0(specify_decimal(mydata()[which.max(mydata_1[,2]),][,2],3), " $ - ", mydata_1[which.max(mydata_1[,2]),][,1])),
             fill=TRUE,
-            icon = icon("money"),
-            color = "olive")
+            icon = icon("level-up"),
+            color = "aqua")
     })
 }
 shinyApp(ui, server)
