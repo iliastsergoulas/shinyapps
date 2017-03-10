@@ -18,6 +18,10 @@ printMoney <- function(x){ # A function to show number as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show number with k decimal places
+<<<<<<< HEAD
+windowsFonts(Arial=windowsFont("TT Arial"))
+=======
+>>>>>>> 483748c51f3c4c0aaa4ff22099a470be18afb6a2
 
 mydata<-WDI(country = "all", indicator = "NV.AGR.TOTL.KD", extra = FALSE, cache = NULL) # Downloading raw data from World Bank
 mydata$year<-as.character(mydata$year)
@@ -169,8 +173,13 @@ server <- function(input, output) {
             scale_x_discrete(expand=c(0, 1)) + 
             scale_y_continuous(labels = comma) + 
             xlab("Έτος") + ylab("Προστιθέμενη αξία γεωργίας (δολάρια σε τιμές 2000)") + 
+<<<<<<< HEAD
+            theme(plot.title = element_text(family = "Arial", color="#666666", face="bold", size=20)) +
+            theme(axis.title = element_text(family = "Arial", color="#666666", face="bold", size=12)) + 
+=======
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=12)) + 
+>>>>>>> 483748c51f3c4c0aaa4ff22099a470be18afb6a2
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 
     })
     output$downloadData <- downloadHandler( # Creating download button

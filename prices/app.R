@@ -22,6 +22,10 @@ percent <- function(x, digits = 2, format = "f", ...) { # A function to show num
     paste0(formatC(100 * x, format = format, digits = digits, ...), "%")
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k) # A function to show number with k decimal places
+<<<<<<< HEAD
+windowsFonts(Arial=windowsFont("TT Arial"))
+=======
+>>>>>>> 419dd07c834a69e8d33d3a0251bf11d7e6447374
 
 Quandl.api_key("KCo4sXzWEzSAb81ff3VP") # Setting API key to have unlimited access to databases
 data_codes<-c("COM/WLD_SUGAR_EU", "COM/WLD_SUGAR_WLD", "COM/WLD_SUGAR_US", # Setting wanted Quandl database codes
@@ -49,6 +53,33 @@ frow1 <- fluidRow( # Creating row of two diagrams
         dateRangeInput("mydate", "Ημερομηνία:", start = "01-01-1960", end = Sys.Date()), width='98%')
 )
 #frow2 <- fluidRow( # Creating row of infoBoxes
+<<<<<<< HEAD
+    #infoBoxOutput("last_price", width=3),
+    #infoBoxOutput("diff_yday", width=3),
+    #infoBoxOutput("highest_price", width=3),
+    #infoBoxOutput("lowest_price", width=3)
+#)
+frow2 <- fluidRow( # Creating row of two diagrams
+  status="success",
+  collapsible = TRUE, 
+  mainPanel(
+    plotOutput("timeline_1"),
+    print("Πηγή: Quandl"), width='98%')
+)
+frow3 <- fluidRow( # Creating row of two diagrams
+  status="success",
+  collapsible = TRUE, 
+  mainPanel(
+    plotOutput("timeline_2"),
+    print("Πηγή: Quandl"), width='98%')
+)
+frow4 <- fluidRow( # Creating row of two diagrams
+  status="success",
+  collapsible = TRUE, 
+  mainPanel(
+    plotOutput("timeline_3"),
+    print("Πηγή: Quandl"), width='98%')
+=======
 #infoBoxOutput("last_price", width=3),
 #infoBoxOutput("diff_yday", width=3),
 #infoBoxOutput("highest_price", width=3),
@@ -74,6 +105,7 @@ frow4 <- fluidRow( # Creating row of two diagrams
     mainPanel(
         plotOutput("timeline_3"),
         print("Πηγή: Quandl"), width='98%')
+>>>>>>> 419dd07c834a69e8d33d3a0251bf11d7e6447374
 )
 
 body <- dashboardBody(frow1, frow2, frow3, frow4) # Binding rows to body of dashboard
@@ -81,6 +113,21 @@ ui <- dashboardPage(header, sidebar, body, skin="yellow") # Binding elements of 
 
 server <- function(input, output) {
     mydata <- reactive({ # Adding reactive data information
+<<<<<<< HEAD
+      data_filtered<-as.data.frame(data_quandl[which(data_quandl$data_product==input$commodity),])
+      mydata<-data.frame(Date= character(0), Value= character(0), Description=character(0))
+      for (i in 1:nrow(data_filtered)){
+        temp<-Quandl(as.character(data_filtered[i,2]))
+        temp$Description<-as.character(data_filtered[i,1])
+        colnames(temp)<-c("Date", "Value", "Description")
+        mydata<-rbind(mydata, temp)
+      }
+      mydata<-mydata_1[which(mydata$Date>=input$mydate[1] & mydata$Date<=input$mydate[2]),]
+      mydata<-mydata_1[which(mydata$Description==""),]
+      mydata$Date<-strptime(as.character(mydata$Date), "%Y-%m-%d")
+      mydata$Date<-format(mydata$Date, "%d/%m/%Y")
+      mydata
+=======
         data_filtered<-as.data.frame(data_quandl[which(data_quandl$data_product==input$commodity),])
         mydata<-data.frame(Date= character(0), Value= character(0), Description=character(0))
         for (i in 1:nrow(data_filtered)){
@@ -94,12 +141,22 @@ server <- function(input, output) {
         mydata$Date<-strptime(as.character(mydata$Date), "%Y-%m-%d")
         mydata$Date<-format(mydata$Date, "%d/%m/%Y")
         mydata
+>>>>>>> 419dd07c834a69e8d33d3a0251bf11d7e6447374
     })
     mydata_1_product <- unique(mydata()$Description)[1]
     mydata_2_product <- unique(mydata()$Description)[2]
     mydata_3_product <- unique(mydata()$Description)[3]
     
     mydata_1 <- reactive({
+<<<<<<< HEAD
+      mydata()[which(mydata()$Description==mydata_1_product),]
+    }) 
+    mydata_2 <- reactive({
+      mydata()[which(mydata()$Description==mydata_2_product),]
+    }) 
+    mydata_3 <- reactive({
+      mydata()[which(mydata()$Description==mydata_3_product),]
+=======
         mydata()[which(mydata()$Description==mydata_1_product),]
     }) 
     mydata_2 <- reactive({
@@ -107,10 +164,47 @@ server <- function(input, output) {
     }) 
     mydata_3 <- reactive({
         mydata()[which(mydata()$Description==mydata_3_product),]
+>>>>>>> 419dd07c834a69e8d33d3a0251bf11d7e6447374
     }) 
     
     output$view <- renderGvis({ # Creating chart
         gvisLineChart(mydata()[rev(rownames(mydata())),], options=list(colors="['#336600']", vAxis="{title:'Τιμή'}", 
+<<<<<<< HEAD
+                hAxis="{title:'Ημερομηνία'}",width=1350, height=500, legend='none'))
+    })
+    output$timeline_1<-renderPlot({ # Creating timeline for commodities
+        ggplot(mydata_1[rev(rownames(mydata_1)),], 
+            aes(x = as.Date(Date, "%d/%m/%Y"), y = Value, group=Description, colour=Description)) + 
+            geom_line() + 
+            ggtitle(mydata_1[1,3]) + 
+            scale_x_discrete(expand=c(0, 0.5)) + 
+            scale_y_continuous(labels = comma) + 
+            xlab("Ημερομηνία") + ylab("Τιμή") + 
+            theme(plot.title = element_text(family = "Arial", color="#666666", face="bold", size=20)) +
+            theme(axis.title = element_text(family = "Arial", color="#666666", face="bold", size=14)) 
+    })
+    output$timeline_2<-renderPlot({ # Creating timeline for commodities
+      ggplot(mydata_2[rev(rownames(mydata_2)),], 
+             aes(x = as.Date(Date, "%d/%m/%Y"), y = Value, group=Description, colour=Description)) + 
+        geom_line() + 
+        ggtitle(mydata_2[1,3]) + 
+        scale_x_discrete(expand=c(0, 0.5)) + 
+        scale_y_continuous(labels = comma) + 
+        xlab("Ημερομηνία") + ylab("Τιμή") + 
+        theme(plot.title = element_text(family = "Arial", color="#666666", face="bold", size=20)) +
+        theme(axis.title = element_text(family = "Arial", color="#666666", face="bold", size=14)) 
+    })
+    output$timeline_3<-renderPlot({ # Creating timeline for commodities
+      ggplot(mydata_3[rev(rownames(mydata_3)),], 
+             aes(x = as.Date(Date, "%d/%m/%Y"), y = Value, group=Description, colour=Description)) + 
+        geom_line() + 
+        ggtitle(mydata_3[1,3]) + 
+        scale_x_discrete(expand=c(0, 0.5)) + 
+        scale_y_continuous(labels = comma) + 
+        xlab("Ημερομηνία") + ylab("Τιμή") + 
+        theme(plot.title = element_text(family = "Arial", color="#666666", face="bold", size=20)) +
+        theme(axis.title = element_text(family = "Arial", color="#666666", face="bold", size=14)) 
+=======
                                                                        hAxis="{title:'Ημερομηνία'}",width=1350, height=500, legend='none'))
     })
     output$timeline_1<-renderPlot({ # Creating timeline for commodities
@@ -145,6 +239,7 @@ server <- function(input, output) {
             xlab("Ημερομηνία") + ylab("Τιμή") + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) 
+>>>>>>> 419dd07c834a69e8d33d3a0251bf11d7e6447374
     })
     output$last_price <- renderInfoBox({ # Filling infoBox
         print(mydata())
