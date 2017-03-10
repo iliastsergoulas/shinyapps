@@ -41,7 +41,7 @@ header <- dashboardHeader(title = "Μέγεθος ζωικού κεφαλαίο�
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
     valueBoxOutput("number", width=6),
-    valueBoxOutput("topcountry", width=6)
+    valueBoxOutput("topregion", width=6)
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     box(
