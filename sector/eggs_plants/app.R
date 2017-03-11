@@ -9,7 +9,7 @@ library(directlabels)
 library(scales)
 library(shinydashboard)
 
-plants <- readShapePoints("/home/iliastsergoulas/shapefiles/eggs/eggs.shp")
+plants <- readShapePoints("/home/iliastsergoulas/Dropbox/Website/shapefiles/eggs/eggs.shp")
 plants_edited <- as.data.frame(plants)
 plants_per_region <- plants_edited[c("region_nam", "id")]
 plants_per_pref <- plants_edited[c("prefecture", "id")]
@@ -26,7 +26,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
-            plotOutput("regions"))
+            plotOutput("regions", width="150%"))
         ),
     box(
         title = "Ανά Περιφερειακή Ενότητα",
@@ -34,7 +34,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
-            plotOutput("prefectures")
+            plotOutput("prefectures",  width="150%")
         ))
 )
 body <- dashboardBody(frow1, frow2) # Binding rows to body of dashboard
@@ -54,7 +54,7 @@ server <- function(input, output, session) {
     })
     output$regions<-renderPlot({ # Per region
         ggplot(plants_per_region, aes(x = factor(region_nam))) + 
-            geom_bar(stat="count", fill="steelblue") + 
+            geom_bar(stat="count", fill="steelblue",width=0.5, color="steelblue") + 
             xlab("Περιφέρεια") + ylab("Αριθμός μονάδων") + 
             theme(axis.text.x=element_text(angle=90, hjust=1)) + 
             geom_text(stat='count',aes(label=..count..),vjust=-1) + 
