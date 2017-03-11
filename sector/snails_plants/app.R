@@ -9,7 +9,7 @@ library(directlabels)
 library(scales)
 library(shinydashboard)
 
-plants <- readShapePoints("/home/iliastsergoulas/Dropbox/Website/shapefiles/snails/snails.shp")
+plants <- readShapePoints("/home/iliastsergoulas/shapefiles/snails/snails.shp")
 plants_edited <- as.data.frame(plants)
 plants_per_region <- plants_edited[c("region_nam", "id")]
 plants_per_pref <- plants_edited[c("prefecture", "id")]
