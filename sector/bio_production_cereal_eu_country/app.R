@@ -12,6 +12,7 @@ library(countrycode)
 library(ggplot2)
 library(directlabels)
 library(scales)
+library(shinydashboard)
 
 printMoney <- function(x){ # A function to show quantity as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
