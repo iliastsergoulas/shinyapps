@@ -22,7 +22,7 @@ frow1 <- fluidRow( # Creating row of valueboxes
 frow2 <- fluidRow( # Creating row of two diagrams
     box(
         title = "Ανά Περιφέρεια",
-        status="primary",
+        status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
@@ -30,7 +30,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
         ),
     box(
         title = "Ανά Περιφερειακή Ενότητα",
-        status="primary",
+        status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
@@ -38,7 +38,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
         ))
 )
 body <- dashboardBody(frow1, frow2) # Binding rows to body of dashboard
-ui <- dashboardPage(header, sidebar, body, skin="blue") # Binding elements of dashboard
+ui <- dashboardPage(header, sidebar, body, skin="green") # Binding elements of dashboard
 
 server <- function(input, output, session) {
     output$map_points <- renderLeaflet({
