@@ -1,4 +1,4 @@
-# Data: Snails plants in Greece
+# Data: Milk collection centres in Greece
 # This R script is created as a Shiny application to process data 
 # from Greek Ministry of Agriculture and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.

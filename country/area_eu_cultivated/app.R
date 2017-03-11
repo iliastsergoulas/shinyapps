@@ -18,10 +18,6 @@ printMoney <- function(x){ # A function to show area as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show area with k decimal places
-<<<<<<< HEAD
-windowsFonts(Arial=windowsFont("TT Arial"))
-=======
->>>>>>> 483748c51f3c4c0aaa4ff22099a470be18afb6a2
 
 mydata<-get_eurostat("ef_oluaareg", time_format = "raw") # Downloading raw data from Eurostat
 mydata$geo<-as.character(mydata$geo)
@@ -164,13 +160,8 @@ server <- function(input, output) {
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
             xlab("Έτος") + ylab("Έκταση καλλιεργημένης γης (εκτάρια)") + 
-<<<<<<< HEAD
-            theme(plot.title = element_text(family = "Arial", color="#666666", face="bold", size=20)) +
-            theme(axis.title = element_text(family = "Arial", color="#666666", face="bold", size=14)) + 
-=======
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
->>>>>>> 483748c51f3c4c0aaa4ff22099a470be18afb6a2
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 
     })
     output$downloadData <- downloadHandler( # Creating download button
