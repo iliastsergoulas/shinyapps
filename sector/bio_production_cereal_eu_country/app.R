@@ -1,4 +1,4 @@
-# Data: Organic crop production by crops (from 2012 onwards)
+# Data: Organic crop production by crops (from 2012 onwards): cereal
 # This R script is created as a Shiny application to download raw data from Eurostat ((C) EuroGeographics for the administrative boundaries), 
 # process it and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
@@ -13,6 +13,11 @@ library(ggplot2)
 library(directlabels)
 library(scales)
 
+printMoney <- function(x){ # A function to show quantity as currency
+    format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
+}
+specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show quantity with k decimal places
+
 mydata<-get_eurostat("org_croppro", time_format = "raw") # Downloading raw data from Eurostat
 mydata$geo<-as.character(mydata$geo)
 mydata<-mydata[which(mydata$crops=='C0000'), ] # Filtering data
@@ -25,27 +30,68 @@ mydata$countryname <- countrycode(mydata$geo, "iso2c", "country.name") # Getting
 mydata<-mydata[which(!is.na(mydata$countryname)), c("countryname", "time", "values")] # Filtering for country names not found
 colnames(mydata)<-c("country", "year", "quantity")
 
-ui <- fluidPage(
-    theme = shinytheme("spacelab"), 
-    sidebarPanel( # Creating sidebar panel with conditions
-        conditionalPanel(condition="input.conditionedPanels == 'Διάγραμμα'",
-                         selectInput('country', 'Χώρα', choices = unique(mydata$country), selected = "Greece")),
-        conditionalPanel(condition="input.conditionedPanels == 'Χάρτης'",
-                         selectInput('year', 'Έτος', choices = unique(mydata$year), selected = "2013")),
-        conditionalPanel(condition="input.conditionedPanels == 'Δεδομένα'", downloadButton("downloadData")),
-        conditionalPanel(condition="input.conditionedPanels == 'Χρονοσειρά' || input.conditionedPanels == 'Σύνοψη ανά χώρα'", 
-                         sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
-                                     value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")),
-        width=2),
-    mainPanel(
-        tabsetPanel( # Creating tabs
-            tabPanel("Διάγραμμα", htmlOutput("view")),
-            tabPanel("Χάρτης", htmlOutput("map")), 
-            tabPanel("Χρονοσειρά", plotOutput("timeline")),
-            tabPanel("Δεδομένα", dataTableOutput("table")),
-            tabPanel("Σύνοψη ανά χώρα", dataTableOutput("summary")),
-            id = "conditionedPanels"),
-        print("Πηγή: (C) EuroGeographics for the administrative boundaries")))
+meanvalue<-mean((aggregate(mydata$quantity, by=list(year=mydata$year), FUN=mean)$x)) # Mean value
+topc<-mydata[which.max(mydata$quantity),] # Top country
+header <- dashboardHeader(title = "Παραγωγή βιολογικών δημητριακών στις χώρες της Ε.Ε.", titleWidth=550) # Header of dashboard
+sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
+frow1 <- fluidRow( # Creating row of valueboxes
+    valueBoxOutput("quantity", width=6),
+    valueBoxOutput("topcountry", width=6)
+)
+frow2 <- fluidRow( # Creating row of two diagrams
+    box(
+        title = "Ανά χώρα",
+        status="success",
+        collapsible = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(
+            htmlOutput("view"),
+            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
+            selectInput('country', 'Χώρα', choices = unique(mydata$country)), width='98%')),
+    box(
+        title = "Ανά έτος",
+        status="success",
+        collapsible = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(
+            htmlOutput("map"),
+            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
+            selectInput('year', 'Έτος', choices = unique(mydata$year)), width='98%'))
+)
+frow3 <- fluidRow(# Creating row of diagram and summary
+    box(
+        title = "5 χώρες με τη μεγαλύτερη παραγωγή βιολογικών δημητριακών",
+        status="success",
+        collapsible = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(
+            plotOutput("timeline", width = "150%"),
+            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
+            sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+                        value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep=""))),
+    box(
+        title = "Σύνοψη δεδομένων ανά χώρα",
+        status="success",
+        collapsible = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(
+            dataTableOutput("summary"),
+            width=550,
+            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
+            sliderInput("myyearsummary", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+                        value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")))
+)
+frow4 <- fluidRow( # Creating row of download button
+    box(
+        title = "Λήψη δεδομένων",
+        status="success",
+        collapsed = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(downloadButton("downloadData")))
+)
+
+body <- dashboardBody(frow1, frow2, frow3, frow4) # Binding rows to body of dashboard
+ui <- dashboardPage(header, sidebar, body, skin="green") # Binding elements of dashboard
 
 server <- function(input, output) {
     data_country <- reactive({ # Adding reactive data information
@@ -72,13 +118,13 @@ server <- function(input, output) {
         mydata_summary<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", title="Παραγωγή βιολογικών δημητριακών στις χώρες της Ε.Ε.", 
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", 
                         titleTextStyle="{color:'#336600',fontSize:14}", vAxis="{title:'Παραγωγή (τόνοι)'}", 
-                        hAxis="{title:'Έτος'}", backgroundColor="#d9ffb3", width=700, height=500, legend='none'))
+                        hAxis="{title:'Έτος'}", backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map
         gvisGeoChart(data_year(), "Χώρα", "Παραγωγή", 
-                                  options=list(region="150", displayMode="regions", datamode='regions', width=700, height=500))
+                                  options=list(region="150", displayMode="regions", datamode='regions', width=550, height=500))
     })
     output$table <- renderDataTable({ # Creating data table
         colnames(mydata)<-c("Χώρα", "Έτος", "Παραγωγή")
@@ -89,8 +135,8 @@ server <- function(input, output) {
             aggregate(quantity~country, mydata_summary(), min),
             aggregate(quantity~country, mydata_summary(), max),
             aggregate(quantity~country, mydata_summary(), mean))
-        mysummary <- mysummary[,c(1,2,4,6,8)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστη Παραγωγή", "Μέγιστη Παραγωγή", "Μέση Παραγωγή", "Διάμεσος")
+        mysummary <- mysummary[,c(1,2,4,6)]
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστη Παραγωγή", "Μέγιστη Παραγωγή", "Μέση Παραγωγή")
         mysummary
     })
     output$timeline<-renderPlot({ # Creating timeline for top 5 countries
