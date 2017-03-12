@@ -145,7 +145,7 @@ server <- function(input, output) {
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Παραγωγή (τόνοι)") + ggtitle("5 κορυφαίες χώρες στην παραγωγή βιολογικών δημητριακών") + 
+            xlab("Έτος") + ylab("Παραγωγή (τόνοι)") + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 
