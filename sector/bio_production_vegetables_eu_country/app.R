@@ -139,7 +139,7 @@ server <- function(input, output) {
         mysummary <- mysummary[,c(1,2,4,6)]
         colnames(mysummary) <- c("Χώρα", "Ελάχιστη Παραγωγή", "Μέγιστη Παραγωγή", "Μέση Παραγωγή")
         mysummary
-    })
+    }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
     output$timeline<-renderPlot({ # Creating timeline for top 5 countries
         ggplot(mydata_top_five(), aes(x = year, y = quantity, group = country, colour = country)) + 
             geom_line() +
