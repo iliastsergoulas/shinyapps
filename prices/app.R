@@ -36,7 +36,7 @@ data_product<-c("Sugar","Sugar","Sugar",
                 "Rice","Rice","Rice")
 data_quandl<-data.frame(data_descr, data_codes, data_product) # Binding codes and description to dataframe
 
-header <- dashboardHeader(title = "Τιμές αγροτικών προϊόντων", titleWidth=600) # Header of dashboard
+header <- dashboardHeader(title = "Τιμές αγροτικών προϊόντων (Πηγή : Quandl)", titleWidth=600) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of two diagrams
     title = "Συνολικά",
@@ -44,30 +44,23 @@ frow1 <- fluidRow( # Creating row of two diagrams
     collapsible = TRUE, 
     mainPanel(
         htmlOutput("view"),
-        print("Πηγή: Quandl"), 
         selectInput('commodity', 'Προϊόν', choices = unique(data_quandl$data_product)), 
         dateRangeInput("mydate", "Ημερομηνία:", start = "01-01-1960", end = Sys.Date()), width='98%')
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     status="success",
     collapsible = TRUE, 
-    mainPanel(
-        plotOutput("timeline_1"),
-        print("Πηγή: Quandl"), width='98%')
+    mainPanel(plotOutput("timeline_1"), width='98%')
 )
 frow3 <- fluidRow( # Creating row of two diagrams
     status="success",
     collapsible = TRUE, 
-    mainPanel(
-        plotOutput("timeline_2"),
-        print("Πηγή: Quandl"), width='98%')
+    mainPanel(plotOutput("timeline_2"), width='98%')
 )
 frow4 <- fluidRow( # Creating row of two diagrams
     status="success",
     collapsible = TRUE, 
-    mainPanel(
-        plotOutput("timeline_3"),
-        print("Πηγή: Quandl"), width='98%')
+    mainPanel(plotOutput("timeline_3"),width='98%')
 )
 
 body <- dashboardBody(frow1, frow2, frow3, frow4) # Binding rows to body of dashboard
