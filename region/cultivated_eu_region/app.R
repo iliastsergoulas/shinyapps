@@ -1,4 +1,4 @@
-# Data: Number of holdings (EU regions)
+# Data: Cultivated land (EU regions)
 # This R script is created as a Shiny application to download raw data from Eurostat ((C) EuroGeographics for the administrative boundaries), 
 # process it and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
@@ -20,7 +20,7 @@ specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=","
 
 mydata<-get_eurostat("ef_kvaareg", time_format = "raw") # Downloading raw data from Eurostat
 mydata$geo<-as.character(mydata$geo)
-mydata<-mydata[which(mydata$indic_ef=='HOLD_HOLD' & mydata$agrarea=='TOTAL' & mydata$legtype=='TOTAL' 
+mydata<-mydata[which(mydata$indic_ef=='AGRAREA_HA' & mydata$agrarea=='TOTAL' & mydata$legtype=='TOTAL' 
                      & nchar(mydata$geo)>3 & !is.na(mydata$values)), ] # Filtering data
 
 for (i in 1:nrow(mydata)) { # Replacing region codes in order to get correct region names
@@ -42,7 +42,7 @@ mymap<-mymap[order(mymap$year, decreasing=TRUE),]
 
 meanvalue<-mean((aggregate(mymap$number, by=list(year=mymap$year), FUN=mean)$x)) # Mean value
 topc<-mymap[which.max(mymap$number),] # Top region
-header <- dashboardHeader(title = "Αριθμός γεωργικών εκμεταλλεύσεων ανά περιφέρεια Ε.Ε.", titleWidth=600) # Header of dashboard
+header <- dashboardHeader(title = "Έκταση καλλιεργημένης γης ανά περιφέρεια Ε.Ε.", titleWidth=600) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 
 frow1 <- fluidRow( # Creating row of valueboxes
@@ -71,7 +71,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 περιφέρειες με μεγαλύτερο αριθμό γεωργικών εκμεταλλεύσεων",
+        title = "5 περιφέρειες με μεγαλύτερη έκταση καλλιεργημένης γης",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -108,7 +108,7 @@ server <- function(input, output) {
     data_region <- reactive({ # Add reactive data information
         data_region<-mymap[mymap$region==input$region, c("year", "number")]
         data_region<-aggregate(data_region$number, by=list(Year=data_region$year), FUN=sum)
-        colnames(data_region)<-c("Έτος", "Μέγεθος ζωικού κεφαλαίου")
+        colnames(data_region)<-c("Έτος", "Έκταση καλλιεργημένης γης")
         data_region
     })
     data_year <- reactive({ # Add reactive data information
@@ -127,7 +127,7 @@ server <- function(input, output) {
     })
     output$view <- renderGvis({ # Creating chart
         gvisColumnChart(data_region(), options=list(colors="['#336600']", 
-                                                    vAxis="{title:'Αριθμός γεωργικών εκμεταλλεύσεων'}", hAxis="{title:'Έτος'}",
+                                                    vAxis="{title:'Έκταση καλλιεργημένης γης (εκτάρια)'}", hAxis="{title:'Έτος'}",
                                                     backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$map <- renderPlot({ # Creating map
@@ -152,7 +152,7 @@ server <- function(input, output) {
                        axis.title = element_blank(), 
                        axis.ticks = element_blank(), 
                        plot.margin = unit(c(-3,-1.5, -3, -1.5), "cm"))
-        p <- p + guides(fill = guide_legend(title = "Αριθμός γεωργικών εκμεταλλεύσεων",
+        p <- p + guides(fill = guide_legend(title = "Έκταση καλλιεργημένης γης",
                                             title.position = "top", 
                                             title.hjust=0))
         print(p)
@@ -162,21 +162,21 @@ server <- function(input, output) {
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Αριθμός γεωργικών εκμεταλλεύσεων") + 
+            xlab("Έτος") + ylab("Έκταση καλλιεργημένης γης") + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14))  
     })
     output$number <- renderValueBox({ # Filling valuebox
         valueBox(
-            specify_decimal(meanvalue,2),
-            "Μέσος αριθμός γεωργικών εκμεταλλεύσεων στις περιφέρειες της Ε.Ε.",
+            paste0(specify_decimal(meanvalue,2), " εκτάρια"),
+            "Μέση έκταση καλλιεργημένης γης στις περιφέρειες της Ε.Ε.",
             icon = icon("user"),
             color = "olive")
     })
     output$topregion <- renderValueBox({ # Filling valuebox
         valueBox(
             topc$region,
-            "Περιφέρεια με μεγαλύτερο αριθμό γεωργικών εκμεταλλεύσεων",
+            "Περιφέρεια με μεγαλύτερη έκταση καλλιεργημένης γης",
             icon = icon("globe"),
             color = "olive")
     })
@@ -186,7 +186,7 @@ server <- function(input, output) {
             aggregate(number~region, mymap_summary(), max),
             aggregate(number~region, mymap_summary(), mean))
         mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Περιφέρεια", "Ελάχιστος αριθμός γεωργικών εκμεταλλεύσεων", "Μέγιστος αριθμός γεωργικών εκμεταλλεύσεων", "Μέσος αριθμός γεωργικών εκμεταλλεύσεων")
+        colnames(mysummary) <- c("Περιφέρεια", "Ελάχιστη έκταση καλλιεργημένης γης", "Μέγιστη έκταση καλλιεργημένης γης", "Μέση έκταση καλλιεργημένης γης")
         mysummary
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
     output$downloadData <- downloadHandler( # Creating download button

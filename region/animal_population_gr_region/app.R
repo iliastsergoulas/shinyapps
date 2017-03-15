@@ -1,4 +1,4 @@
-# Data: Number of holdings (EU regions)
+# Data: Animal population (GR regions)
 # This R script is created as a Shiny application to download raw data from Eurostat ((C) EuroGeographics for the administrative boundaries), 
 # process it and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
@@ -18,11 +18,10 @@ printMoney <- function(x){ # A function to show number as currency
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show number with k decimal places
 
-mydata<-get_eurostat("ef_kvaareg", time_format = "raw") # Downloading raw data from Eurostat
+mydata<-get_eurostat("agr_r_animal", time_format = "raw") # Downloading raw data from Eurostat
 mydata$geo<-as.character(mydata$geo)
-mydata<-mydata[which(mydata$indic_ef=='HOLD_HOLD' & mydata$agrarea=='TOTAL' & mydata$legtype=='TOTAL' 
-                     & nchar(mydata$geo)>3 & !is.na(mydata$values)), ] # Filtering data
-
+mydata<-mydata[which(startsWith(mydata$geo, "EL")),]
+mydata<-mydata[which(mydata$animals=='A2000' & nchar(mydata$geo)>3 & !is.na(mydata$values)), ] # Filtering data
 for (i in 1:nrow(mydata)) { # Replacing region codes in order to get correct region names
     if(as.character(mydata$geo[i])=="EL") {
         mydata$geo[i] <- "GR"}
@@ -32,18 +31,17 @@ mydata_reg<-label_eurostat(mydata)
 mydata$regionname <- mydata_reg$geo
 mydata<-mydata[c("regionname", "geo", "time", "values")]
 colnames(mydata)<-c("region", "geo", "year", "number")
-mydata<-mydata[which(!startsWith(mydata$region, "Euro")),]
 mymap<- merge_eurostat_geodata(data = mydata, geocolumn = "geo", # Creating geodata
-                               resolution = "60", all_regions = FALSE, output_class = "df")
+                                 resolution = "60", all_regions = FALSE, output_class = "df")
 mymap$class<-with(mymap, factor(findInterval(number, c(-Inf, # Creating classes out of values
-                                                       quantile(number, probs=c(0.25, .5, .75)), Inf)), 
-                                labels=c("Q1","Q2","Q3","Q4")))
+                quantile(number, probs=c(0.25, .5, .75)), Inf)), 
+                labels=c("Q1","Q2","Q3","Q4")))
 mymap<-mymap[order(mymap$year, decreasing=TRUE),]
 
 meanvalue<-mean((aggregate(mymap$number, by=list(year=mymap$year), FUN=mean)$x)) # Mean value
 topc<-mymap[which.max(mymap$number),] # Top region
-header <- dashboardHeader(title = "Αριθμός γεωργικών εκμεταλλεύσεων ανά περιφέρεια Ε.Ε.", titleWidth=600) # Header of dashboard
-sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
+header <- dashboardHeader(title = "Μέγεθος ζωικού κεφαλαίου (χιλ. κεφαλές) - Περιφέρειες Ελλάδος", titleWidth=600) # Header of dashboard
+sidebar <- dashboardSidebar(disable = TRUE) # Disabling sidebar of dashboard
 
 frow1 <- fluidRow( # Creating row of valueboxes
     valueBoxOutput("number", width=6),
@@ -71,7 +69,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 περιφέρειες με μεγαλύτερο αριθμό γεωργικών εκμεταλλεύσεων",
+        title = "5 περιφέρειες με υψηλότερο μέγεθος ζωικού κεφαλαίου",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -119,7 +117,7 @@ server <- function(input, output) {
         mymap_top_five<-mymap[which(mymap$year>=input$myyear[1] & mymap$year<=input$myyear[2]),]
         data_year_temp<-aggregate(mymap_top_five$number, by=list(Region=mymap_top_five$region), FUN=mean)
         data_year_temp<-data_year_temp[order(-data_year_temp$x),]
-        data_year_temp<-data_year_temp[1:5,] # Keeping top five regions
+        data_year_temp<-data_year_temp[1:5,] # Keeping top five countries
         mymap_top_five<-mymap_top_five[which(mymap_top_five$region %in% data_year_temp$Region),]
     })
     mymap_summary<-reactive({ # Subsetting data according to year interval
@@ -127,56 +125,56 @@ server <- function(input, output) {
     })
     output$view <- renderGvis({ # Creating chart
         gvisColumnChart(data_region(), options=list(colors="['#336600']", 
-                                                    vAxis="{title:'Αριθμός γεωργικών εκμεταλλεύσεων'}", hAxis="{title:'Έτος'}",
-                                                    backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
+                        vAxis="{title:'Μέγεθος ζωικού κεφαλαίου (χιλ. κεφαλές)'}", hAxis="{title:'Έτος'}",
+                        backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$map <- renderPlot({ # Creating map
         p <- ggplot(data=data_year(), aes(long,lat,group=group))
         p <- p + geom_polygon(data = data_year(), aes(long,lat),fill=NA,colour="white",size = 1.5)
         p <- p + geom_polygon(aes(fill = class),colour="dim grey",size=.2)
         p <- p + scale_fill_manual(values=c("#d0ed6a","#a0b74e","#7a8c3c","#4e5925","#333a18")) 
-        p <- p + coord_map(project="orthographic", xlim=c(-22,34), ylim=c(25,70))
-        p <- p + theme(legend.position = c(0.1,0.50), 
-                       legend.justification=c(0,0),
-                       legend.key.size=unit(6,'mm'),
-                       legend.direction = "vertical",
-                       legend.background=element_rect(colour=NA, fill=alpha("white", 2/3)),
-                       legend.text=element_text(size=12), 
-                       legend.title=element_text(size=12), 
-                       title=element_text(size=16), 
-                       panel.background = element_blank(), 
-                       plot.background = element_blank(),
-                       panel.grid.minor = element_line(colour = 'Grey80', size = .5, linetype = 'solid'),
-                       panel.grid.major = element_line(colour = 'Grey80', size = .5, linetype = 'solid'),
-                       axis.text = element_blank(), 
-                       axis.title = element_blank(), 
-                       axis.ticks = element_blank(), 
-                       plot.margin = unit(c(-3,-1.5, -3, -1.5), "cm"))
-        p <- p + guides(fill = guide_legend(title = "Αριθμός γεωργικών εκμεταλλεύσεων",
+        p <- p + coord_map(project="orthographic")
+        p <- p + theme(legend.position = c(0.1,0.04), 
+                        legend.justification=c(0,0),
+                        legend.key.size=unit(6,'mm'),
+                        legend.direction = "vertical",
+                        legend.background=element_rect(colour=NA, fill=alpha("white", 2/3)),
+                        legend.text=element_text(size=12), 
+                        legend.title=element_text(size=12), 
+                        title=element_text(size=16), 
+                        panel.background = element_blank(), 
+                        plot.background = element_blank(),
+                        panel.grid.minor = element_line(colour = 'Grey80', size = .5, linetype = 'solid'),
+                        panel.grid.major = element_line(colour = 'Grey80', size = .5, linetype = 'solid'),
+                        axis.text = element_blank(), 
+                        axis.title = element_blank(), 
+                        axis.ticks = element_blank(), 
+                        plot.margin = unit(c(-3,-1.5, -3, -1.5), "cm"))
+        p <- p + guides(fill = guide_legend(title = "Μέγεθος ζωικού κεφαλαίου",
                                             title.position = "top", 
                                             title.hjust=0))
         print(p)
     })
-    output$timeline<-renderPlot({ # Creating timeline for top 5 regions
+    output$timeline<-renderPlot({ # Creating timeline for top 5 countries
         ggplot(mymap_top_five(), aes(x = year, y = number, group = region, colour = region)) + 
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Αριθμός γεωργικών εκμεταλλεύσεων") + 
+            xlab("Έτος") + ylab("Μέγεθος ζωικού κεφαλαίου") + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14))  
     })
     output$number <- renderValueBox({ # Filling valuebox
         valueBox(
-            specify_decimal(meanvalue,2),
-            "Μέσος αριθμός γεωργικών εκμεταλλεύσεων στις περιφέρειες της Ε.Ε.",
+            paste0(specify_decimal(meanvalue,2), " χιλιάδες κεφαλές"),
+            "Μέσο ζωικό κεφάλαιο στις περιφέρειες της Ελλάδος",
             icon = icon("user"),
             color = "olive")
     })
     output$topregion <- renderValueBox({ # Filling valuebox
         valueBox(
             topc$region,
-            "Περιφέρεια με μεγαλύτερο αριθμό γεωργικών εκμεταλλεύσεων",
+            "Περιφέρεια με μεγαλύτερο ζωικό κεφάλαιο",
             icon = icon("globe"),
             color = "olive")
     })
@@ -186,13 +184,13 @@ server <- function(input, output) {
             aggregate(number~region, mymap_summary(), max),
             aggregate(number~region, mymap_summary(), mean))
         mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Περιφέρεια", "Ελάχιστος αριθμός γεωργικών εκμεταλλεύσεων", "Μέγιστος αριθμός γεωργικών εκμεταλλεύσεων", "Μέσος αριθμός γεωργικών εκμεταλλεύσεων")
+        colnames(mysummary) <- c("Περιφέρεια", "Ελάχιστο μέγεθος ζωικού κεφαλαίου", "Μέγιστο μέγεθος ζωικού κεφαλαίου", "Μέσο μέγεθος ζωικού κεφαλαίου")
         mysummary
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
     output$downloadData <- downloadHandler( # Creating download button
         filename = function() { paste('mydata', '.csv', sep='') },
         content = function(file) {
             write.csv(mydata, file)
-        })
+    })
 }
 shinyApp(ui, server)
