@@ -47,7 +47,7 @@ myDtm <- TermDocumentMatrix(myCorpus, control =
                                "είναι","ανά","νέο","αγροτική","αγροτών","κιλό",
                                stopwords("english")),
                  removeNumbers = TRUE, tolower = TRUE))
-m <- as.matrix(myDtm)
+m <- as.matrix(myDtm) # Converting to matrix
 v <- sort(rowSums(m), decreasing=TRUE) # Calculating frequency of words
 myNames <- names(v) # Getting words
 d <- data.frame(word=myNames, freq=v) # Creating dataframe with each word and its frequency
