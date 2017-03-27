@@ -9,3 +9,12 @@ These applications encompass
 - creating plots with ggplot2 and GoogleViz, 
 - handling open and public data and 
 - creating predictive scenarios based on well known statistical theories.
+
+### Copyright of data
+All data is attributed properly within the R code, the Shiny plot and the Wordpress post. On the whole, data sources are:
+1) Eurostat
+2) World Bank
+3) FAO
+4) OECD
+5) Ministry of Agricultural Production and Food, Greece,
+6) Payment Agency (OPEKEPE), Greece
