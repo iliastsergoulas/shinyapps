@@ -1,4 +1,4 @@
-# Data: Production from aquaculture excluding hatcheries and nurseries (1984-2007) 
+# Data: Production from aquaculture excluding hatcheries and nurseries (from 2008 onwards) 
 # This R script is created as a Shiny application to download raw data from Eurostat ((C) EuroGeographics for the administrative boundaries), 
 # process it and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
@@ -6,8 +6,8 @@
 
 library(shiny)
 library(googleVis)
-library(shinythemes)
 library(shinydashboard)
+library(shinythemes)
 library(eurostat)
 library(countrycode)
 library(ggplot2)
@@ -19,9 +19,10 @@ printMoney <- function(x){ # A function to show quantity as currency
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show quantity with k decimal places
 
-mydata<-get_eurostat("fish_aq_q", time_format = "raw") # Downloading raw data from Eurostat
+mydata<-get_eurostat("fish_aq2a", time_format = "raw") # Downloading raw data from Eurostat
 mydata$geo<-as.character(mydata$geo)
-mydata<-mydata[which(mydata$unit=='TLW' & mydata$aquaenv=='TOTAL'& mydata$fishreg==0 & mydata$species=='F00'), ] # Filtering data
+mydata<-mydata[which(mydata$unit=='TLW' & mydata$fishreg==0 & mydata$species=='F00' 
+                     & mydata$aquaenv=='TOTAL' & mydata$aquameth=='TOTAL'), ] # Filtering data
 mydata<-mydata[complete.cases(mydata),] # Removing null values
 for (i in 1:nrow(mydata)) { # Replacing country codes in order to get correct country names
     if(as.character(mydata$geo[i])=="EL") {
@@ -37,7 +38,7 @@ colnames(mydata)<-c("country", "year", "quantity")
 
 meanvalue<-mean((aggregate(mydata$quantity, by=list(year=mydata$year), FUN=sum)$x)) # Mean value
 topc<-mydata[which.max(mydata$quantity),] # Top country
-header <- dashboardHeader(title = "Παραγωγή από υδατοκαλλιέργειες (1984-2007)", titleWidth=500) # Header of dashboard
+header <- dashboardHeader(title = "Aquaculture production in EU countries (2008-)", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
     valueBoxOutput("quantity", width=6),
@@ -45,50 +46,50 @@ frow1 <- fluidRow( # Creating row of valueboxes
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Ανά χώρα",
+        title = "Per country",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             htmlOutput("view"),
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            selectInput('country', 'Χώρα', choices = unique(mydata$country)), width='98%')),
+            print("Source: (C) EuroGeographics for the administrative boundaries"),
+            selectInput('country', 'Country', choices = unique(mydata$country)), width='98%')),
     box(
-        title = "Ανά έτος",
+        title = "Per year",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             htmlOutput("map"),
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            selectInput('year', 'Έτος', choices = unique(mydata$year)), width='98%'))
+            print("Source: (C) EuroGeographics for the administrative boundaries"),
+            selectInput('year', 'Year', choices = unique(mydata$year)), width='98%'))
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 χώρες με μεγαλύτερη παραγωγή από υδατοκαλλιέργειες",
+        title = "5 countries with largest aquaculture production",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             plotOutput("timeline", width = "150%"),
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+            print("Source: (C) EuroGeographics for the administrative boundaries"),
+            sliderInput("myyear", "Year:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
                         value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep=""))),
     box(
-        title = "Σύνοψη δεδομένων ανά χώρα",
+        title = "Data synopsis per country",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             dataTableOutput("summary"),
             width=550,
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            sliderInput("myyearsummary", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+            print("Source: (C) EuroGeographics for the administrative boundaries"),
+            sliderInput("myyearsummary", "Year:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
                         value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")))
 )
 frow4 <- fluidRow( # Creating row of download button
     box(
-        title = "Λήψη δεδομένων",
+        title = "Download data",
         status="success",
         collapsed = TRUE,
         theme = shinytheme("spacelab"), 
@@ -101,13 +102,13 @@ server <- function(input, output) {
     data_country <- reactive({ # Adding reactive data information
         data_country<-mydata[mydata$country==input$country & mydata$quantity>0, c("year", "quantity")]
         data_country<-aggregate(data_country$quantity, by=list(Year=data_country$year), FUN=sum)
-        colnames(data_country)<-c("Έτος", "Παραγωγή")
+        colnames(data_country)<-c("Year", "Production")
         data_country
     })
     data_year <- reactive({ # Adding reactive data information
         data_year<-mydata[mydata$year==input$year & mydata$quantity>0,  c("country", "quantity")]
         data_year<-aggregate(data_year$quantity, by=list(Country=data_year$country), FUN=sum)
-        colnames(data_year)<-c("Χώρα", "Παραγωγή")
+        colnames(data_year)<-c("Country", "Production")
         data_year
     })
     mydata_top_five<-reactive({ # Subsetting data according to year interval and getting top five countries
@@ -122,15 +123,15 @@ server <- function(input, output) {
         mydata_summary<-mydata[which(mydata$year>=input$myyearsummary[1] & mydata$year<=input$myyearsummary[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Παραγωγή (χιλ. τόνοι)'}", 
-                        hAxis="{title:'Έτος'}", backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Production (thousands tonnes)'}", 
+                        hAxis="{title:'Year'}", backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map
-        gvisGeoChart(data_year(), "Χώρα", "Παραγωγή", options=list(region="150", 
+        gvisGeoChart(data_year(), "Country", "Production", options=list(region="150", 
                                 displayMode="regions", datamode='regions',width=550, height=500))
     })
     output$table <- renderDataTable({ # Creating data table
-        colnames(mydata)<-c("Χώρα", "Έτος", "Παραγωγή")
+        colnames(mydata)<-c("Country", "Year", "Production")
         mydata
     })
     output$summary <- renderDataTable({ # Creating summary by country
@@ -139,21 +140,21 @@ server <- function(input, output) {
             aggregate(quantity~country, mydata_summary(), max),
             aggregate(quantity~country, mydata_summary(), mean))
         mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστη Παραγωγή", "Μέγιστη Παραγωγή", "Μέση Παραγωγή")
+        colnames(mysummary) <- c("Country", "Minimum production", "Maximum production", "Mean production")
         mysummary
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5)
     )
     output$quantity <- renderValueBox({ # Filling valuebox
         valueBox(
-            paste0(printMoney(meanvalue)," χιλ. τόνοι"),
-            "Μέση παραγωγή από υδατοκαλλιέργειες",
+            paste0(printMoney(meanvalue)," thousands tonnes"),
+            "Mean aquaculture production",
             icon = icon("money"),
             color = "olive")
     })
     output$topcountry <- renderValueBox({ # Filling valuebox
         valueBox(
             paste0(topc$country," - ", topc$year),
-            "Χώρα με μεγαλύτερη παραγωγή από υδατοκαλλιέργειες",
+            "Country with largest aquaculture production",
             icon = icon("globe"),
             color = "olive")
     })
@@ -162,7 +163,7 @@ server <- function(input, output) {
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Παραγωγή (χιλ. τόνοι)") + 
+            xlab("Year") + ylab("Production (thousands tonnes)") + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 

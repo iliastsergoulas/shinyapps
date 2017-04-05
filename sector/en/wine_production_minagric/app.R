@@ -1,4 +1,4 @@
-# Data: Crop statistics (from 2000 onwards)
+# Data: Wine production based on data by Greek Ministry of Agricultural Production and Food
 # This R script is created as a Shiny application to download raw data from Eurostat ((C) EuroGeographics for the administrative boundaries), 
 # process it and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
@@ -6,34 +6,28 @@
 
 library(shiny)
 library(googleVis)
+library(shinydashboard)
 library(shinythemes)
 library(eurostat)
 library(countrycode)
 library(ggplot2)
 library(directlabels)
 library(scales)
-library(shinydashboard)
 
 printMoney <- function(x){ # A function to show quantity as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show quantity with k decimal places
 
-mydata<-get_eurostat("apro_acs_a", time_format = "raw") # Downloading raw data from Eurostat
-mydata$geo<-as.character(mydata$geo)
-mydata<-mydata[which(mydata$strucpro=='PR' & mydata$crops=='C0000'), ] # Filtering data
-for (i in 1:nrow(mydata)) { # Replacing country codes in order to get correct country names
-    if(as.character(mydata$geo[i])=="EL") {
-        mydata$geo[i] <- "GR"}
-    if(as.character(mydata$geo[i])=="UK") {
-        mydata$geo[i] <- "GB"}}
-mydata$countryname <- countrycode(mydata$geo, "iso2c", "country.name") # Getting country names
+mydata<-read.csv("C:/Users/itsergoulas/Dropbox/Website/shiny/sector/wine_production_minagric/wine_production_minagric.csv", 
+                 sep=",", encoding="UTF-8")
+print(mydata)
 mydata<-mydata[which(!is.na(mydata$countryname)), c("countryname", "time", "values")] # Filtering for country names not found
 colnames(mydata)<-c("country", "year", "quantity")
 
-meanvalue<-mean((aggregate(mydata$quantity, by=list(year=mydata$year), FUN=mean)$x)) # Mean value
+meanvalue<-mean((aggregate(mydata$quantity, by=list(year=mydata$year), FUN=sum)$x)) # Mean value
 topc<-mydata[which.max(mydata$quantity),] # Top country
-header <- dashboardHeader(title = "Παραγωγή δημητριακών στις χώρες της Ε.Ε.", titleWidth=500) # Header of dashboard
+header <- dashboardHeader(title = "Παραγωγή οίνου κατά είδος στην Ελλάδα", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
     valueBoxOutput("quantity", width=6),
@@ -41,7 +35,7 @@ frow1 <- fluidRow( # Creating row of valueboxes
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Ανά χώρα",
+        title = "Ανά είδος",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -61,7 +55,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 χώρες με τη μεγαλύτερη παραγωγή δημητριακών",
+        title = "5 χώρες με μεγαλύτερη παραγωγή γάλακτος",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -88,26 +82,26 @@ frow4 <- fluidRow( # Creating row of download button
         status="success",
         collapsed = TRUE,
         theme = shinytheme("spacelab"), 
-        mainPanel(downloadButton("downloadData")))
-)
+        mainPanel(downloadButton("downloadData"))))
 
 body <- dashboardBody(frow1, frow2, frow3, frow4) # Binding rows to body of dashboard
 ui <- dashboardPage(header, sidebar, body, skin="green") # Binding elements of dashboard
 
+
 server <- function(input, output) {
     data_country <- reactive({ # Adding reactive data information
-        data_country<-mydata[mydata$country==input$country, c("year", "quantity")]
+        data_country<-mydata[mydata$country==input$country & mydata$quantity>0, c("year", "quantity")]
         data_country<-aggregate(data_country$quantity, by=list(Year=data_country$year), FUN=sum)
         colnames(data_country)<-c("Έτος", "Παραγωγή")
         data_country
     })
     data_year <- reactive({ # Adding reactive data information
-        data_year<-mydata[mydata$year==input$year,  c("country", "quantity")]
+        data_year<-mydata[mydata$year==input$year & mydata$quantity>0,  c("country", "quantity")]
         data_year<-aggregate(data_year$quantity, by=list(Country=data_year$country), FUN=sum)
         colnames(data_year)<-c("Χώρα", "Παραγωγή")
         data_year
     })
-    mydata_top_five<-reactive({ # Subsetingt data according to year interval and getting top five countries
+    mydata_top_five<-reactive({ # Subsetting data according to year interval and getting top five countries
         # Filtering out groups of countries
         mydata_top_five<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),]
         data_year_temp<-aggregate(mydata_top_five$quantity, by=list(Country=mydata_top_five$country), FUN=mean)
@@ -116,15 +110,15 @@ server <- function(input, output) {
         mydata_top_five<-mydata_top_five[which(mydata_top_five$country %in% data_year_temp$Country),]
     })
     mydata_summary<-reactive({ # Subsetting data according to year interval
-        mydata_summary<-mydata[which(mydata$year>=input$myyearsummary[1] & mydata$year<=input$myyearsummary[2]),] 
+        mydata_summary<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Παραγωγή (τόνοι)'}", hAxis="{title:'Έτος'}",
-                                                     backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Παραγωγή (τόνοι)'}", 
+                        hAxis="{title:'Έτος'}", backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map
         gvisGeoChart(data_year(), "Χώρα", "Παραγωγή", options=list(region="150", displayMode="regions", 
-                                                                                datamode='regions', width=550, height=500))
+                                  datamode='regions', width=550, height=500))
     })
     output$table <- renderDataTable({ # Creating data table
         colnames(mydata)<-c("Χώρα", "Έτος", "Παραγωγή")
@@ -139,26 +133,12 @@ server <- function(input, output) {
         colnames(mysummary) <- c("Χώρα", "Ελάχιστη Παραγωγή", "Μέγιστη Παραγωγή", "Μέση Παραγωγή")
         mysummary
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
-    output$quantity <- renderValueBox({ # Filling valuebox
-        valueBox(
-            paste0(specify_decimal(meanvalue,2), " τόνοι"),
-            "Μέση παραγωγή δημητριακών στις χώρες της Ε.Ε.",
-            icon = icon("user"),
-            color = "olive")
-    })
-    output$topcountry <- renderValueBox({ # Filling valuebox
-        valueBox(
-            paste0(topc$country," - ", topc$year),
-            "Χώρα με μεγαλύτερη παραγωγή δημητριακών στην Ε.Ε.",
-            icon = icon("globe"),
-            color = "olive")
-    })
     output$timeline<-renderPlot({ # Creating timeline for top 5 countries
         ggplot(mydata_top_five(), aes(x = year, y = quantity, group = country, colour = country)) + 
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Παραγωγή ρύπων (εκατ. τόνοι)") + 
+            xlab("Έτος") + ylab("Παραγωγή (τόνοι)") + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 

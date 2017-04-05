@@ -116,7 +116,7 @@ server <- function(input, output) {
         mydata_top_five<-mydata_top_five[which(mydata_top_five$country %in% data_year_temp$Country),]
     })
     mydata_summary<-reactive({ # Subsetting data according to year interval
-        mydata_summary<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),] 
+        mydata_summary<-mydata[which(mydata$year>=input$myyearsummary[1] & mydata$year<=input$myyearsummary[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
         gvisColumnChart(data_country(), options=list(colors="['#336600']", 
