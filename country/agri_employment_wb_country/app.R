@@ -135,7 +135,7 @@ server <- function(input, output) {
     })
     output$view <- renderGvis({ # Creating chart
         gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Ποσοστό'}", 
-                        hAxis="{title:'Έτος'}",backgroundColor="#d9ffb3", width=55, height=500, legend='none'))
+                        hAxis="{title:'Έτος'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map
         gvisGeoChart(data_year(), "Χώρα", "Γεωργική απασχόληση (%)", 

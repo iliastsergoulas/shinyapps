@@ -130,7 +130,7 @@ server <- function(input, output) {
         mydata_summary<-mydata[which(mydata$year>=input$myyearsummary[1] & mydata$year<=input$myyearsummary[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Αξία (δολάρια)'}", 
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Απασχόληση (%)'}", 
                         hAxis="{title:'Έτος'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map

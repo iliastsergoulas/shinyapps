@@ -132,8 +132,8 @@ server <- function(input, output) {
         mydata_summary<-mydata[which(mydata$year>=input$myyearsummary[1] & mydata$year<=input$myyearsummary[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Ποσοστό'}", 
-                        hAxis="{title:'Έτος'}",backgroundColor="#d9ffb3", width=55, height=500, legend='none'))
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Πληθυσμός'}", 
+                        hAxis="{title:'Έτος'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map
         gvisGeoChart(data_year(), "Χώρα", "Πληθυσμός", 
@@ -148,10 +148,9 @@ server <- function(input, output) {
         mysummary <- data.frame(
             aggregate(agri_econ_population~country, mydata_summary(), min),
             aggregate(agri_econ_population~country, mydata_summary(), max),
-            aggregate(agri_econ_population~country, mydata_summary(), mean),
-            aggregate(agri_econ_population~country, mydata_summary(), median))
-        mysummary <- mysummary[,c(1,2,4,6,8)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστος οικονομικά ενεργός πληθυσμός γεωργίας", "Μέγιστος οικονομικά ενεργός πληθυσμός γεωργίας", "Μέσος οικονομικά ενεργός πληθυσμός γεωργίας", "Διάμεσος")
+            aggregate(agri_econ_population~country, mydata_summary(), mean))
+        mysummary <- mysummary[,c(1,2,4,6)]
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστος οικονομικά ενεργός πληθυσμός γεωργίας", "Μέγιστος οικονομικά ενεργός πληθυσμός γεωργίας", "Μέσος οικονομικά ενεργός πληθυσμός γεωργίας")
         mysummary
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
     output$agri_econ_population <- renderValueBox({ # Filling valuebox

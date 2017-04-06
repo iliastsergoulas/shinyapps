@@ -1,4 +1,4 @@
-# Data: Total agricultural exports (FAO, current US$)
+# Data: Agriculture, Real GDP
 # This R script is created as a Shiny application to download raw data from World Bank through WDI package, 
 # process it and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
@@ -14,15 +14,15 @@ library(directlabels)
 library(scales)
 library(shinydashboard)
 
-printMoney <- function(x){ # A function to show quantity as currency
+printMoney <- function(x){ # A function to show number as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
 }
-specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show quantity with k decimal places
+specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show number with k decimal places
 
-mydata<-WDI(country = "all", indicator = "BX.GSR.AGRI.CD", extra = FALSE, cache = NULL) # Downloading raw data from World Bank
+mydata<-WDI(country = "all", indicator = "NV.AGR.TOTL.ZG", extra = FALSE, cache = NULL) # Downloading raw data from World Bank
 mydata$year<-as.character(mydata$year)
-names(mydata)[names(mydata)=="BX.GSR.AGRI.CD"] <- "total_agri_exports"
-mydata<-mydata[which(!is.na(mydata$total_agri_exports)),] # Filtering for NA values
+names(mydata)[names(mydata)=="NV.AGR.TOTL.ZG"] <- "agri_real_gdp"
+mydata<-mydata[which(!is.na(mydata$agri_real_gdp)),] # Filtering for NA values
 # Filtering out groups of countries
 mydata_filtered<-mydata[which(!startsWith(mydata$country, "Euro")),]
 mydata_filtered<-mydata_filtered[which(!endsWith(mydata_filtered$country, "income")),]
@@ -46,60 +46,60 @@ mydata_filtered<-mydata_filtered[which(!endsWith(mydata_filtered$country, "Ameri
 mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Africa")),]
 mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "North Africa")),]
 
-meanvalue<-mean((aggregate(mydata_filtered$total_agri_exports, by=list(year=mydata_filtered$year), FUN=mean)$x)) # Mean value
-topc<-mydata_filtered[which.max(mydata_filtered$total_agri_exports),] # Top country
-header <- dashboardHeader(title = "Αξία όγκου εξαγωγών αγροτικών προϊόντων", titleWidth=500) # Header of dashboard
+meanvalue<-mean((aggregate(mydata_filtered$agri_real_gdp, by=list(year=mydata_filtered$year), FUN=mean)$x)) # Mean value
+topc<-mydata_filtered[which.max(mydata_filtered$agri_real_gdp),] # Top country
+header <- dashboardHeader(title = "Real agricultural GDP growth rate (%)", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
-    valueBoxOutput("total_agri_exports", width=6),
+    valueBoxOutput("agri_real_gdp", width=6),
     valueBoxOutput("topcountry", width=6)
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Ανά χώρα",
+        title = "Per country",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             htmlOutput("view"),
-            print("Πηγή: World Bank"),
-            selectInput('country', 'Χώρα', choices = unique(mydata$country)), width='98%')),
+            print("Source: World Bank"),
+            selectInput('country', 'Country', choices = unique(mydata$country)), width='98%')),
     box(
-        title = "Ανά έτος",
+        title = "Per year",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             htmlOutput("map"),
-            print("Πηγή: World Bank"),
-            selectInput('year', 'Έτος', choices = unique(mydata$year)), width='98%'))
+            print("Source: World Bank"),
+            selectInput('year', 'Year', choices = unique(mydata$year)), width='98%'))
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 χώρες με τη μεγαλύτερη αξία εξαγόμενων προϊόντων",
+        title = "5 countries with highest real agricultural GDP growth rate (%)",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             plotOutput("timeline", width = "150%"),
-            print("Πηγή: World Bank"),
-            sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+            print("Source: World Bank"),
+            sliderInput("myyearsummary", "Year:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
                         value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep=""))),
     box(
-        title = "Σύνοψη δεδομένων ανά χώρα",
+        title = "Data synopsis per country",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             dataTableOutput("summary"),
             width=550,
-            print("Πηγή: World Bank"),
-            sliderInput("myyearsummary", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+            print("Source: World Bank"),
+            sliderInput("myyear", "Year:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
                         value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")))
 )
 frow4 <- fluidRow( # Creating row of download button
     box(
-        title = "Λήψη δεδομένων",
+        title = "Download data",
         status="success",
         collapsed = TRUE,
         theme = shinytheme("spacelab"), 
@@ -111,20 +111,20 @@ ui <- dashboardPage(header, sidebar, body, skin="green") # Binding elements of d
 
 server <- function(input, output) {
     data_country <- reactive({ # Adding reactive data information
-        data_country<-mydata[mydata$country==input$country, c("year", "total_agri_exports")]
-        data_country<-aggregate(data_country$total_agri_exports, by=list(Year=data_country$year), FUN=sum)
-        colnames(data_country)<-c("Έτος", "Συνολικές εξαγωγές (δολάρια)")
+        data_country<-mydata[mydata$country==input$country, c("year", "agri_real_gdp")]
+        data_country<-aggregate(data_country$agri_real_gdp, by=list(Year=data_country$year), FUN=sum)
+        colnames(data_country)<-c("Year", "Real agricultural GDP growth rate (%)")
         data_country
     })
     data_year <- reactive({ # Adding reactive data information
-        data_year<-mydata_filtered[mydata_filtered$year==input$year,  c("country", "total_agri_exports")]
-        data_year<-aggregate(data_year$total_agri_exports, by=list(Country=data_year$country), FUN=sum)
-        colnames(data_year)<-c("Χώρα", "Συνολικές εξαγωγές (δολάρια)")
+        data_year<-mydata_filtered[mydata_filtered$year==input$year,  c("country", "agri_real_gdp")]
+        data_year<-aggregate(data_year$agri_real_gdp, by=list(Country=data_year$country), FUN=sum)
+        colnames(data_year)<-c("Country", "Real agricultural GDP growth rate (%)")
         data_year
     })
     mydata_top_five<-reactive({ # Subsetting data according to year interval and getting top five countries
         mydata_top_five<-mydata_filtered[which(mydata_filtered$year>=input$myyear[1] & mydata_filtered$year<=input$myyear[2]),]
-        data_year_temp<-aggregate(mydata_top_five$total_agri_exports, by=list(Country=mydata_top_five$country), FUN=mean)
+        data_year_temp<-aggregate(mydata_top_five$agri_real_gdp, by=list(Country=mydata_top_five$country), FUN=mean)
         data_year_temp<-data_year_temp[order(-data_year_temp$x),]
         data_year_temp<-data_year_temp[1:5,] # Keeping top five countries
         mydata_top_five<-mydata_top_five[which(mydata_top_five$country %in% data_year_temp$Country),]
@@ -133,52 +133,52 @@ server <- function(input, output) {
         mydata_summary<-mydata[which(mydata$year>=input$myyearsummary[1] & mydata$year<=input$myyearsummary[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Συνολικές εξαγωγές (δολάρια)'}", 
-                        hAxis="{title:'Έτος'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Rate'}", 
+                        hAxis="{title:'Year'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map
-        gvisGeoChart(data_year(), "Χώρα", "Συνολικές εξαγωγές (δολάρια)", 
+        gvisGeoChart(data_year(), "Country", "Real agricultural GDP growth rate (%)", 
                      options=list(displayMode="regions", datamode='regions',width=550, height=500))
     })
     output$table <- renderDataTable({ # Creating data table
-        colnames(mydata)<-c("Κωδικός", "Χώρα", "Συνολικές εξαγωγές", "Έτος")
-        mydata[c("Χώρα", "Συνολικές εξαγωγές", "Έτος")]
+        colnames(mydata)<-c("Code", "Country", "Real agricultural GDP growth rate", "Year")
+        mydata[c("Country", "Real agricultural GDP growth rate", "Year")]
     })
     output$summary <- renderDataTable({ # Creating summary by country
         mysummary <- data.frame(
-            aggregate(total_agri_exports~country, mydata_summary(), min),
-            aggregate(total_agri_exports~country, mydata_summary(), max),
-            aggregate(total_agri_exports~country, mydata_summary(), mean))
+            aggregate(agri_real_gdp~country, mydata_summary(), min),
+            aggregate(agri_real_gdp~country, mydata_summary(), max),
+            aggregate(agri_real_gdp~country, mydata_summary(), mean))
         mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστη αξία εξαγωγών", "Μέγιστη αξία εξαγωγών", "Μέση αξία εξαγωγών")
+        colnames(mysummary) <- c("Country", "Minimum real agricultural GDP growth rate", "Maximum real agricultural GDP growth rate", "Mean real agricultural GDP growth rate")
         mysummary
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
-    output$total_agri_exports <- renderValueBox({ # Filling valuebox
+    output$agri_real_gdp <- renderValueBox({ # Filling valuebox
         valueBox(
-            paste0(printMoney(meanvalue), " δολάρια"),
-            "Μέση αξία όγκου εξαγωγών παγκοσμίως",
-            icon = icon("dollar"),
+            paste0(specify_decimal(meanvalue,2), " %"),
+            "Mean real agricultural GDP growth rate globally",
+            icon = icon("user"),
             color = "olive")
     })
     output$topcountry <- renderValueBox({ # Filling valuebox
         valueBox(
             paste0(topc$country," - ", topc$year),
-            "Χώρα με μεγαλύτερη αξία όγκου εξαγωγών",
+            "Country with highest real agricultural GDP growth rate",
             icon = icon("globe"),
             color = "olive")
     })
     output$timeline<-renderPlot({ # Creating timeline for top 5 countries
-        ggplot(mydata_top_five(), aes(x = year, y = total_agri_exports, group = country, colour = country)) + 
+        ggplot(mydata_top_five(), aes(x = year, y = agri_real_gdp, group = country, colour = country)) + 
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Συνολικές εξαγωγές (δολάρια)") + 
+            xlab("Year") + ylab("Real agricultural GDP growth rate (%)") + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 
     })
     output$downloadData <- downloadHandler( # Creating download button
-        filename = function() {paste('mydata', '.csv', sep='')},
+        filename = function() { paste('mydata', '.csv', sep='') },
         content = function(file) {
             write.csv(mydata, file)
     })
