@@ -18,11 +18,11 @@ plants_per_region <- plants_edited[c("region", "id")]
 plants_per_pref <- plants_edited[c("prefecture", "id")]
 
 
-header <- dashboardHeader(title = "Συσκευαστήρια μελιού", titleWidth=500) # Header of dashboard
+header <- dashboardHeader(title = "Processing honey plants", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Ανά Περιφέρεια",
+        title = "Per region",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -30,7 +30,7 @@ frow1 <- fluidRow( # Creating row of two diagrams
             plotOutput("regions", width="150%"))
         ),
     box(
-        title = "Ανά Περιφερειακή Ενότητα",
+        title = "Per prefecture",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -45,7 +45,7 @@ server <- function(input, output, session) {
     output$regions<-renderPlot({ # Per region
         ggplot(plants_per_region, aes(x = factor(region))) + 
             geom_bar(stat="count", fill="steelblue",width=0.5, color="steelblue") + 
-            xlab("Περιφέρεια") + ylab("Αριθμός μονάδων") + 
+            xlab("Region") + ylab("Number of plants") + 
             theme(axis.text.x=element_text(angle=90, hjust=1)) + 
             geom_text(stat='count',aes(label=..count..),vjust=-1) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
@@ -55,7 +55,7 @@ server <- function(input, output, session) {
     output$prefectures<-renderPlot({ # Per prefecture
         ggplot(plants_per_pref, aes(x = factor(prefecture))) + 
             geom_bar(stat="count", fill="steelblue") + 
-            xlab("Περιφερειακή ενότητα") + ylab("Αριθμός μονάδων") + 
+            xlab("Prefecture") + ylab("Number of plants") + 
             theme(axis.text.x=element_text(angle=90, hjust=1)) + 
             geom_text(stat='count',aes(label=..count..),vjust=-1) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
