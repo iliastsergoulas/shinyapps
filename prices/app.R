@@ -1,5 +1,5 @@
-# This R script is created as a Shiny application to use processed data from OPEKEPE (Greek Payment Agency) 
-# and create plots and statistics.
+# This R script is created as a Shiny application to use raw agricultural commodities data, 
+# available by Quandl, and create plots and statistics.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
 # Author: Ilias Tsergoulas, Website: www.agristats.eu
 
@@ -14,6 +14,8 @@ library(lubridate)
 library(shinydashboard)
 library(corrplot)
 library(Quandl)
+library(forecast)
+library(dygraphs)
 
 printMoney <- function(x){ # A function to show number as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
@@ -36,7 +38,7 @@ data_product<-c("Sugar","Sugar","Sugar",
                 "Rice","Rice","Rice")
 data_quandl<-data.frame(data_descr, data_codes, data_product) # Binding codes and description to dataframe
 
-header <- dashboardHeader(title = "Τιμές αγροτικών προϊόντων (Πηγή : Quandl)", titleWidth=600) # Header of dashboard
+header <- dashboardHeader(title = "Τιμές αγροτικών προϊόντων (Πηγή: Quandl)", titleWidth=600) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of two diagrams
     title = "Συνολικά",
@@ -50,7 +52,7 @@ frow1 <- fluidRow( # Creating row of two diagrams
 frow2 <- fluidRow( # Creating row of two diagrams
     status="success",
     collapsible = TRUE, 
-    mainPanel(plotOutput("timeline_1"), width='98%')
+    mainPanel(dygraphOutput("mytimeline"), width='98%')
 )
 frow3 <- fluidRow( # Creating row of two diagrams
     status="success",
@@ -82,6 +84,10 @@ server <- function(input, output) {
         mydata
     })
     
+    mydata_multiple<- reactive({ # Reshaping mydata dataframe
+        mydata_multiple<-reshape(mydata(), direction = "wide", idvar = "Date", timevar = "Description")
+    })
+    
     mydata_1 <- reactive({
         mydata_1_product <- unique(mydata()$Description)[1]
         mydata_1<-mydata()[which(mydata()$Description==mydata_1_product),]
@@ -96,8 +102,12 @@ server <- function(input, output) {
     }) 
     
     output$view <- renderGvis({ # Creating chart
-        gvisLineChart(mydata()[rev(rownames(mydata())),], options=list(colors="['#336600']", vAxis="{title:'Τιμή'}", 
-                                                                       hAxis="{title:'Ημερομηνία'}",width=1350, height=500, legend='none'))
+        gvisLineChart(mydata_multiple()[rev(rownames(mydata_multiple())),], 
+                      options=list(vAxis="{title:'Τιμή'}", hAxis="{title:'Ημερομηνία'}",
+                                   width=1350, height=500, legend='none'))
+    })
+    output$mytimeline<-renderDygraph({ # Creating timeline for commodities
+        dygraph(mydata_1())
     })
     output$timeline_1<-renderPlot({ # Creating timeline for commodities
         ggplot(mydata_1()[rev(rownames(mydata_1())),], aes(x = as.Date(Date, "%d/%m/%Y"), y = Value, group=Description, colour=Description)) + 
