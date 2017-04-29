@@ -89,7 +89,7 @@ server <- function(input, output) {
     })
     
     mydata_1 <- reactive({
-        data_quandl[which(data_quandl$data_product==input$commodity),]
+        xts(data_quandl[which(data_quandl$data_product==input$commodity),])
     }) 
     mydata_2 <- reactive({
         mydata_2_product <- unique(mydata()$Description)[2]
