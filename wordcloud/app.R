@@ -22,29 +22,27 @@ setup_twitter_oauth(as.character(credentials[1,1]), as.character(credentials[2,1
 rdmTweets1 <- userTimeline("ypaithros", n=50)
 rdmTweets2 <- userTimeline("Agronewsgr", n=50)
 rdmTweets3 <- userTimeline("agrocapital", n=50)
-rdmTweets4 <- userTimeline("agroteseu", n=50)
-rdmTweets5 <- userTimeline("Agrotypos", n=50)
+rdmTweets4 <- userTimeline("Agrotypos", n=50)
 df1 <- do.call("rbind", lapply(rdmTweets1, as.data.frame))
 df2 <- do.call("rbind", lapply(rdmTweets2, as.data.frame))
 df3 <- do.call("rbind", lapply(rdmTweets3, as.data.frame))
 df4 <- do.call("rbind", lapply(rdmTweets4, as.data.frame))
-df5 <- do.call("rbind", lapply(rdmTweets5, as.data.frame))
-df <- rbind(df1, df2, df3, df4, df5) # Creating a single dataframe with all the tweets
+df <- rbind(df1, df2, df3, df4) # Creating a single dataframe with all the tweets
 myCorpus <- Corpus(VectorSource(df$text)) # Building a corpus
 # Creating matrix od tweets after "cleaning" them from anything unnecessary
 myDtm <- TermDocumentMatrix(myCorpus, control = 
             list(removePunctuation = TRUE, 
-                 stopwords = c("agronewsgr","για","και","από","των",
-                               "την","στις","της","του","τον","τους",
-                               "τις","στους","αύριο","στην","προς", 
-                               "που","στα","κάθε","λέει","στο","στη",
-                               "ζωντανά","αγρότες","αγροτικής","μήνα",
-                               "ημέρες","μέρες","στον", "έως", "λόγω",
-                               "αγροτικό","ζητά","αλλά","χωρίς", "προ", 
-                               "αγροτικού", "δείτε", "πριν", "πού",
-                               "πιο", "όλοι", "φωτό","νέα", "δισ", "δεν", 
+                 stopwords = c("agronewsgr","για","και","από","των", "οι", "...",
+                               "την","στις","της","του","τον","τους", "τα","να", "τέλος",
+                               "τις","στους","αύριο","στην","προς", "θα", "ως", "ευρώ",
+                               "που","στα","κάθε","λέει","στο","στη", "σε", "agrenda",
+                               "ζωντανά","αγρότες","αγροτικής","μήνα", "τη", "φεκ",
+                               "ημέρες","μέρες","στον", "έως", "λόγω", "εκατ",
+                               "αγροτικό","ζητά","αλλά","χωρίς", "προ", "ύψους",
+                               "αγροτικού", "δείτε", "πριν", "πού", "με", "το",
+                               "πιο", "όλοι", "φωτό","νέα", "δισ", "δεν", "να",
                                "ειδήσεις","αγροτικές", "μέχρι","μετά","γίνει",
-                               "είναι","ανά","νέο","αγροτική","αγροτών","κιλό",
+                               "είναι","ανά","νέο","αγροτική","αγροτών","κιλό","https",
                                stopwords("english")),
                  removeNumbers = TRUE, tolower = TRUE))
 m <- as.matrix(myDtm) # Converting to matrix
