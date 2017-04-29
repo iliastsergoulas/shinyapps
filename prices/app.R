@@ -107,7 +107,7 @@ server <- function(input, output) {
                                    width=1350, height=500, legend='none'))
     })
     output$mytimeline<-renderDygraph({ # Creating timeline for commodities
-        dygraph(mydata_1())
+        dygraph(data_quandl[which(data_quandl$data_product==input$commodity),])
     })
     output$timeline_1<-renderPlot({ # Creating timeline for commodities
         ggplot(mydata_1()[rev(rownames(mydata_1())),], aes(x = as.Date(Date, "%d/%m/%Y"), y = Value, group=Description, colour=Description)) + 
