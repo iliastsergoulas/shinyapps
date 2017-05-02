@@ -76,7 +76,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 countries with hghest agricultural population density (per sq. klm arable land)",
+        title = "5 countries with highest agricultural population density (per sq. klm arable land)",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 

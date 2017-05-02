@@ -33,7 +33,7 @@ colnames(mydata)<-c("country", "year", "area")
 
 meanvalue<-mean((aggregate(mydata$area, by=list(year=mydata$year), FUN=mean)$x)) # Mean value
 topc<-mydata[which.max(mydata$area),] # Top country
-header <- dashboardHeader(title = "Έκταση καλλιεργημένης γης (εκτάρια)", titleWidth=500) # Header of dashboard
+header <- dashboardHeader(title = "Cultivated area (hectares)", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
     valueBoxOutput("area", width=6),
@@ -41,50 +41,50 @@ frow1 <- fluidRow( # Creating row of valueboxes
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Ανά χώρα",
+        title = "Per country",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             htmlOutput("view"),
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            selectInput('country', 'Χώρα', choices = unique(mydata$country)), width='98%')),
+            print("Source: (C) EuroGeographics for the administrative boundaries"),
+            selectInput('country', 'Country', choices = unique(mydata$country)), width='98%')),
     box(
-        title = "Ανά έτος",
+        title = "Per year",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             htmlOutput("map"),
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            selectInput('year', 'Έτος', choices = unique(mydata$year)), width='98%'))
+            print("Source: (C) EuroGeographics for the administrative boundaries"),
+            selectInput('year', 'Year', choices = unique(mydata$year)), width='98%'))
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 χώρες με μεγαλύτερη έκταση καλλιεργημένης γης",
+        title = "5 countries with largest cultivated land",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             plotOutput("timeline", width = "150%"),
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+            print("Source: (C) EuroGeographics for the administrative boundaries"),
+            sliderInput("myyear", "Year:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
                         value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep=""))),
     box(
-        title = "Σύνοψη δεδομένων ανά χώρα",
+        title = "Data synopsis per country",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             dataTableOutput("summary"),
             width=550,
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            sliderInput("myyearsummary", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+            print("Source: (C) EuroGeographics for the administrative boundaries"),
+            sliderInput("myyearsummary", "Year:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
                         value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")))
 )
 frow4 <- fluidRow( # Creating row of download button
     box(
-        title = "Λήψη δεδομένων",
+        title = "Download data",
         status="success",
         collapsed = TRUE,
         theme = shinytheme("spacelab"), 
@@ -99,13 +99,13 @@ server <- function(input, output) {
     data_country <- reactive({ # Adding reactive data information
         data_country<-mydata[mydata$country==input$country, c("year", "area")]
         data_country<-aggregate(data_country$area, by=list(Year=data_country$year), FUN=sum)
-        colnames(data_country)<-c("Έτος", "Έκταση καλλιεργημένης γης")
+        colnames(data_country)<-c("Year", "Cultivated land")
         data_country
     })
     data_year <- reactive({ # Adding reactive data information
         data_year<-mydata[mydata$year==input$year,  c("country", "area")]
         data_year<-aggregate(data_year$area, by=list(Country=data_year$country), FUN=sum)
-        colnames(data_year)<-c("Χώρα", "Έκταση καλλιεργημένης γης")
+        colnames(data_year)<-c("Country", "Cultivated land")
         data_year
     })
     mydata_top_five<-reactive({ # Subsetting data according to year interval and getting top five countries
@@ -120,15 +120,15 @@ server <- function(input, output) {
         mydata_summary<-mydata[which(mydata$year>=input$myyearsummary[1] & mydata$year<=input$myyearsummary[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Έκταση καλλιεργημένης γης (εκτάρια)'}", 
-                        hAxis="{title:'Έτος'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Cultivated land (hectares)'}", 
+                        hAxis="{title:'Year'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map
-        gvisGeoChart(data_year(), "Χώρα", "Έκταση καλλιεργημένης γης", options=list(region="150", 
+        gvisGeoChart(data_year(), "Country", "Cultivated land", options=list(region="150", 
                                 displayMode="regions", datamode='regions',width=550, height=500))
     })
     output$table <- renderDataTable({ # Creating data table
-        colnames(mydata)<-c("Χώρα", "Έτος", "Έκταση καλλιεργημένης γης")
+        colnames(mydata)<-c("Country", "Year", "Cultivated land")
         mydata
     })
     output$summary <- renderDataTable({ # Creating summary by country
@@ -137,20 +137,20 @@ server <- function(input, output) {
             aggregate(area~country, mydata_summary(), max),
             aggregate(area~country, mydata_summary(), mean))
         mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστη έκταση", "Μέγιστη έκταση", "Μέση έκταση")
+        colnames(mysummary) <- c("Country", "Minimum cultivated land", "Maximum cultivated land", "Mean cultivated land")
         mysummary
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
     output$area <- renderValueBox({ # Filling valuebox
         valueBox(
-            paste0(printMoney(meanvalue), " εκτάρια"),
-            "Μέση έκταση καλλιεργημένης γης παγκοσμίως",
+            paste0(printMoney(meanvalue), " hectares"),
+            "Mean cultivated land globally",
             icon = icon("user"),
             color = "olive")
     })
     output$topcountry <- renderValueBox({ # Filling valuebox
         valueBox(
             paste0(topc$country," - ", topc$year),
-            "Χώρα με μεγαλύτερη έκταση καλλιεργημένης γης",
+            "Country with largest cultivated land",
             icon = icon("globe"),
             color = "olive")
     })
@@ -159,7 +159,7 @@ server <- function(input, output) {
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Έκταση καλλιεργημένης γης (εκτάρια)") + 
+            xlab("Year") + ylab("Cultivated land (hectares)") + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 

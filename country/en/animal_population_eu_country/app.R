@@ -36,7 +36,7 @@ colnames(mydata)<-c("country", "year", "number")
 
 meanvalue<-mean((aggregate(mydata$number, by=list(year=mydata$year), FUN=mean)$x)) # Mean value
 topc<-mydata[which.max(mydata$number),] # Top country
-header <- dashboardHeader(title = "Μέγεθος ζωικού κεφαλαίου (χιλ. κεφαλές)", titleWidth=500) # Header of dashboard
+header <- dashboardHeader(title = "Animal population (thousands heads)", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
     valueBoxOutput("number", width=6),
@@ -44,50 +44,50 @@ frow1 <- fluidRow( # Creating row of valueboxes
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Ανά χώρα",
+        title = "Per country",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             htmlOutput("view"),
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            selectInput('country', 'Χώρα', choices = unique(mydata$country)), width='98%')),
+            print("Source: (C) EuroGeographics for the administrative boundaries"),
+            selectInput('country', 'Country', choices = unique(mydata$country)), width='98%')),
     box(
-        title = "Ανά έτος",
+        title = "Per year",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             htmlOutput("map"),
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            selectInput('year', 'Έτος', choices = unique(mydata$year)), width='98%'))
+            print("Source: (C) EuroGeographics for the administrative boundaries"),
+            selectInput('year', 'Year', choices = unique(mydata$year)), width='98%'))
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 χώρες με υψηλότερο μέγεθος ζωικού κεφαλαίου",
+        title = "5 countries with largest animal population",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             plotOutput("timeline", width = "150%"),
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+            print("Source: (C) EuroGeographics for the administrative boundaries"),
+            sliderInput("myyear", "Year:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
                         value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep=""))),
     box(
-        title = "Σύνοψη δεδομένων ανά χώρα",
+        title = "Data synopsis per country",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             dataTableOutput("summary"),
             width=550,
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            sliderInput("myyearsummary", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+            print("Source: (C) EuroGeographics for the administrative boundaries"),
+            sliderInput("myyearsummary", "Year:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
                         value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")))
 )
 frow4 <- fluidRow( # Creating row of download button
     box(
-        title = "Λήψη δεδομένων",
+        title = "Download data",
         status="success",
         collapsed = TRUE,
         theme = shinytheme("spacelab"), 
@@ -101,13 +101,13 @@ server <- function(input, output) {
     data_country <- reactive({ # Adding reactive data information
         data_country<-mydata[mydata$country==input$country, c("year", "number")]
         data_country<-aggregate(data_country$number, by=list(Year=data_country$year), FUN=sum)
-        colnames(data_country)<-c("Έτος", "Παραγωγή")
+        colnames(data_country)<-c("Year", "Animal population")
         data_country
     })
     data_year <- reactive({ # Adding reactive data information
         data_year<-mydata[mydata$year==input$year,  c("country", "number")]
         data_year<-aggregate(data_year$number, by=list(Country=data_year$country), FUN=sum)
-        colnames(data_year)<-c("Χώρα", "Μέγεθος ζωικού κεφαλαίου")
+        colnames(data_year)<-c("Country", "Animal population")
         data_year
     })
     mydata_top_five<-reactive({ # Subsetting data according to year interval and getting top five countries
@@ -122,15 +122,15 @@ server <- function(input, output) {
         mydata_summary<-mydata[which(mydata$year>=input$myyearsummary[1] & mydata$year<=input$myyearsummary[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Αριθμός κεφαλών (χιλιάδες)'}", hAxis="{title:'Έτος'}",
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Animal population (thousands heads)'}", hAxis="{title:'Year'}",
                         backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map
-        gvisGeoChart(data_year(), "Χώρα", "Μέγεθος ζωικού κεφαλαίου", options=list(region="150", 
+        gvisGeoChart(data_year(), "Country", "Animal population", options=list(region="150", 
                                 displayMode="regions", datamode='regions',width=550, height=500))
     })
     output$table <- renderDataTable({ # Creating data table
-        colnames(mydata)<-c("Χώρα", "Έτος", "Μέγεθος ζωικού κεφαλαίου")
+        colnames(mydata)<-c("Country", "Year", "Animal population")
         mydata
     })
     output$summary <- renderDataTable({ # Creating summary by country
@@ -139,20 +139,20 @@ server <- function(input, output) {
             aggregate(number~country, mydata_summary(), max),
             aggregate(number~country, mydata_summary(), mean))
         mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστο μέγεθος ζωικού κεφαλαίου", "Μέγιστο μέγεθος ζωικού κεφαλαίου", "Μέσο μέγεθος ζωικού κεφαλαίου")
+        colnames(mysummary) <- c("Country", "Minimum animal population", "Maximum animal population", "Mean animal population")
         mysummary
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
     output$number <- renderValueBox({ # Filling valuebox
         valueBox(
-            paste0(specify_decimal(meanvalue,2), " χιλιάδες κεφαλές"),
-            "Μέσο ζωικό κεφάλαιο στις χώρες της Ε.Ε.",
+            paste0(specify_decimal(meanvalue,2), " thousands heads"),
+            "Mean animal population in EU countries",
             icon = icon("user"),
             color = "olive")
     })
     output$topcountry <- renderValueBox({ # Filling valuebox
         valueBox(
             paste0(topc$country," - ", topc$year),
-            "Χώρα με μεγαλύτερο ζωικό κεφάλαιο",
+            "Country with largest animal population",
             icon = icon("globe"),
             color = "olive")
     })
@@ -161,7 +161,7 @@ server <- function(input, output) {
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Μέγεθος ζωικού κεφαλαίου") + 
+            xlab("Year") + ylab("Animal population") + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 
