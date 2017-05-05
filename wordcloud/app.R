@@ -15,7 +15,7 @@ library(rJava)
 library(RWekajars)
 
 # Setting twitter credentials
-credentials<-read.table("credentials.txt")
+credentials<-read.table("/home/iliastsergoulas/credentials.txt")
 setup_twitter_oauth(as.character(credentials[1,1]), as.character(credentials[2,1]), 
                     as.character(credentials[3,1]), as.character(credentials[4,1]))
 # Retrieving the first 50 tweets from the timeline of the main agricultural press's users
