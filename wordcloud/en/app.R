@@ -21,7 +21,7 @@ setup_twitter_oauth(as.character(credentials[1,1]), as.character(credentials[2,1
 # Retrieving the first 50 tweets from the timeline of the main agricultural press's users
 rdmTweets1 <- userTimeline("DaniNierenberg", n=50)
 rdmTweets2 <- userTimeline("FAOnews", n=50)
-rdmTweets3 <- userTimeline("agchat", n=50)
+rdmTweets3 <- userTimeline("mpaynspeaker", n=50)
 rdmTweets4 <- userTimeline("ASA_CSSA_SSSA", n=50)
 df1 <- do.call("rbind", lapply(rdmTweets1, as.data.frame))
 df2 <- do.call("rbind", lapply(rdmTweets2, as.data.frame))
@@ -32,18 +32,18 @@ myCorpus <- Corpus(VectorSource(df$text)) # Building a corpus
 # Creating matrix od tweets after "cleaning" them from anything unnecessary
 myDtm <- TermDocumentMatrix(myCorpus, control = 
             list(removePunctuation = TRUE, 
-                 stopwords = c("agronewsgr","για","και","από","των", "οι", "...",
-                               "την","στις","της","του","τον","τους", "τα","να", "τέλος",
-                               "τις","στους","αύριο","στην","προς", "θα", "ως", "ευρώ",
-                               "που","στα","κάθε","λέει","στο","στη", "σε", "agrenda",
-                               "ζωντανά","αγρότες","αγροτικής","μήνα", "τη", "φεκ",
-                               "ημέρες","μέρες","στον", "έως", "λόγω", "εκατ",
-                               "αγροτικό","ζητά","αλλά","χωρίς", "προ", "ύψους",
-                               "αγροτικού", "δείτε", "πριν", "πού", "με", "το",
-                               "πιο", "όλοι", "φωτό","νέα", "δισ", "δεν", "να",
-                               "ειδήσεις","αγροτικές", "μέχρι","μετά","γίνει",
-                               "είναι","ανά","νέο","αγροτική","αγροτών","κιλό","https",
-                               stopwords("english")),
+                 stopwords = c("agronewsgr", "https", "amp", "food", "read", 
+                               "thanks", "look", "looking", "see", "people",
+                               "gaid", "agchattruth", "foodtruth","agchat",
+                               "agriculture","will", "talk", "now", "new", 
+                               "farm", "thank", "book", "year", "week", "photo",
+                               "add", "can", "truths", "life", "news", "every",
+                               "time", "action", "know", "share", "just", "found",
+                               "latest", "find", "get", "great", "table", "join", "word", 
+                               "thunderclap", "excited", "better", "voice", "video", 
+                               "paper", "getting", "blogs", "help", "at ...", "...", "one",
+                               "best", "animal", "need", "joy", "many", "awesome", "support", 
+                               "review", stopwords("english")),
                  removeNumbers = TRUE, tolower = TRUE))
 m <- as.matrix(myDtm) # Converting to matrix
 v <- sort(rowSums(m), decreasing=TRUE) # Calculating frequency of words
