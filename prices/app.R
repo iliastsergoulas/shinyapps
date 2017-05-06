@@ -4,13 +4,7 @@
 # Author: Ilias Tsergoulas, Website: www.agristats.eu
 
 library(shiny)
-library(googleVis)
 library(shinythemes)
-library(ggplot2)
-library(directlabels)
-library(scales)
-library(dplyr)
-library(lubridate)
 library(shinydashboard)
 library(corrplot)
 library(Quandl)
@@ -45,24 +39,23 @@ frow1 <- fluidRow( # Creating row of two diagrams
     status="success",
     collapsible = TRUE, 
     mainPanel(
-        htmlOutput("view"),
-        selectInput('commodity', 'Προϊόν', choices = unique(data_quandl$data_product)), 
-        dateRangeInput("mydate", "Ημερομηνία:", start = "01-01-1960", end = Sys.Date()), width='98%')
+        dygraphOutput("view"),
+        selectInput('commodity', 'Προϊόν', choices = unique(data_quandl$data_product)), width='98%')
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     status="success",
     collapsible = TRUE, 
-    mainPanel(dygraphOutput("mytimeline"), width='98%')
+    mainPanel(dygraphOutput("timeline_1"), width='98%')
 )
 frow3 <- fluidRow( # Creating row of two diagrams
     status="success",
     collapsible = TRUE, 
-    mainPanel(plotOutput("timeline_2"), width='98%')
+    mainPanel(dygraphOutput("timeline_2"), width='98%')
 )
 frow4 <- fluidRow( # Creating row of two diagrams
     status="success",
     collapsible = TRUE, 
-    mainPanel(plotOutput("timeline_3"),width='98%')
+    mainPanel(dygraphOutput("timeline_3"),width='98%')
 )
 
 body <- dashboardBody(frow1, frow2, frow3, frow4) # Binding rows to body of dashboard
@@ -78,101 +71,49 @@ server <- function(input, output) {
             colnames(temp)<-c("Date", "Value", "Description")
             mydata<-rbind(mydata, temp)
         }
-        mydata<-mydata[which(mydata$Date>=input$mydate[1] & mydata$Date<=input$mydate[2]),]
-        mydata$Date<-strptime(as.character(mydata$Date), "%Y-%m-%d")
-        mydata$Date<-format(mydata$Date, "%d/%m/%Y")
         mydata
     })
-    
     mydata_multiple<- reactive({ # Reshaping mydata dataframe
+        unique_descriptions<-unique(mydata()$Description)
         mydata_multiple<-reshape(mydata(), direction = "wide", idvar = "Date", timevar = "Description")
+        colnames(mydata_multiple)<-c("Date", unique_descriptions[1], unique_descriptions[2], unique_descriptions[3])
+        mydata_multiple<-xts(mydata_multiple, order.by=as.POSIXct(mydata_multiple$Date))
+        mydata_multiple<-mydata_multiple[,-c(1)]
     })
-    
     mydata_1 <- reactive({
-        xts(data_quandl[which(data_quandl$data_product==input$commodity),])
+        mydata_1_product <- unique(mydata()$Description)[1]
+        mydata_1<-mydata()[which(mydata()$Description==mydata_1_product),]
+        mydata_1<-xts(mydata_1, order.by=as.POSIXct(mydata_1$Date))
     }) 
     mydata_2 <- reactive({
         mydata_2_product <- unique(mydata()$Description)[2]
         mydata_2<-mydata()[which(mydata()$Description==mydata_2_product),]
+        mydata_2<-xts(mydata_2, order.by=as.POSIXct(mydata_2$Date))
     }) 
     mydata_3 <- reactive({
         mydata_3_product <- unique(mydata()$Description)[3]
         mydata_3<-mydata()[which(mydata()$Description==mydata_3_product),]
+        mydata_3<-xts(mydata_3, order.by=as.POSIXct(mydata_3$Date))
     }) 
-    
-    output$view <- renderGvis({ # Creating chart
-        gvisLineChart(mydata_multiple()[rev(rownames(mydata_multiple())),], 
-                      options=list(vAxis="{title:'Τιμή'}", hAxis="{title:'Ημερομηνία'}",
-                                   width=1350, height=500, legend='none'))
+    output$view <- renderDygraph({ # Creating chart
+        dygraph(mydata_multiple(), main="Comparing commodities' prices", group = "commodities")%>%
+        dyAxis("y", label = "Commodity Price")%>%
+        dyRangeSelector(height = 20)
     })
-    output$mytimeline<-renderDygraph({ # Creating timeline for commodities
-        dygraph(data_quandl[which(data_quandl$data_product==input$commodity),])
+    output$timeline_1<-renderDygraph({ # Creating timeline for commodities
+        dygraph(mydata_1()$Value, main=mydata_1()[1,3], group = "commodities")%>%
+        dyAxis("y", label = "Commodity Price")%>%
+        dyRangeSelector(height = 20)
     })
-    output$timeline_1<-renderPlot({ # Creating timeline for commodities
-        ggplot(mydata_1()[rev(rownames(mydata_1())),], aes(x = as.Date(Date, "%d/%m/%Y"), y = Value, group=Description, colour=Description)) + 
-            geom_line() + 
-            ggtitle(mydata_1()[1,3]) + 
-            scale_y_continuous(labels = comma) + 
-            xlab("Ημερομηνία") + ylab("Τιμή") + 
-            theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) + 
-            theme(legend.position="none") + 
-            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) 
+    output$timeline_2<-renderDygraph({ # Creating timeline for commodities
+        dygraph(mydata_2()$Value, main=mydata_2()[1,3], group = "commodities")%>%
+        dyAxis("y", label = "Commodity Price")%>%
+        dyRangeSelector(height = 20)
     })
-    output$timeline_2<-renderPlot({ # Creating timeline for commodities
-        ggplot(mydata_2()[rev(rownames(mydata_2())),], 
-               aes(x = as.Date(Date, "%d/%m/%Y"), y = Value, group=Description, colour=Description)) + 
-            geom_line() + 
-            ggtitle(mydata_2()[1,3]) + 
-            scale_y_continuous(labels = comma) + 
-            xlab("Ημερομηνία") + ylab("Τιμή") + 
-            theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) + 
-            theme(legend.position="none") + 
-            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) 
-    })
-    output$timeline_3<-renderPlot({ # Creating timeline for commodities
-        ggplot(mydata_3()[rev(rownames(mydata_3())),], 
-               aes(x = as.Date(Date, "%d/%m/%Y"), y = Value, group=Description, colour=Description)) + 
-            geom_line() + 
-            ggtitle(mydata_3()[1,3]) + 
-            scale_y_continuous(labels = comma) + 
-            xlab("Ημερομηνία") + ylab("Τιμή") + 
-            theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) + 
-            theme(legend.position="none") + 
-            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) 
-    })
-    output$last_price <- renderInfoBox({ # Filling infoBox
-        infoBox(
-            "ΣΗΜΕΡΙΝΗ ΤΙΜΗ",
-            value = tags$p(style = "font-size: 20px;", paste0(specify_decimal(mydata_1()[1,2], 3), " $ - ", mydata_1()[1,1], " - ", mydata_1()[1,3])),
-            fill=TRUE,
-            icon = icon("money"),
-            color = "aqua")
-    })
-    output$diff_yday <- renderInfoBox({ # Filling infoBox
-        infoBox(
-            "ΜΕΤΑΒΟΛΗ ΑΠΟ ΤΕΛΕΥΤΑΙΑ ΤΙΜΗ",
-            value = tags$p(style = "font-size: 20px;", percent(((mydata_1()[1,2]-mydata_1()[2,2])/mydata_1()[2,2]))), 
-            fill=TRUE,
-            icon = icon("percent"),
-            color = "aqua")
-    })
-    output$highest_price <- renderInfoBox({ # Filling infoBox
-        infoBox(
-            "ΧΑΜΗΛΟΤΕΡΗ ΤΙΜΗ",
-            value = tags$p(style = "font-size: 20px;", 
-                           paste0(specify_decimal(mydata()[which.min(mydata_1()[,2]),][,2], 3), " $ - ", mydata_1()[which.min(mydata_1()[,2]),][,1])),
-            fill=TRUE,
-            icon = icon("level-down"),
-            color = "aqua")
-    })
-    output$lowest_price <- renderInfoBox({ # Filling infoBox
-        infoBox(
-            "ΥΨΗΛΟΤΕΡΗ ΤΙΜΗ",
-            value = tags$p(style = "font-size: 20px;", 
-                           paste0(specify_decimal(mydata()[which.max(mydata_1()[,2]),][,2],3), " $ - ", mydata_1()[which.max(mydata_1()[,2]),][,1])),
-            fill=TRUE,
-            icon = icon("level-up"),
-            color = "aqua")
+    output$timeline_3<-renderDygraph({ # Creating timeline for commodities
+        dygraph(mydata_3()$Value, main=mydata_3()[1,3], group = "commodities")%>%
+        dyAxis("y", label = "Commodity Price")%>%
+        dyRangeSelector(height = 20)
     })
 }
 shinyApp(ui, server)
