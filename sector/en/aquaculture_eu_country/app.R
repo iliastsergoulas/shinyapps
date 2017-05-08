@@ -38,7 +38,7 @@ colnames(mydata)<-c("country", "year", "quantity")
 
 meanvalue<-mean((aggregate(mydata$quantity, by=list(year=mydata$year), FUN=sum)$x)) # Mean value
 topc<-mydata[which.max(mydata$quantity),] # Top country
-header <- dashboardHeader(title = "Aquaculture production in EU countries (2008-)", titleWidth=500) # Header of dashboard
+header <- dashboardHeader(title = "Aquaculture production (2008-)", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
     valueBoxOutput("quantity", width=6),
@@ -102,13 +102,13 @@ server <- function(input, output) {
     data_country <- reactive({ # Adding reactive data information
         data_country<-mydata[mydata$country==input$country & mydata$quantity>0, c("year", "quantity")]
         data_country<-aggregate(data_country$quantity, by=list(Year=data_country$year), FUN=sum)
-        colnames(data_country)<-c("Year", "Production")
+        colnames(data_country)<-c("Year", "Παραγωγή")
         data_country
     })
     data_year <- reactive({ # Adding reactive data information
         data_year<-mydata[mydata$year==input$year & mydata$quantity>0,  c("country", "quantity")]
         data_year<-aggregate(data_year$quantity, by=list(Country=data_year$country), FUN=sum)
-        colnames(data_year)<-c("Country", "Production")
+        colnames(data_year)<-c("Country", "Aquaculture production")
         data_year
     })
     mydata_top_five<-reactive({ # Subsetting data according to year interval and getting top five countries
@@ -123,15 +123,15 @@ server <- function(input, output) {
         mydata_summary<-mydata[which(mydata$year>=input$myyearsummary[1] & mydata$year<=input$myyearsummary[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Production (thousands tonnes)'}", 
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Aquaculture production'}", 
                         hAxis="{title:'Year'}", backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map
-        gvisGeoChart(data_year(), "Country", "Production", options=list(region="150", 
+        gvisGeoChart(data_year(), "Country", "Aquaculture production", options=list(region="150", 
                                 displayMode="regions", datamode='regions',width=550, height=500))
     })
     output$table <- renderDataTable({ # Creating data table
-        colnames(mydata)<-c("Country", "Year", "Production")
+        colnames(mydata)<-c("Country", "Year", "Aquaculture production")
         mydata
     })
     output$summary <- renderDataTable({ # Creating summary by country
@@ -147,7 +147,7 @@ server <- function(input, output) {
     output$quantity <- renderValueBox({ # Filling valuebox
         valueBox(
             paste0(printMoney(meanvalue)," thousands tonnes"),
-            "Mean aquaculture production",
+            "Mean aquaculture production in EU countries",
             icon = icon("money"),
             color = "olive")
     })
@@ -163,7 +163,8 @@ server <- function(input, output) {
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Year") + ylab("Production (thousands tonnes)") + 
+            xlab("Year") + ylab("Aquaculture production (thousands tonnes)") + 
+            theme(legend.title=element_blank()) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 

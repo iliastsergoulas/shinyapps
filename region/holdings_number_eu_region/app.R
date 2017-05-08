@@ -108,7 +108,7 @@ server <- function(input, output) {
     data_region <- reactive({ # Add reactive data information
         data_region<-mymap[mymap$region==input$region, c("year", "number")]
         data_region<-aggregate(data_region$number, by=list(Year=data_region$year), FUN=sum)
-        colnames(data_region)<-c("Έτος", "Μέγεθος ζωικού κεφαλαίου")
+        colnames(data_region)<-c("Έτος", "Αριθμός γεωργικών εκμεταλλεύσεων")
         data_region
     })
     data_year <- reactive({ # Add reactive data information

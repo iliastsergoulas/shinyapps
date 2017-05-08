@@ -74,6 +74,7 @@ server <- function(input, output, session) {
             xlab("Prefecture") + ylab("Number of plants") + 
             theme(axis.text.x=element_text(angle=90, hjust=1)) + 
             geom_text(stat='count',aes(label=..count..),vjust=-1) + 
+            theme(legend.title=element_blank()) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)
         )  

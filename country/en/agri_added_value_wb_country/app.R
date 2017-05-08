@@ -169,6 +169,7 @@ server <- function(input, output) {
             scale_x_discrete(expand=c(0, 1)) + 
             scale_y_continuous(labels = comma) + 
             xlab("Year") + ylab("Added value of agriculture ($ in 2000 prices)") + 
+            theme(legend.title=element_blank()) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=12)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 

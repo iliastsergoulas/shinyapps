@@ -48,7 +48,7 @@ mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Nor
 
 meanvalue<-mean((aggregate(mydata_filtered$total_agri_imports, by=list(year=mydata_filtered$year), FUN=mean)$x)) # Mean value
 topc<-mydata_filtered[which.max(mydata_filtered$total_agri_imports),] # Top country
-header <- dashboardHeader(title = "Αξία όγκου εισαγωγών αγροτικών προϊόντων", titleWidth=500) # Header of dashboard
+header <- dashboardHeader(title = "Imports of agricultural products (value $)", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
     valueBoxOutput("total_agri_imports", width=6),
@@ -56,50 +56,50 @@ frow1 <- fluidRow( # Creating row of valueboxes
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Ανά χώρα",
+        title = "Per country",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             htmlOutput("view"),
-            print("Πηγή: World Bank"),
-            selectInput('country', 'Χώρα', choices = unique(mydata$country)), width='98%')),
+            print("Source: World Bank"),
+            selectInput('country', 'Country', choices = unique(mydata$country)), width='98%')),
     box(
-        title = "Ανά έτος",
+        title = "Per year",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             htmlOutput("map"),
-            print("Πηγή: World Bank"),
-            selectInput('year', 'Έτος', choices = unique(mydata$year)), width='98%'))
+            print("Source: World Bank"),
+            selectInput('year', 'Year', choices = unique(mydata$year)), width='98%'))
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 χώρες με τη μεγαλύτερη αξία όγκου εισαγωγών",
+        title = "5 countries with highest value of agricultural products' imports",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             plotOutput("timeline", width = "150%"),
-            print("Πηγή: World Bank"),
-            sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+            print("Source: World Bank"),
+            sliderInput("myyear", "Year:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
                         value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep=""))),
     box(
-        title = "Σύνοψη δεδομένων ανά χώρα",
+        title = "Data synopsis per country",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             dataTableOutput("summary"),
             width=550,
-            print("Πηγή: World Bank"),
-            sliderInput("myyearsummary", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
+            print("Source: World Bank"),
+            sliderInput("myyearsummary", "Year:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
                         value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")))
 )
 frow4 <- fluidRow( # Creating row of download button
     box(
-        title = "Λήψη δεδομένων",
+        title = "Download data",
         status="success",
         collapsed = TRUE,
         theme = shinytheme("spacelab"), 
@@ -113,13 +113,13 @@ server <- function(input, output) {
     data_country <- reactive({ # Adding reactive data information
         data_country<-mydata[mydata$country==input$country, c("year", "total_agri_imports")]
         data_country<-aggregate(data_country$total_agri_imports, by=list(Year=data_country$year), FUN=sum)
-        colnames(data_country)<-c("Έτος", "Συνολικές εισαγωγές (δολάρια)")
+        colnames(data_country)<-c("Year", "Total imports ($)")
         data_country
     })
     data_year <- reactive({ # Adding reactive data information
         data_year<-mydata_filtered[mydata_filtered$year==input$year,  c("country", "total_agri_imports")]
         data_year<-aggregate(data_year$total_agri_imports, by=list(Country=data_year$country), FUN=sum)
-        colnames(data_year)<-c("Χώρα", "Συνολικές εισαγωγές (δολάρια)")
+        colnames(data_year)<-c("Country", "Total imports ($)")
         data_year
     })
     mydata_top_five<-reactive({ # Subsetting data according to year interval and getting top five countries
@@ -133,16 +133,16 @@ server <- function(input, output) {
         mydata_summary<-mydata[which(mydata$year>=input$myyearsummary[1] & mydata$year<=input$myyearsummary[2]),] 
     })
     output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Συνολικές εισαγωγές (δολάρια)'}", 
-                        hAxis="{title:'Έτος'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
+        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Total imports ($)'}", 
+                        hAxis="{title:'Year'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$map <- renderGvis({ # Creating map
-        gvisGeoChart(data_year(), "Χώρα", "Συνολικές εισαγωγές (δολάρια)", 
+        gvisGeoChart(data_year(), "Country", "Total imports ($)", 
                      options=list(displayMode="regions", datamode='regions',width=550, height=500))
     })
     output$table <- renderDataTable({ # Creating data table
-        colnames(mydata)<-c("Κωδικός", "Χώρα", "Συνολικές εισαγωγές", "Έτος")
-        mydata[c("Χώρα", "Συνολικές εισαγωγές", "Έτος")]
+        colnames(mydata)<-c("Κωδικός", "Country", "Total imports ($)", "Year")
+        mydata[c("Country", "Συνολικές εισαγωγές", "Year")]
     })
     output$summary <- renderDataTable({ # Creating summary by country
         mysummary <- data.frame(
@@ -150,20 +150,20 @@ server <- function(input, output) {
             aggregate(total_agri_imports~country, mydata_summary(), max),
             aggregate(total_agri_imports~country, mydata_summary(), mean))
         mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστη αξία εισαγωγών", "Μέγιστη αξία εισαγωγών", "Μέση αξία εισαγωγών")
+        colnames(mysummary) <- c("Country", "Minimum imports value", "Maximum imports value", "Mean imports value")
         mysummary
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
     output$total_agri_imports <- renderValueBox({ # Filling valuebox
         valueBox(
-            paste0(printMoney(meanvalue), " δολάρια"),
-            "Μέση αξία όγκου εισαγωγών παγκοσμίως",
+            paste0(printMoney(meanvalue), " $"),
+            "Mean value of agricultural products' imports globally",
             icon = icon("dollar"),
             color = "olive")
     })
     output$topcountry <- renderValueBox({ # Filling valuebox
         valueBox(
             paste0(topc$country," - ", topc$year),
-            "Χώρα με μεγαλύτερη αξία όγκου εισαγωγών",
+            "Country with highest value of agricultural products' imports",
             icon = icon("globe"),
             color = "olive")
     })
@@ -172,7 +172,8 @@ server <- function(input, output) {
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Συνολικές εισαγωγές (δολάρια)") + 
+            xlab("Year") + ylab("Total imports ($)") + 
+            theme(legend.title=element_blank()) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8))  

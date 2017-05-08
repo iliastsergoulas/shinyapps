@@ -169,6 +169,7 @@ server <- function(input, output) {
             scale_x_discrete(expand=c(0, 1)) + 
             scale_y_continuous(labels = comma) + 
             xlab("Έτος") + ylab("Προστιθέμενη αξία γεωργίας (δολάρια σε τιμές 2000)") + 
+            theme(legend.title=element_blank()) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=12)) + 
             geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 

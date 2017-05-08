@@ -41,7 +41,7 @@ mymap<-mymap[order(mymap$year, decreasing=TRUE),]
 
 meanvalue<-mean((aggregate(mymap$number, by=list(year=mymap$year), FUN=mean)$x)) # Mean value
 topc<-mymap[which.max(mymap$number),] # Top region
-header <- dashboardHeader(title = "Παραγωγή γάλακτος ανά περιφέρεια Ε.Ε.", titleWidth=600) # Header of dashboard
+header <- dashboardHeader(title = "Milk production per EU region", titleWidth=600) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 
 frow1 <- fluidRow( # Creating row of valueboxes
@@ -50,50 +50,50 @@ frow1 <- fluidRow( # Creating row of valueboxes
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Ανά περιφέρεια",
+        title = "Per EU region",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             htmlOutput("view"),
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            selectInput('region', 'Περιφέρεια', choices = unique(mymap$region)), width='98%')),
+            print("Source: (C) EuroGeographics for the administrative boundaries"),
+            selectInput('region', 'Region', choices = unique(mymap$region)), width='98%')),
     box(
-        title = "Ανά έτος",
+        title = "Per year",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             plotOutput("map"),
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            selectInput('year', 'Έτος', choices = unique(mymap$year)), width='98%'))
+            print("Source: (C) EuroGeographics for the administrative boundaries"),
+            selectInput('year', 'Year', choices = unique(mymap$year)), width='98%'))
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 περιφέρειες με μεγαλύτερη παραγωγή γάλακτος",
+        title = "5 EU regions with largest milk production",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             plotOutput("timeline", width = "150%"),
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            sliderInput("myyear", "Έτος:",min=min(as.numeric(mymap$year)), max=max(as.numeric(mymap$year)), 
+            print("Source: (C) EuroGeographics for the administrative boundaries"),
+            sliderInput("myyear", "Year:",min=min(as.numeric(mymap$year)), max=max(as.numeric(mymap$year)), 
                         value=c(min(as.numeric(mymap$year))+1,max(as.numeric(mymap$year))-1), sep=""))),
     box(
-        title = "Σύνοψη δεδομένων ανά περιφέρεια",
+        title = "Data synopsis per region",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             dataTableOutput("summary"),
             width=550,
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            sliderInput("myyearsummary", "Έτος:",min=min(as.numeric(mymap$year)), max=max(as.numeric(mymap$year)), 
+            print("Source: (C) EuroGeographics for the administrative boundaries"),
+            sliderInput("myyearsummary", "Year:",min=min(as.numeric(mymap$year)), max=max(as.numeric(mymap$year)), 
                         value=c(min(as.numeric(mymap$year))+1,max(as.numeric(mymap$year))-1), sep="")))
 )
 frow4 <- fluidRow( # Creating row of download button
     box(
-        title = "Λήψη δεδομένων",
+        title = "Download data",
         status="success",
         collapsed = TRUE,
         theme = shinytheme("spacelab"), 
@@ -107,7 +107,7 @@ server <- function(input, output) {
     data_region <- reactive({ # Add reactive data information
         data_region<-mymap[mymap$region==input$region, c("year", "number")]
         data_region<-aggregate(data_region$number, by=list(Year=data_region$year), FUN=sum)
-        colnames(data_region)<-c("Έτος", "Παραγωγή γάλακτος")
+        colnames(data_region)<-c("Year", "Milk production")
         data_region
     })
     data_year <- reactive({ # Add reactive data information
@@ -126,7 +126,7 @@ server <- function(input, output) {
     })
     output$view <- renderGvis({ # Creating chart
         gvisColumnChart(data_region(), options=list(colors="['#336600']", 
-                                                    vAxis="{title:'Παραγωγή γάλακτος (χιλ. τόνοι)'}", hAxis="{title:'Έτος'}",
+                                                    vAxis="{title:'Milk production (thousands tonnes)'}", hAxis="{title:'Year'}",
                                                     backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$map <- renderPlot({ # Creating map
@@ -151,7 +151,7 @@ server <- function(input, output) {
                        axis.title = element_blank(), 
                        axis.ticks = element_blank(), 
                        plot.margin = unit(c(-3,-1.5, -3, -1.5), "cm"))
-        p <- p + guides(fill = guide_legend(title = "Παραγωγή γάλακτος",
+        p <- p + guides(fill = guide_legend(title = "Milk production",
                                             title.position = "top", 
                                             title.hjust=0))
         print(p)
@@ -161,21 +161,22 @@ server <- function(input, output) {
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Παραγωγή γάλακτος") + 
+            xlab("Year") + ylab("Milk production") + 
+            theme(legend.title=element_blank()) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14))  
     })
     output$number <- renderValueBox({ # Filling valuebox
         valueBox(
-            paste0(specify_decimal(meanvalue,2), " χιλ. τόνοι"),
-            "Μέση παραγωγή γάλακτος στις περιφέρειες της Ε.Ε.",
+            paste0(specify_decimal(meanvalue,2), " thousands tonnes"),
+            "Mean milk production in EU regions",
             icon = icon("user"),
             color = "olive")
     })
     output$topregion <- renderValueBox({ # Filling valuebox
         valueBox(
             topc$region,
-            "Περιφέρεια με μεγαλύτερη παραγωγή γάλακτος",
+            "Region with largest milk production",
             icon = icon("globe"),
             color = "olive")
     })
@@ -185,7 +186,7 @@ server <- function(input, output) {
             aggregate(number~region, mymap_summary(), max),
             aggregate(number~region, mymap_summary(), mean))
         mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Περιφέρεια", "Ελάχιστη παραγωγή γάλακτος", "Μέγιστη παραγωγή γάλακτος", "Μέση παραγωγή γάλακτος")
+        colnames(mysummary) <- c("Region", "Minimum milk production", "Maximum milk production", "Mean milk production")
         mysummary
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
     output$downloadData <- downloadHandler( # Creating download button
