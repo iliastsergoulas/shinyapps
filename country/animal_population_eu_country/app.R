@@ -64,7 +64,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 χώρες με υψηλότερο μέγεθος ζωικού κεφαλαίου",
+        title = "5 χώρες με μεγαλύτερο ζωικό κεφάλαιο",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 

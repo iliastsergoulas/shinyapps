@@ -76,7 +76,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 χώρες με μεγαλύτερο ρυθμό μεταβολής κατά κεφαλήν πραγματικού ΑΕΠ γεωργίας (%)",
+        title = "5 χώρες με μεγαλύτερο ρυθμό μεταβολής κατά κεφαλήν ΑΕΠ γεωργίας",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -150,14 +150,14 @@ server <- function(input, output) {
             aggregate(agri_real_gdp_per_capita~country, mydata_summary(), max),
             aggregate(agri_real_gdp_per_capita~country, mydata_summary(), mean))
         mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστος ρυθμός μεταβολής κατά κεφαλήν ΑΕΠ γεωργίας (%)", "Μέγιστος ρυθμός μεταβολής κατά κεφαλήν ΑΕΠ γεωργίας (%)", "Μέσος ρυθμός μεταβολής κατά κεφαλήν ΑΕΠ γεωργίας (%)")
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστος ρυθμός μεταβολής", "Μέγιστος ρυθμός μεταβολής", "Μέσος ρυθμός μεταβολής")
         mysummary
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
     output$agri_real_gdp_per_capita <- renderValueBox({ # Filling valuebox
         valueBox(
             paste0(specify_decimal(meanvalue,2), " %"),
             "Μέσος ρυθμός μεταβολής κατά κεφαλήν πραγματικού ΑΕΠ γεωργίας παγκοσμίως",
-            icon = icon("user"),
+            icon = icon("money"),
             color = "olive")
     })
     output$topcountry <- renderValueBox({ # Filling valuebox

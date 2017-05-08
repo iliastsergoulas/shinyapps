@@ -156,7 +156,7 @@ server <- function(input, output) {
         valueBox(
             paste0(printMoney(meanvalue), " τ. χλμ."),
             "Μέση έκταση αγροτικής γης παγκοσμίως",
-            icon = icon("user"),
+            icon = icon("map"),
             color = "olive")
     })
     output$topcountry <- renderValueBox({ # Filling valuebox

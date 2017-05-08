@@ -28,6 +28,9 @@ for (i in 1:nrow(mydata)) { # Replacing country codes in order to get correct co
     if(as.character(mydata$geo[i])=="UK") {
         mydata$geo[i] <- "GB"}}
 mydata$countryname <- countrycode(mydata$geo, "iso2c", "country.name") # Getting country names
+for (i in 1:nrow(mydata)) { # Replacing country codes in order to get correct country names
+    if(as.character(mydata$geo[i])=="GB") {
+        mydata$countryname[i] <- "United Kingdom"}}
 mydata<-mydata[which(!is.na(mydata$countryname)), c("countryname", "time", "values")] # Filtering for country names not found
 colnames(mydata)<-c("country", "year", "quantity")
 
@@ -61,7 +64,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 κορυφαίες χώρες στην παραγωγή ρύπων από αγροτικό τομέα",
+        title = "5 χώρες με μεγαλύτερη παραγωγή ρύπων από αγροτικό τομέα",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -143,7 +146,7 @@ server <- function(input, output) {
         valueBox(
             paste0(specify_decimal(meanvalue,2), " εκατ. τόνοι"),
             "Μέση παραγωγή ρύπων στις χώρες της Ε.Ε.",
-            icon = icon("user"),
+            icon = icon("industry"),
             color = "olive")
     })
     output$topcountry <- renderValueBox({ # Filling valuebox

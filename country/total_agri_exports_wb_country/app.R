@@ -76,7 +76,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 χώρες με τη μεγαλύτερη αξία εξαγόμενων προϊόντων",
+        title = "5 χώρες με τη μεγαλύτερη αξία όγκου εξαγωγών",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 

@@ -28,6 +28,9 @@ for (i in 1:nrow(mydata)) { # Replacing country codes in order to get correct co
     if(as.character(mydata$geo[i])=="UK") {
         mydata$geo[i] <- "GB"}}
 mydata$countryname <- countrycode(mydata$geo, "iso2c", "country.name") # Getting country names
+for (i in 1:nrow(mydata)) { # Replacing country codes in order to get correct country names
+    if(as.character(mydata$geo[i])=="GB") {
+        mydata$countryname[i] <- "United Kingdom"}}
 mydata<-mydata[which(!is.na(mydata$countryname)), c("countryname", "time", "values")] # Filtering for country names not found
 colnames(mydata)<-c("country", "year", "area")
 
@@ -144,7 +147,7 @@ server <- function(input, output) {
         valueBox(
             paste0(printMoney(meanvalue), " εκτάρια"),
             "Μέση έκταση καλλιεργημένης γης παγκοσμίως",
-            icon = icon("user"),
+            icon = icon("map"),
             color = "olive")
     })
     output$topcountry <- renderValueBox({ # Filling valuebox

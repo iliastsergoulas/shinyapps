@@ -147,7 +147,7 @@ server <- function(input, output) {
         valueBox(
             paste0(printMoney(meanvalue)," χιλ. τόνοι"),
             "Μέση παραγωγή από υδατοκαλλιέργειες",
-            icon = icon("money"),
+            icon = icon("balance-scale"),
             color = "olive")
     })
     output$topcountry <- renderValueBox({ # Filling valuebox

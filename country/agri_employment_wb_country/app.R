@@ -152,7 +152,7 @@ server <- function(input, output) {
             aggregate(employment~country, mydata_summary(), max),
             aggregate(employment~country, mydata_summary(), mean))
         mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστο ποσοστό γεωργικής απασχόλησης", "Μέγιστο ποσοστό γεωργικής απασχόλησης", "Μέσο ποσοστό γεωργικής απασχόλησης")
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστο ποσοστό", "Μέγιστο ποσοστό", "Μέσο ποσοστό")
         mysummary
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
     output$employment <- renderValueBox({ # Filling valuebox

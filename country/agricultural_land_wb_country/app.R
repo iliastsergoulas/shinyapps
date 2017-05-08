@@ -76,7 +76,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 χώρες με υψηλότερο ποσοστό αγροτικής γης",
+        title = "5 χώρες με μεγαλύτερο ποσοστό αγροτικής γης",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -150,14 +150,14 @@ server <- function(input, output) {
             aggregate(agri_area_percentage~country, mydata_summary(), max),
             aggregate(agri_area_percentage~country, mydata_summary(), mean))
         mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστο ποσοστό αγροτικής γης", "Μέγιστο ποσοστό αγροτικής γης", "Μέσο ποσοστό αγροτικής γης")
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστο ποσοστό", "Μέγιστο ποσοστό", "Μέσο ποσοστό")
         mysummary
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
     output$agri_area_percentage <- renderValueBox({ # Filling valuebox
         valueBox(
             paste0(specify_decimal(meanvalue,2), " %"),
             "Μέσο ποσοστό αγροτικής γης παγκοσμίως",
-            icon = icon("user"),
+            icon = icon("map"),
             color = "olive")
     })
     output$topcountry <- renderValueBox({ # Filling valuebox

@@ -76,7 +76,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
     box(
-        title = "5 χώρες με μεγαλύτερη πυκνότητα αγροτικού πληθυσμού (ανά τ. χλμ. καλλιεργήσιμης γης)",
+        title = "5 χώρες με μεγαλύτερη πυκνότητα αγροτικού πληθυσμού",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -150,7 +150,7 @@ server <- function(input, output) {
             aggregate(agri_population_persqkm~country, mydata_summary(), max),
             aggregate(agri_population_persqkm~country, mydata_summary(), mean))
         mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστη πυκνότητα αγροτικού πληθυσμού", "Μέγιστη πυκνότητα αγροτικού πληθυσμού", "Μέση πυκνότητα αγροτικού πληθυσμού")
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστη πυκνότητα", "Μέγιστη πυκνότητα", "Μέση πυκνότητα")
         mysummary
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
     output$agri_population_persqkm <- renderValueBox({ # Filling valuebox

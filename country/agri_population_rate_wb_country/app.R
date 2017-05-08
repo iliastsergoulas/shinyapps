@@ -150,7 +150,7 @@ server <- function(input, output) {
             aggregate(agri_population_rate~country, mydata_summary(), max),
             aggregate(agri_population_rate~country, mydata_summary(), mean))
         mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστος ρυθμός μεταβολής αγροτικού πληθυσμού", "Μέγιστος ρυθμός μεταβολής αγροτικού πληθυσμού", "Μέσος ρυθμός μεταβολής αγροτικού πληθυσμού")
+        colnames(mysummary) <- c("Χώρα", "Ελάχιστος ρυθμός μεταβολής", "Μέγιστος ρυθμός μεταβολής", "Μέσος ρυθμός μεταβολής")
         mysummary
     }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
     output$agri_population_rate <- renderValueBox({ # Filling valuebox

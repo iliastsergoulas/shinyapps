@@ -157,7 +157,7 @@ server <- function(input, output) {
         valueBox(
             paste0(specify_decimal(meanvalue,2), " %"),
             "Μέσο ποσοστό αρδευόμενης αγροτικής γης παγκοσμίως",
-            icon = icon("user"),
+            icon = icon("map"),
             color = "olive")
     })
     output$topcountry <- renderValueBox({ # Filling valuebox
