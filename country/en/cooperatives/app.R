@@ -15,7 +15,7 @@ library(directlabels)
 library(scales)
 library(shinydashboard)
 
-coops <- readShapePoints("/home/iliastsergoulas/Dropbox/Website/shapefiles/cooperatives/cooperatives.shp")
+coops <- readShapePoints("/home/iliastsergoulas/shapefiles/cooperatives/cooperatives.shp")
 coops_edited <- as.data.frame(coops)
 coops_per_region <- coops_edited[c("region", "id")]
 coops_per_pref <- coops_edited[c("prefecture", "id")]
