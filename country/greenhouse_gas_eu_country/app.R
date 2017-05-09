@@ -36,7 +36,7 @@ colnames(mydata)<-c("country", "year", "quantity")
 
 meanvalue<-mean((aggregate(mydata$quantity, by=list(year=mydata$year), FUN=mean)$x)) # Mean value
 topc<-mydata[which.max(mydata$quantity),] # Top country
-header <- dashboardHeader(title = "Παραγωγή ρύπων από αγροτικό τομέα στις χώρες της Ε.Ε. (εκατ. τόνοι)", titleWidth=500) # Header of dashboard
+header <- dashboardHeader(title = "Παραγωγή ρύπων από αγροτικό τομέα στην Ε.Ε. (εκατ. τόνοι)", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
     valueBoxOutput("quantity", width=6),

@@ -163,6 +163,7 @@ server <- function(input, output) {
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
             xlab("Έτος") + ylab("Έκταση καλλιεργημένης γης") + 
+            theme(legend.title=element_blank()) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14))  
     })
