@@ -55,7 +55,7 @@ ui <- fluidPage( # Creating shiny app's UI
 )
 server <- function(input, output) {
     output$view <- renderPlot({ # Creating wordcloud
-        wordcloud(d$word, d$freq, min.freq=2, max.words=50, scale=c(3,.5), 
+        wordcloud(d$word, d$freq, min.freq=2, max.words=50, scale=c(5,.5), 
                   rot.per=.5,colors=brewer.pal(8, "Dark2"))
     })
 }
