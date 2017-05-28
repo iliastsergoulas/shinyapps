@@ -22,7 +22,7 @@ if (magnitude > suffixes.length - 1)
 magnitude = suffixes.length - 1;
 return String(Math.round(v / Math.pow(10, magnitude * 3), 2)) +suffixes[magnitude]}"
 
-mydata<-read.csv("/home/iliastsergoulas/payments.csv", sep=",", encoding="UTF-8", stringsAsFactors = FALSE)
+mydata<-read.csv("/home/iliastsergoulas/Dropbox/Website/payments.csv", sep=",", encoding="UTF-8", stringsAsFactors = FALSE)
 #mydata<-mydata[which(mydata$category=='Πληρωμές ΕΤΑ 2007-2013'), ] # Filtering data
 #mydata<-mydata[c("date", "measure", "payment_amount")]
 mydata$date <- dmy(mydata$date) # Converting character to date
@@ -58,6 +58,7 @@ frow3 <- fluidRow(# Creating row of diagram and summary
         theme = shinytheme("spacelab"), 
         mainPanel(
             dataTableOutput("summary"),width=550)),
+
     box(
         title = "Λήψη δεδομένων",
         status="success",
@@ -102,7 +103,7 @@ server <- function(input, output) {
         mysummary <- mysummary[,c(1,2,4,6)]
         colnames(mysummary) <- c("Μέτρο", "Ελάχιστη απορρόφηση ημέρας", "Μέγιστη απορρόφηση ημέρας", "Μέση απορρόφηση ημέρας")
         mysummary
-    }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
+    }, options = list(lengthMenu = c(5, 25, 50), pageLength = 3))
     output$downloadData <- downloadHandler( # Creating download button
         filename = function() {paste('mydata', '.csv', sep='')},
         content = function(file) {
