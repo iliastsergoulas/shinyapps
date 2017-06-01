@@ -15,7 +15,7 @@ library(directlabels)
 library(scales)
 library(shinydashboard)
 
-plants <- readShapePoints("/home/iliastsergoulas/Dropbox/Website/shapefiles/aromatic/aromatic_plants.shp")
+plants <- readShapePoints("/home/iliastsergoulas/shapefiles/aromatic/aromatic_plants.shp")
 plants_list <- as.data.frame(plants)
 plants_list <- plants_list[c("business_n", "type_en", "website")]
 names(plants_list)<-c("Name", "Type", "Website")
