@@ -1,5 +1,5 @@
 # Data: Wine production based on data by Greek Ministry of Agricultural Production and Food
-# This R script is created as a Shiny application to download raw data from Eurostat ((C) EuroGeographics for the administrative boundaries), 
+# This R script is created as a Shiny application to download raw data from Eurostat (Υπουργείο Αγροτικής Ανάπτυξης και Τροφίμων), 
 # process it and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
 # Author: Ilias Tsergoulas, Website: www.agristats.eu
@@ -13,140 +13,120 @@ library(countrycode)
 library(ggplot2)
 library(directlabels)
 library(scales)
+library(reshape2)
 
 printMoney <- function(x){ # A function to show quantity as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show quantity with k decimal places
 
-mydata<-read.csv("C:/Users/itsergoulas/Dropbox/Website/shiny/sector/wine_production_minagric/wine_production_minagric.csv", 
-                 sep=",", encoding="UTF-8")
-print(mydata)
-mydata<-mydata[which(!is.na(mydata$countryname)), c("countryname", "time", "values")] # Filtering for country names not found
-colnames(mydata)<-c("country", "year", "quantity")
-
-meanvalue<-mean((aggregate(mydata$quantity, by=list(year=mydata$year), FUN=sum)$x)) # Mean value
-topc<-mydata[which.max(mydata$quantity),] # Top country
-header <- dashboardHeader(title = "Παραγωγή οίνου κατά είδος στην Ελλάδα", titleWidth=500) # Header of dashboard
+mydata<-read.csv("wine_production_minagric.csv", sep=",", encoding="UTF-8")
+mydata_processed<-melt(mydata, id.vars=c("wine_category", "year"))
+total_per_year<-aggregate(mydata_processed$value, by=list(c(year=mydata_processed$year, variable=mydata_processed$total)), FUN=sum)
+mean_wine_production<-mean(total_per_year$x) # Mean value
+topyear<-total_per_year[which.max(total_per_year$x),] # Top country
+header <- dashboardHeader(title = "Structure of wine production in Greece", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
-    valueBoxOutput("quantity", width=6),
-    valueBoxOutput("topcountry", width=6)
+    valueBoxOutput("mean_wine_production", width=6),
+    valueBoxOutput("topyear", width=6)
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Ανά είδος",
+        title = "Production per category",
+        status="success",
+        collapsible = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(
+            plotOutput("timeline_category"),
+            print("Source: Ministry of Agricultural Development and Food"),
+            selectInput('wine_category', 'Κατηγορία', choices = unique(mydata_processed$wine_category)), width='98%')),
+    box(
+        title = "Production per type",
+        status="success",
+        collapsible = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(
+            plotOutput("timeline_type"),
+            print("Source: Ministry of Agricultural Development and Food"),
+            selectInput('type', 'Τύπος', choices = unique(mydata_processed$variable)), width='98%'))
+)
+frow3 <- fluidRow( # Creating row of two diagrams
+    box(
+        title = "Per year",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             htmlOutput("view"),
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            selectInput('country', 'Χώρα', choices = unique(mydata$country)), width='98%')),
+            print("Source: Ministry of Agricultural Development and Food"),
+            selectInput('year', 'Έτος', choices = unique(mydata_processed$year)), width='98%')),
     box(
-        title = "Ανά έτος",
-        status="success",
-        collapsible = TRUE,
-        theme = shinytheme("spacelab"), 
-        mainPanel(
-            htmlOutput("map"),
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            selectInput('year', 'Έτος', choices = unique(mydata$year)), width='98%'))
-)
-frow3 <- fluidRow(# Creating row of diagram and summary
-    box(
-        title = "5 χώρες με μεγαλύτερη παραγωγή γάλακτος",
-        status="success",
-        collapsible = TRUE,
-        theme = shinytheme("spacelab"), 
-        mainPanel(
-            plotOutput("timeline", width = "150%"),
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            sliderInput("myyear", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
-                        value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep=""))),
-    box(
-        title = "Σύνοψη δεδομένων ανά χώρα",
-        status="success",
-        collapsible = TRUE,
-        theme = shinytheme("spacelab"), 
-        mainPanel(
-            dataTableOutput("summary"),
-            width=550,
-            print("Πηγή: (C) EuroGeographics for the administrative boundaries"),
-            sliderInput("myyearsummary", "Έτος:",min=min(as.numeric(mydata$year)), max=max(as.numeric(mydata$year)), 
-                        value=c(min(as.numeric(mydata$year))+1,max(as.numeric(mydata$year))-1), sep="")))
-)
-frow4 <- fluidRow( # Creating row of download button
-    box(
-        title = "Λήψη δεδομένων",
+        title = "Download data",
         status="success",
         collapsed = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(downloadButton("downloadData"))))
 
-body <- dashboardBody(frow1, frow2, frow3, frow4) # Binding rows to body of dashboard
+body <- dashboardBody(frow1, frow2, frow3) # Binding rows to body of dashboard
 ui <- dashboardPage(header, sidebar, body, skin="green") # Binding elements of dashboard
 
 
 server <- function(input, output) {
-    data_country <- reactive({ # Adding reactive data information
-        data_country<-mydata[mydata$country==input$country & mydata$quantity>0, c("year", "quantity")]
-        data_country<-aggregate(data_country$quantity, by=list(Year=data_country$year), FUN=sum)
-        colnames(data_country)<-c("Έτος", "Παραγωγή")
-        data_country
-    })
     data_year <- reactive({ # Adding reactive data information
-        data_year<-mydata[mydata$year==input$year & mydata$quantity>0,  c("country", "quantity")]
-        data_year<-aggregate(data_year$quantity, by=list(Country=data_year$country), FUN=sum)
-        colnames(data_year)<-c("Χώρα", "Παραγωγή")
-        data_year
+        data_year<-mydata_processed[mydata_processed$year==input$year,]
     })
-    mydata_top_five<-reactive({ # Subsetting data according to year interval and getting top five countries
-        # Filtering out groups of countries
-        mydata_top_five<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),]
-        data_year_temp<-aggregate(mydata_top_five$quantity, by=list(Country=mydata_top_five$country), FUN=mean)
-        data_year_temp<-data_year_temp[order(-data_year_temp$x),]
-        data_year_temp<-data_year_temp[1:5,] # Keeping top five countries
-        mydata_top_five<-mydata_top_five[which(mydata_top_five$country %in% data_year_temp$Country),]
+    mydata_processed_timeline_category<-reactive({ # Filtering data by chosen wine category
+        mydata_processed_timeline_category<-mydata_processed[which(mydata_processed$wine_category==input$wine_category),]
     })
-    mydata_summary<-reactive({ # Subsetting data according to year interval
-        mydata_summary<-mydata[which(mydata$year>=input$myyear[1] & mydata$year<=input$myyear[2]),] 
+    mydata_processed_timeline_type<-reactive({ # Filtering data by chosen wine type
+        mydata_processed_timeline_type<-mydata_processed[which(mydata_processed$variable==input$type),]
     })
-    output$view <- renderGvis({ # Creating chart
-        gvisColumnChart(data_country(), options=list(colors="['#336600']", vAxis="{title:'Παραγωγή (τόνοι)'}", 
-                        hAxis="{title:'Έτος'}", backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
+    output$view <- renderPlot({ # Creating chart
+        ggplot(data_year(), aes(x = variable, y = value, fill = wine_category, label = value)) + 
+            xlab("Type") + ylab("Production (tonnes)") + 
+            theme(legend.title=element_blank()) + 
+            geom_bar(stat = "identity")
     })
-    output$map <- renderGvis({ # Creating map
-        gvisGeoChart(data_year(), "Χώρα", "Παραγωγή", options=list(region="150", displayMode="regions", 
-                                  datamode='regions', width=550, height=500))
+    output$mean_wine_production <- renderValueBox({ # Filling valuebox
+        valueBox(
+            paste0(specify_decimal(mean_wine_production,2), " tonnes"),
+            "Average annual wine production",
+            icon = icon("map"),
+            color = "olive")
     })
-    output$table <- renderDataTable({ # Creating data table
-        colnames(mydata)<-c("Χώρα", "Έτος", "Παραγωγή")
-        mydata
+    output$topyear <- renderValueBox({ # Filling valuebox
+        valueBox(
+            paste0(topyear$Group.1," - ", printMoney(topc$x), " tonnes"),
+            "Year with maximum total wine production",
+            icon = icon("globe"),
+            color = "olive")
     })
-    output$summary <- renderDataTable({ # Creating summary by country
-        mysummary <- data.frame(
-            aggregate(quantity~country, mydata_summary(), min),
-            aggregate(quantity~country, mydata_summary(), max),
-            aggregate(quantity~country, mydata_summary(), mean))
-        mysummary <- mysummary[,c(1,2,4,6)]
-        colnames(mysummary) <- c("Χώρα", "Ελάχιστη Παραγωγή", "Μέγιστη Παραγωγή", "Μέση Παραγωγή")
-        mysummary
-    }, options = list(lengthMenu = c(5, 25, 50), pageLength = 5))
-    output$timeline<-renderPlot({ # Creating timeline for top 5 countries
-        ggplot(mydata_top_five(), aes(x = year, y = quantity, group = country, colour = country)) + 
+    output$timeline_category<-renderPlot({ # Creating timeline per wine category
+        ggplot(mydata_processed_timeline_category(), aes(x = year, y = value, group = variable, colour = variable)) + 
+            geom_line() +
+            scale_x_discrete(expand=c(0, 0.5)) + 
+            scale_y_continuous(labels = comma) + 
+            xlab("Year") + ylab("Production (tonnes)") + 
+            theme(legend.title=element_blank()) + 
+            theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
+            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
+            geom_dl(aes(label = variable), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 
+    })
+    output$timeline_type<-renderPlot({ # Creating timeline per wine type
+        ggplot(mydata_processed_timeline_type(), aes(x = year, y = value, group = wine_category, colour = wine_category)) + 
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
             xlab("Έτος") + ylab("Παραγωγή (τόνοι)") + 
+            theme(legend.title=element_blank()) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
-            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
-            geom_dl(aes(label = country), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 
+            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) 
     })
     output$downloadData <- downloadHandler( # Creating download button
-        filename = function() { paste('mydata', '.csv', sep='') },
+        filename = function() { paste('mydata_processed', '.csv', sep='') },
         content = function(file) {
-            write.csv(mydata, file)
+            write.csv(mydata_processed, file)
     })
 }
 shinyApp(ui, server)

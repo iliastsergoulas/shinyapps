@@ -1,4 +1,4 @@
-wine_type,year,total,red_wine,white_wine
+wine_category,year,Total,Red wine,White wine
 V.Q.P.R.D.,1984,289000,145000,144000
 Οίνοι με Γεωγραφική Ένδειξη,1984,659000,2000,657000
 Οίνοι χωρίς Γεωγραφική Ένδειξη,1984,4067500,1476500,2591000
