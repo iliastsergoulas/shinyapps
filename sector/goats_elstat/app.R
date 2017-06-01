@@ -19,7 +19,7 @@ printMoney <- function(x){ # A function to show quantity as currency
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show quantity with k decimal places
 
-mydata<-read.csv("C:/Users/itsergoulas/Dropbox/Website/shiny/sector/goats_elstat/goats.csv", 
+mydata<-read.csv("/home/iliastsergoulas/Dropbox/Website/shiny/sector/goats_elstat/goats.csv", 
                  sep=";",stringsAsFactors = FALSE)
 mydata_processed<-melt(mydata, id.vars=c("Έτος", "Περιφέρεια"))
 names(mydata_processed)<-c("year", "region", "variable", "value")
