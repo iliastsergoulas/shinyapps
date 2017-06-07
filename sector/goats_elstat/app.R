@@ -7,8 +7,7 @@
 library(shiny)
 library(shinydashboard)
 library(shinythemes)
-library(eurostat)
-library(countrycode)
+library(googleVis)
 library(ggplot2)
 library(directlabels)
 library(scales)
@@ -20,41 +19,44 @@ printMoney <- function(x){ # A function to show quantity as currency
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show quantity with k decimal places
 
 mydata<-read.csv("/home/iliastsergoulas/Dropbox/Website/shiny/sector/goats_elstat/goats.csv", 
-                 sep=";",stringsAsFactors = FALSE)
+                 sep=";", encoding='UTF-8', stringsAsFactors = FALSE)
 mydata_processed<-melt(mydata, id.vars=c("Έτος", "Περιφέρεια"))
 names(mydata_processed)<-c("year", "region", "variable", "value")
-total_per_year<-aggregate(as.numeric(mydata_processed$value), by=list(year=mydata_processed$year), FUN=sum)
-mean_goats_production<-mean(total_per_year$x) # Mean value
+total_per_year<-mydata_processed[which(mydata_processed$variable=='Σύνολο.αιγοειδών'),]
+total_per_year<-aggregate(total_per_year$value, by=list(total_per_year$year), FUN=sum)
+mean_goats_population<-mean(total_per_year$x) # Mean value
 topyear<-total_per_year[which.max(total_per_year$x),] # Top country
-header <- dashboardHeader(title = "Αιγοπρόβατα στην Ελλάδα", titleWidth=500) # Header of dashboard
+mydata_category<-aggregate(mydata_processed$value, by=list(c(mydata_processed$year, mydata_processed$variable)), FUN=sum)
+mydata_category$pct_category<-mydata_category$value/mydata_category[which(mydata_category$variable=='Σύνολο.αιγοειδών'),]$value
+header <- dashboardHeader(title = "Αιγοειδή στην Ελλάδα", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
-    valueBoxOutput("mean_goats_production", width=6),
+    valueBoxOutput("mean_goats_population", width=6),
     valueBoxOutput("topyear", width=6)
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Πορεία παραγωγής ανά κατηγορία",
+        title = "Πορεία πληθυσμού αιγοειδών ανά κατηγορία",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             plotOutput("timeline_category"),
             print("Πηγή: ΕΛΣΤΑΤ"),
-            selectInput('wine_category', 'Κατηγορία', choices = unique(mydata_processed$wine_category)), width='98%')),
+            selectInput('goats_category', 'Κατηγορία', choices = unique(mydata_processed$variable)), width='98%')),
     box(
-        title = "Πορεία παραγωγής ανά τύπο",
+        title = "Πορεία πληθυσμού αιγοειδών ανά Περιφέρεια",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
-            plotOutput("timeline_type"),
+            plotOutput("timeline_region"),
             print("Πηγή: ΕΛΣΤΑΤ"),
-            selectInput('type', 'Τύπος', choices = unique(mydata_processed$variable)), width='98%'))
+            selectInput('region', 'Περιφέρεια', choices = unique(mydata_processed$region)), width='98%'))
 )
 frow3 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Διάρθρωση παραγωγής ανά έτος",
+        title = "Διάρθρωση Πληθυσμός ανά έτος",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -78,48 +80,41 @@ server <- function(input, output) {
         data_year<-mydata_processed[mydata_processed$year==input$year,]
     })
     mydata_processed_timeline_category<-reactive({ # Filtering data by chosen wine category
-        mydata_processed_timeline_category<-mydata_processed[which(mydata_processed$wine_category==input$wine_category),]
+        mydata_processed_timeline_category<-mydata_processed[which(mydata_processed$variable==input$goats_category),]
     })
-    mydata_processed_timeline_type<-reactive({ # Filtering data by chosen wine type
-        mydata_processed_timeline_type<-mydata_processed[which(mydata_processed$variable==input$type),]
+    mydata_processed_timeline_region<-reactive({ # Filtering data by chosen wine type
+        mydata_processed_timeline_region<-mydata_processed[which(mydata_processed$region==input$region),]
     })
-    output$view <- renderPlot({ # Creating chart
-        ggplot(data_year(), aes(x = variable, y = value, fill = wine_category, label = value)) + 
-            xlab("Τύπος") + ylab("Παραγωγή (τόνοι)") + 
-            theme(legend.title=element_blank()) + 
-            geom_bar(stat = "identity")
-    })
-    output$mean_goats_production <- renderValueBox({ # Filling valuebox
+    output$mean_goats_population <- renderValueBox({ # Filling valuebox
         valueBox(
-            paste0(specify_decimal(mean_goats_production,2), " τόνοι"),
-            "Μέση παραγωγή οίνου ετησίως",
+            paste0(specify_decimal(mean_goats_population,2)),
+            "Μέσος εθνικός πληθυσμός αιγοειδών ετησίως",
             icon = icon("map"),
             color = "olive")
     })
     output$topyear <- renderValueBox({ # Filling valuebox
         valueBox(
-            paste0(topyear$Group.1," - ", printMoney(topc$x), " τόνοι"),
-            "Έτος με μέγιστη συνολική παραγωγή οίνου",
+            paste0(topyear$Group.1, " - ", printMoney(topyear$x)),
+            "Έτος με μέγιστο συνολικό εθνικό πληθυσμό αιγοειδών",
             icon = icon("globe"),
             color = "olive")
     })
     output$timeline_category<-renderPlot({ # Creating timeline per wine category
-        ggplot(mydata_processed_timeline_category(), aes(x = year, y = value, group = variable, colour = variable)) + 
+        ggplot(mydata_processed_timeline_category(), aes(x = year, y = value, group = region, colour = region)) + 
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Παραγωγή (τόνοι)") + 
+            xlab("Έτος") + ylab("Πληθυσμός") + 
             theme(legend.title=element_blank()) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
-            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
-            geom_dl(aes(label = variable), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 
+            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) 
     })
-    output$timeline_type<-renderPlot({ # Creating timeline per wine type
-        ggplot(mydata_processed_timeline_type(), aes(x = year, y = value, group = wine_category, colour = wine_category)) + 
+    output$timeline_region<-renderPlot({ # Creating timeline per wine type
+        ggplot(mydata_processed_timeline_region(), aes(x = year, y = value, group = variable, colour = variable)) + 
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Παραγωγή (τόνοι)") + 
+            xlab("Έτος") + ylab("Πληθυσμός") + 
             theme(legend.title=element_blank()) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) 
