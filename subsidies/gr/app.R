@@ -22,7 +22,7 @@ if (magnitude > suffixes.length - 1)
 magnitude = suffixes.length - 1;
 return String(Math.round(v / Math.pow(10, magnitude * 3), 2)) +suffixes[magnitude]}"
 
-mydata<-read.csv("/home/iliastsergoulas/Dropbox/Website/payments.csv", sep=",", encoding="UTF-8", stringsAsFactors = FALSE)
+mydata<-read.csv("/home/iliastsergoulas/payments.csv", sep=",", encoding="UTF-8", stringsAsFactors = FALSE)
 #mydata<-mydata[which(mydata$category=='Πληρωμές ΕΤΑ 2007-2013'), ] # Filtering data
 #mydata<-mydata[c("date", "measure", "payment_amount")]
 mydata$date <- dmy(mydata$date) # Converting character to date
