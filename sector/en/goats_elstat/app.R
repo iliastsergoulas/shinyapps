@@ -18,7 +18,7 @@ printMoney <- function(x){ # A function to show quantity as currency
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show quantity with k decimal places
 
-mydata<-read.csv("/home/iliastsergoulas/Dropbox/Website/shiny/sector/goats_elstat/goats.csv", 
+mydata<-read.csv("C://Users/itsergoulas/Dropbox/Website/shiny/sector/goats_elstat/goats.csv", 
                  sep=";", encoding='UTF-8', stringsAsFactors = FALSE)
 mydata_processed<-melt(mydata, id.vars=c("Έτος", "Περιφέρεια"))
 names(mydata_processed)<-c("year", "region", "variable", "value")
@@ -30,8 +30,8 @@ topyear<-total_per_year[which.max(total_per_year$x),] # Top country
 mydata_category<-aggregate(mydata_processed$value, by=list(mydata_processed$year, mydata_processed$variable), FUN=sum)
 mydata_category$pct_category<-mydata_category$x/mydata_category[which(mydata_category$Group.2=='Σύνολο αιγοειδών'),]$x
 mydata_category<-mydata_category[which(mydata_category$Group.2!='Σύνολο αιγοειδών'),]
-names(mydata_category)<-c("Έτος", "Κατηγορία", "Πληθυσμός", "Ποσοστό")
-header <- dashboardHeader(title = "Αιγοειδή στην Ελλάδα", titleWidth=500) # Header of dashboard
+names(mydata_category)<-c("Year", "Category", "Population", "Percentage")
+header <- dashboardHeader(title = "Goats in Greece", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
     valueBoxOutput("mean_goats_population", width=6),
@@ -39,35 +39,35 @@ frow1 <- fluidRow( # Creating row of valueboxes
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Πορεία πληθυσμού αιγοειδών ανά κατηγορία",
+        title = "Goats population per category",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             plotOutput("timeline_category"),
-            print("Πηγή: ΕΛΣΤΑΤ"),
+            print("Source: Hellenic Statistical Authority"),
             selectInput('goats_category', 'Κατηγορία', choices = unique(mydata_processed$variable)), width='98%')),
     box(
-        title = "Πορεία πληθυσμού αιγοειδών ανά Περιφέρεια",
+        title = "Goats population per Region",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             plotOutput("timeline_region"),
-            print("Πηγή: ΕΛΣΤΑΤ"),
+            print("Source: Hellenic Statistical Authority"),
             selectInput('region', 'Περιφέρεια', choices = unique(mydata_processed$region)), width='98%'))
 )
 frow3 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Χρονική ανάλυση διάρθρωσης πληθυσμού αιγοειδών",
+        title = "Temporal analysis of goats population structure",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             htmlOutput("motion"),
-            print("Πηγή: ΕΛΣΤΑΤ"),width='98%')),
+            print("Source: Hellenic Statistical Authority"),width='98%')),
     box(
-        title = "Λήψη δεδομένων",
+        title = "Download data",
         status="success",
         collapsed = TRUE,
         theme = shinytheme("spacelab"), 
@@ -90,14 +90,14 @@ server <- function(input, output) {
     output$mean_goats_population <- renderValueBox({ # Filling valuebox
         valueBox(
             paste0(specify_decimal(mean_goats_population,2)),
-            "Μέσος εθνικός πληθυσμός αιγοειδών ετησίως",
+            "Mean national goats poulation",
             icon = icon("map"),
             color = "olive")
     })
     output$topyear <- renderValueBox({ # Filling valuebox
         valueBox(
             paste0(topyear$Group.1, " - ", printMoney(topyear$x)),
-            "Έτος με μέγιστο συνολικό εθνικό πληθυσμό αιγοειδών",
+            "Year with maximum goats population",
             icon = icon("globe"),
             color = "olive")
     })
@@ -106,7 +106,7 @@ server <- function(input, output) {
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Πληθυσμός") + 
+            xlab("Year") + ylab("Population") + 
             theme(legend.title=element_blank()) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) 
@@ -116,14 +116,14 @@ server <- function(input, output) {
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Πληθυσμός") + 
+            xlab("Year") + ylab("Population") + 
             theme(legend.title=element_blank()) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) 
     })
     output$motion<-renderGvis({
-        gvisMotionChart(mydata_category, xvar="Πληθυσμός", yvar="Ποσοστό",
-                        idvar="Κατηγορία", timevar="Έτος")
+        gvisMotionChart(mydata_category, xvar="Population", yvar="Percentage",
+                        idvar="Category", timevar="Year")
     })
     output$downloadData <- downloadHandler( # Creating download button
         filename = function() { paste('mydata_processed', '.csv', sep='') },
