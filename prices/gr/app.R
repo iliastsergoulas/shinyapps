@@ -32,15 +32,17 @@ data_product<-c("Sugar","Sugar","Sugar",
                 "Rice","Rice","Rice")
 data_quandl<-data.frame(data_descr, data_codes, data_product) # Binding codes and description to dataframe
 
-header <- dashboardHeader(title = "Τιμές αγροτικών προϊόντων (Πηγή: Quandl)", titleWidth=600) # Header of dashboard
-sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
+header <- dashboardHeader(title = "Τιμές αγροτικών προϊόντων ", titleWidth=600) # Header of dashboard
+sidebar <- dashboardSidebar(sidebarMenu(
+    selectInput('commodity', 'Προϊόν', choices = unique(data_quandl$data_product)),
+    tags$footer(
+        tags$p("Η παρούσα εφαρμογή βασίζεται σε επεξεργασμένα δεδομένα από Δελτία Τύπου του ΟΠΕΚΕΠΕ. 
+               Το agristats.eu δε φέρει καμία ευθύνη για την ποιότητα των δεδομένων."))))
 frow1 <- fluidRow( # Creating row of two diagrams
     title = "Συνολικά",
     status="success",
     collapsible = TRUE, 
-    mainPanel(
-        dygraphOutput("view"),
-        selectInput('commodity', 'Προϊόν', choices = unique(data_quandl$data_product)), width='98%')
+    mainPanel(dygraphOutput("view"), width='98%')
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     status="success",
@@ -66,7 +68,7 @@ server <- function(input, output) {
         data_filtered<-as.data.frame(data_quandl[which(data_quandl$data_product==input$commodity),])
         mydata<-data.frame(Date= character(0), Value= character(0), Description=character(0))
         for (i in 1:nrow(data_filtered)){
-            temp<-Quandl(as.character(data_filtered[i,2]))
+            temp<-Quandl(as.character(data_filtered[i,2]), collapse = "monthly")
             temp$Description<-as.character(data_filtered[i,1])
             colnames(temp)<-c("Date", "Value", "Description")
             mydata<-rbind(mydata, temp)
@@ -94,26 +96,41 @@ server <- function(input, output) {
         mydata_3_product <- unique(mydata()$Description)[3]
         mydata_3<-mydata()[which(mydata()$Description==mydata_3_product),]
         mydata_3<-xts(mydata_3, order.by=as.POSIXct(mydata_3$Date))
-    }) 
+    })
+    mydata_1_predicted<-reactive({
+        mydata_1_predicted <- forecast(as.numeric(mydata_1()$Value), h=12)
+        mydata_1_predicted <- data.frame(Date = seq(mdy('06/30/2017'), 
+                                                   by = 'months', length.out = 12),
+                                        Forecast = mydata_1_predicted$mean,
+                                        Hi_95 = mydata_1_predicted$upper[,2],
+                                        Lo_95 = mydata_1_predicted$lower[,2])
+        mydata_1_xts <- xts(mydata_1_predicted, order.by = as.POSIXct(mydata_1_predicted$Date))
+        mydata_1_predicted <- merge(mydata_1(), mydata_1_xts)
+        mydata_1_predicted <- mydata_1_predicted[,c("Value", "Forecast", "Hi_95", "Lo_95")]
+    })
     output$view <- renderDygraph({ # Creating chart
+        #combined <- cbind(mydata_multiple(), actual=mydata_multiple())
         dygraph(mydata_multiple(), main="Αντιπαραβολή τιμών αγροτικών προϊόντων", group = "commodities")%>%
-        dyAxis("y", label = "Τιμή προϊόντος")%>%
-        dyRangeSelector(height = 20)
+            dyAxis("y", label = "Τιμή προϊόντος")%>%
+            dyRangeSelector(height = 20)
     })
     output$timeline_1<-renderDygraph({ # Creating timeline for commodities
-        dygraph(mydata_1()$Value, main=mydata_1()[1,3], group = "commodities")%>%
-        dyAxis("y", label = "Τιμή προϊόντος")%>%
-        dyRangeSelector(height = 20)
+        print(tail(mydata_1_predicted(),20))
+        dygraph(mydata_1_predicted(), main=as.character(mydata_1()[1,3]), group = "commodities")%>%
+            dyAxis("y", label = "Τιμή προϊόντος")%>%
+            dySeries("Value", label = "Value") %>%
+            dySeries(c("Lo_95", "Forecast", "Hi_95"), label = "Forecast")%>%
+            dyRangeSelector(height = 20)
     })
     output$timeline_2<-renderDygraph({ # Creating timeline for commodities
         dygraph(mydata_2()$Value, main=mydata_2()[1,3], group = "commodities")%>%
-        dyAxis("y", label = "Τιμή προϊόντος")%>%
-        dyRangeSelector(height = 20)
+            dyAxis("y", label = "Τιμή προϊόντος")%>%
+            dyRangeSelector(height = 20)
     })
     output$timeline_3<-renderDygraph({ # Creating timeline for commodities
         dygraph(mydata_3()$Value, main=mydata_3()[1,3], group = "commodities")%>%
-        dyAxis("y", label = "Τιμή προϊόντος")%>%
-        dyRangeSelector(height = 20)
+            dyAxis("y", label = "Τιμή προϊόντος")%>%
+            dyRangeSelector(height = 20)
     })
 }
 shinyApp(ui, server)
