@@ -1,5 +1,5 @@
 # Data: Goats population based on data from Hellenic Statistic Service
-# This R script is created as a Shiny application to download raw data from Hellenic Statistical Authority (ELSTAT), , 
+# This R script is created as a Shiny application to download raw data from Eurostat (ΕΛΣΤΑΤ), 
 # process it and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
 # Author: Ilias Tsergoulas, Website: www.agristats.eu
@@ -24,21 +24,19 @@ drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
 con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
                  host = as.character(credentials$host), port = as.character(credentials$port), 
                  user = as.character(credentials$user), password = as.character(credentials$password))
-mydata <- dbGetQuery(con, "SELECT * from agriculture.goats_elstat") # Get data
-dbDisconnect(con)
-dbUnloadDriver(drv)
+mydata <- dbGetQuery(con, "SELECT * from agriculture.goats_classes_elstat") # Get data
 mydata_processed<-melt(mydata, id.vars=c("Έτος", "Περιφέρεια"))
 names(mydata_processed)<-c("year", "region", "variable", "value")
 mydata_processed$variable<-chartr(".", " ", mydata_processed$variable)
-total_per_year<-mydata_processed[which(mydata_processed$variable=='Σύνολο αιγοειδών'),]
+total_per_year<-mydata_processed[which(mydata_processed$variable=='Σύνολο'),]
 total_per_year<-aggregate(total_per_year$value, by=list(total_per_year$year), FUN=sum)
 mean_goats_population<-mean(total_per_year$x) # Mean value
 topyear<-total_per_year[which.max(total_per_year$x),] # Top country
 mydata_category<-aggregate(mydata_processed$value, by=list(mydata_processed$year, mydata_processed$variable), FUN=sum)
-mydata_category$pct_category<-mydata_category$x/mydata_category[which(mydata_category$Group.2=='Σύνολο αιγοειδών'),]$x
-mydata_category<-mydata_category[which(mydata_category$Group.2!='Σύνολο αιγοειδών'),]
-names(mydata_category)<-c("Year", "Category", "Population", "Percentage")
-header <- dashboardHeader(title = "Goats in Greece", titleWidth=500) # Header of dashboard
+mydata_category$pct_category<-mydata_category$x/mydata_category[which(mydata_category$Group.2=='Σύνολο'),]$x
+mydata_category<-mydata_category[which(mydata_category$Group.2!='Σύνολο'),]
+names(mydata_category)<-c("Έτος", "Κατηγορία", "Αριθμός εκμεταλλεύσεων", "Ποσοστό")
+header <- dashboardHeader(title = "Εκμεταλλεύσεις αιγοειδών κατά τάξη μεγέθους και Περιφέρεια στην Ελλάδα", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
     valueBoxOutput("mean_goats_population", width=6),
@@ -46,35 +44,35 @@ frow1 <- fluidRow( # Creating row of valueboxes
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Goats population per category",
+        title = "Πορεία αριθμού εκμεταλλεύσεων αιγοειδών ανά τάξη μεγέθους",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             plotOutput("timeline_category"),
-            print("Source: Hellenic Statistical Authority"),
+            print("Πηγή: ΕΛΣΤΑΤ"),
             selectInput('goats_category', 'Κατηγορία', choices = unique(mydata_processed$variable)), width='98%')),
     box(
-        title = "Goats population per Region",
+        title = "Πορεία εκμεταλλεύσεων αιγοειδών κατά τάξη μεγέθους ανά Περιφέρεια",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             plotOutput("timeline_region"),
-            print("Source: Hellenic Statistical Authority"),
+            print("Πηγή: ΕΛΣΤΑΤ"),
             selectInput('region', 'Περιφέρεια', choices = unique(mydata_processed$region)), width='98%'))
 )
 frow3 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Temporal analysis of goats population structure",
+        title = "Χρονική ανάλυση διάρθρωσης εκμεταλλεύσεων αιγοειδών κατά τάξη μεγέθους",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             htmlOutput("motion"),
-            print("Source: Hellenic Statistical Authority"),width='98%')),
+            print("Πηγή: ΕΛΣΤΑΤ"),width='98%')),
     box(
-        title = "Download data",
+        title = "Λήψη δεδομένων",
         status="success",
         collapsed = TRUE,
         theme = shinytheme("spacelab"), 
@@ -97,14 +95,14 @@ server <- function(input, output) {
     output$mean_goats_population <- renderValueBox({ # Filling valuebox
         valueBox(
             paste0(specify_decimal(mean_goats_population,2)),
-            "Mean national goats poulation",
+            "Μέσος αριθμός εκμεταλλεύσεων αιγοειδών ετησίως",
             icon = icon("map"),
             color = "olive")
     })
     output$topyear <- renderValueBox({ # Filling valuebox
         valueBox(
             paste0(topyear$Group.1, " - ", printMoney(topyear$x)),
-            "Year with maximum goats population",
+            "Έτος με μέγιστο αριθμό εκμεταλλεύσεων αιγοειδών",
             icon = icon("globe"),
             color = "olive")
     })
@@ -113,7 +111,7 @@ server <- function(input, output) {
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Year") + ylab("Population") + 
+            xlab("Έτος") + ylab("Αριθμός εκμεταλλεύσεων") + 
             theme(legend.title=element_blank()) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) 
@@ -123,14 +121,14 @@ server <- function(input, output) {
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Year") + ylab("Population") + 
+            xlab("Έτος") + ylab("Αριθμός εκμεταλλεύσεων") + 
             theme(legend.title=element_blank()) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) 
     })
     output$motion<-renderGvis({
-        gvisMotionChart(mydata_category, xvar="Population", yvar="Percentage",
-                        idvar="Category", timevar="Year")
+        gvisMotionChart(mydata_category, xvar="Αριθμός εκμεταλλεύσεων", yvar="Ποσοστό",
+                        idvar="Κατηγορία", timevar="Έτος")
     })
     output$downloadData <- downloadHandler( # Creating download button
         filename = function() { paste('mydata_processed', '.csv', sep='') },

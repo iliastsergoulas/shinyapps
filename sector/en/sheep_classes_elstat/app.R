@@ -1,5 +1,5 @@
-# Data: Wine production based on data by Greek Ministry of Agricultural Production and Food
-# This R script is created as a Shiny application to download raw data from Eurostat (Υπουργείο Αγροτικής Ανάπτυξης και Τροφίμων), 
+# Data: sheep population based on data from Hellenic Statistic Service
+# This R script is created as a Shiny application to download raw data from Hellenic Statistical Authority (ELSTAT), 
 # process it and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
 # Author: Ilias Tsergoulas, Website: www.agristats.eu
@@ -7,11 +7,12 @@
 library(shiny)
 library(shinydashboard)
 library(shinythemes)
-library(RPostgreSQL)
+library(googleVis)
 library(ggplot2)
 library(directlabels)
 library(scales)
 library(reshape2)
+library(RPostgreSQL)
 
 printMoney <- function(x){ # A function to show quantity as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
@@ -23,51 +24,57 @@ drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
 con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
                  host = as.character(credentials$host), port = as.character(credentials$port), 
                  user = as.character(credentials$user), password = as.character(credentials$password))
-mydata <- dbGetQuery(con, "SELECT * from agriculture.wine_production_minagric") # Get data
+mydata <- dbGetQuery(con, "SELECT * from agriculture.sheep_classes_elstat") # Get data
 dbDisconnect(con)
 dbUnloadDriver(drv)
-mydata_processed<-melt(mydata, id.vars=c("wine_category", "year"))
-total_per_year<-aggregate(mydata_processed$value, by=list(c(year=mydata_processed$year, variable=mydata_processed$total)), FUN=sum)
-mean_wine_production<-mean(total_per_year$x) # Mean value
+mydata_processed<-melt(mydata, id.vars=c("Έτος", "Περιφέρεια"))
+names(mydata_processed)<-c("year", "region", "variable", "value")
+mydata_processed$variable<-chartr(".", " ", mydata_processed$variable)
+total_per_year<-mydata_processed[which(mydata_processed$variable=='Σύνολο'),]
+total_per_year<-aggregate(total_per_year$value, by=list(total_per_year$year), FUN=sum)
+mean_sheep_population<-mean(total_per_year$x) # Mean value
 topyear<-total_per_year[which.max(total_per_year$x),] # Top country
-header <- dashboardHeader(title = "Διάρθρωση παραγωγής οίνου στην Ελλάδα", titleWidth=500) # Header of dashboard
+mydata_category<-aggregate(mydata_processed$value, by=list(mydata_processed$year, mydata_processed$variable), FUN=sum)
+mydata_category$pct_category<-mydata_category$x/mydata_category[which(mydata_category$Group.2=='Σύνολο'),]$x
+mydata_category<-mydata_category[which(mydata_category$Group.2!='Σύνολο'),]
+names(mydata_category)<-c("Year", "Class", "Holdings", "Percentage")
+header <- dashboardHeader(title = "Holdings per sheep population class in Greece", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
-    valueBoxOutput("mean_wine_production", width=6),
+    valueBoxOutput("mean_sheep_population", width=6),
     valueBoxOutput("topyear", width=6)
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Πορεία παραγωγής ανά κατηγορία",
+        title = "Holdings per population class",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
             plotOutput("timeline_category"),
-            print("Πηγή: Υπουργείο Αγροτικής Ανάπτυξης και Τροφίμων"),
-            selectInput('wine_category', 'Κατηγορία', choices = unique(mydata_processed$wine_category)), width='98%')),
+            print("Source: Hellenic Statistical Authority"),
+            selectInput('sheep_category', 'Κατηγορία', choices = unique(mydata_processed$variable)), width='98%')),
     box(
-        title = "Πορεία παραγωγής ανά τύπο",
+        title = "Holdings per Region",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
-            plotOutput("timeline_type"),
-            print("Πηγή: Υπουργείο Αγροτικής Ανάπτυξης και Τροφίμων"),
-            selectInput('type', 'Τύπος', choices = unique(mydata_processed$variable)), width='98%'))
+            plotOutput("timeline_region"),
+            print("Source: Hellenic Statistical Authority"),
+            selectInput('region', 'Περιφέρεια', choices = unique(mydata_processed$region)), width='98%'))
 )
 frow3 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Διάρθρωση παραγωγής ανά έτος",
+        title = "Temporal analysis of sheep holdings structure",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
         mainPanel(
-            plotOutput("view"),
-            print("Πηγή: Υπουργείο Αγροτικής Ανάπτυξης και Τροφίμων"),
-            selectInput('year', 'Έτος', choices = unique(mydata_processed$year)), width='98%')),
+            htmlOutput("motion"),
+            print("Source: Hellenic Statistical Authority"),width='98%')),
     box(
-        title = "Λήψη δεδομένων",
+        title = "Download data",
         status="success",
         collapsed = TRUE,
         theme = shinytheme("spacelab"), 
@@ -76,62 +83,58 @@ frow3 <- fluidRow( # Creating row of two diagrams
 body <- dashboardBody(frow1, frow2, frow3) # Binding rows to body of dashboard
 ui <- dashboardPage(header, sidebar, body, skin="green") # Binding elements of dashboard
 
-
 server <- function(input, output) {
     data_year <- reactive({ # Adding reactive data information
         data_year<-mydata_processed[mydata_processed$year==input$year,]
     })
     mydata_processed_timeline_category<-reactive({ # Filtering data by chosen wine category
-        mydata_processed_timeline_category<-mydata_processed[which(mydata_processed$wine_category==input$wine_category),]
+        mydata_processed_timeline_category<-mydata_processed[which(mydata_processed$variable==input$sheep_category),]
     })
-    mydata_processed_timeline_type<-reactive({ # Filtering data by chosen wine type
-        mydata_processed_timeline_type<-mydata_processed[which(mydata_processed$variable==input$type),]
+    mydata_processed_timeline_region<-reactive({ # Filtering data by chosen wine type
+        mydata_processed_timeline_region<-mydata_processed[which(mydata_processed$region==input$region),]
     })
-    output$view <- renderPlot({ # Creating chart
-        ggplot(data_year(), aes(x = variable, y = value, fill = wine_category, label = value)) + 
-            xlab("Τύπος") + ylab("Παραγωγή (τόνοι)") + 
-            theme(legend.title=element_blank()) + 
-            geom_bar(stat = "identity")
-    })
-    output$mean_wine_production <- renderValueBox({ # Filling valuebox
+    output$mean_sheep_population <- renderValueBox({ # Filling valuebox
         valueBox(
-            paste0(specify_decimal(mean_wine_production,2), " τόνοι"),
-            "Μέση παραγωγή οίνου ετησίως",
+            paste0(specify_decimal(mean_sheep_population,2)),
+            "Mean sheep holdings",
             icon = icon("map"),
             color = "olive")
     })
     output$topyear <- renderValueBox({ # Filling valuebox
         valueBox(
-            paste0(topyear$Group.1," - ", printMoney(topc$x), " τόνοι"),
-            "Έτος με μέγιστη συνολική παραγωγή οίνου",
+            paste0(topyear$Group.1, " - ", printMoney(topyear$x)),
+            "Year with maximum holdings",
             icon = icon("globe"),
             color = "olive")
     })
     output$timeline_category<-renderPlot({ # Creating timeline per wine category
-        ggplot(mydata_processed_timeline_category(), aes(x = year, y = value, group = variable, colour = variable)) + 
+        ggplot(mydata_processed_timeline_category(), aes(x = year, y = value, group = region, colour = region)) + 
             geom_line() +
             scale_x_discrete(expand=c(0, 0.5)) + 
             scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Παραγωγή (τόνοι)") + 
-            theme(legend.title=element_blank()) + 
-            theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
-            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) + 
-            geom_dl(aes(label = variable), method = list(dl.combine("first.points", "last.points"), cex = 0.8)) 
-    })
-    output$timeline_type<-renderPlot({ # Creating timeline per wine type
-        ggplot(mydata_processed_timeline_type(), aes(x = year, y = value, group = wine_category, colour = wine_category)) + 
-            geom_line() +
-            scale_x_discrete(expand=c(0, 0.5)) + 
-            scale_y_continuous(labels = comma) + 
-            xlab("Έτος") + ylab("Παραγωγή (τόνοι)") + 
+            xlab("Year") + ylab("Holdings") + 
             theme(legend.title=element_blank()) + 
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) 
+    })
+    output$timeline_region<-renderPlot({ # Creating timeline per wine type
+        ggplot(mydata_processed_timeline_region(), aes(x = year, y = value, group = variable, colour = variable)) + 
+            geom_line() +
+            scale_x_discrete(expand=c(0, 0.5)) + 
+            scale_y_continuous(labels = comma) + 
+            xlab("Year") + ylab("Holdings") + 
+            theme(legend.title=element_blank()) + 
+            theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
+            theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)) 
+    })
+    output$motion<-renderGvis({
+        gvisMotionChart(mydata_category, xvar="Holdings", yvar="Percentage",
+                        idvar="Class", timevar="Year")
     })
     output$downloadData <- downloadHandler( # Creating download button
         filename = function() { paste('mydata_processed', '.csv', sep='') },
         content = function(file) {
             write.csv(mydata_processed, file)
-    })
+        })
 }
 shinyApp(ui, server)

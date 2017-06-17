@@ -1,5 +1,5 @@
 # Data: Goats population based on data from Hellenic Statistic Service
-# This R script is created as a Shiny application to download raw data from Eurostat (ΕΛΣΤΑΤ), 
+# This R script is created as a Shiny application to download raw data from Hellenic Statistical Authority (ELSTAT), , 
 # process it and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
 # Author: Ilias Tsergoulas, Website: www.agristats.eu
@@ -12,17 +12,23 @@ library(ggplot2)
 library(directlabels)
 library(scales)
 library(reshape2)
+library(RPostgreSQL)
 
 printMoney <- function(x){ # A function to show quantity as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show quantity with k decimal places
 
-mydata<-read.csv("/home/iliastsergoulas/Dropbox/Website/shiny/sector/goats_elstat/goats.csv", 
-                 sep=";", encoding='UTF-8', stringsAsFactors = FALSE)
+credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
+drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
+con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
+                 host = as.character(credentials$host), port = as.character(credentials$port), 
+                 user = as.character(credentials$user), password = as.character(credentials$password))
+mydata <- dbGetQuery(con, "SELECT * from agriculture.goats_elstat") # Get data
+dbDisconnect(con)
+dbUnloadDriver(drv)
 mydata_processed<-melt(mydata, id.vars=c("Έτος", "Περιφέρεια"))
 names(mydata_processed)<-c("year", "region", "variable", "value")
-mydata_processed$variable<-chartr(".", " ", mydata_processed$variable)
 total_per_year<-mydata_processed[which(mydata_processed$variable=='Σύνολο αιγοειδών'),]
 total_per_year<-aggregate(total_per_year$value, by=list(total_per_year$year), FUN=sum)
 mean_goats_population<-mean(total_per_year$x) # Mean value
