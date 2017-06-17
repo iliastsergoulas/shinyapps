@@ -22,22 +22,36 @@ specify_decimal <- function(x, k) format(round(x, k), nsmall=k) # A function to 
 Quandl.api_key("KCo4sXzWEzSAb81ff3VP") # Setting API key to have unlimited access to databases
 data_codes<-c("COM/WLD_SUGAR_EU", "COM/WLD_SUGAR_WLD", "COM/WLD_SUGAR_US", # Setting wanted Quandl database codes
               "COM/COFFEE_BRZL", "COM/COFFEE_CLMB", "COM/WLD_COFFEE_ARABIC",
-              "COM/RICE_2", "COM/WLD_RICE_05", "COM/WLD_RICE_05_VNM") 
+              "COM/RICE_2", "COM/WLD_RICE_05", "COM/WLD_RICE_05_VNM",
+              "COM/BEEF_S", "COM/BEEF_C", "COM/WLD_BEEF",
+              "COM/WLD_BANANA_EU", "COM/WLD_BANANA_US", "COM/PBANSOP_USD",
+              "COM/WLD_MAIZE","COM/PMAIZMT_USD",
+              "COM/COCOA", "COM/WLD_COCOA",
+              "COM/WLD_COTTON_A_INDX") 
 # Setting Quandl codes respective description
 data_descr<-c("Sugar Price, EU, cents/kg", "Sugar Price, world, cents/kg", "Sugar Price, US, cents/kg", 
               "Coffee, Brazilian, Comp.", "Coffee, Colombian, NY lb.", "Coffee Price, Arabica, cents/kg",
-              "Rice, Long Grain Milled, No. 2 AR", "Rice Price, Thailand, 5%, $/mt", "Rice Price, Vietnamese, 5%, $/mt")
+              "Rice, Long Grain Milled, No. 2 AR", "Rice Price, Thailand, 5%, $/mt", "Rice Price, Vietnamese, 5%, $/mt",
+              "Beef - Select 1", "Beef - Choice 1", "Beef,($/kg)",
+              "Banana, Europe,($/kg)", "Banana, US,($/kg)", "Bananas, Central American and Ecuador, FOB U.S. Ports, US$ per metric ton",
+              "Maize,($/mt)", "Maize (corn), U.S. No.2 Yellow, US$ per metric ton",
+              "Cocoa, ICE", "Cocoa,($/kg)",
+              "Cotton, A Index,($/kg)")
 data_product<-c("Sugar","Sugar","Sugar", 
                 "Coffee","Coffee","Coffee", 
-                "Rice","Rice","Rice")
+                "Rice","Rice","Rice",
+                "Beef", "Beef", "Beef",
+                "Banana", "Banana", "Banana",
+                "Corn", "Corn",
+                "Cocoa", "Cocoa",
+                "Cotton")
 data_quandl<-data.frame(data_descr, data_codes, data_product) # Binding codes and description to dataframe
 
 header <- dashboardHeader(title = "Τιμές αγροτικών προϊόντων ", titleWidth=600) # Header of dashboard
 sidebar <- dashboardSidebar(sidebarMenu(
     selectInput('commodity', 'Προϊόν', choices = unique(data_quandl$data_product)),
-    tags$footer(
-        tags$p("Η παρούσα εφαρμογή βασίζεται σε επεξεργασμένα δεδομένα από Δελτία Τύπου του ΟΠΕΚΕΠΕ. 
-               Το agristats.eu δε φέρει καμία ευθύνη για την ποιότητα των δεδομένων."))))
+    tags$footer(tags$p("Η παρούσα εφαρμογή βασίζεται σε δεδομένα αγροτικών εμπορευμάτων από τη βάση δεδομένων του Quandl. 
+                       Το agristats.eu δε φέρει καμία ευθύνη για την ποιότητα των δεδομένων."))))
 frow1 <- fluidRow( # Creating row of two diagrams
     title = "Συνολικά",
     status="success",
@@ -100,10 +114,10 @@ server <- function(input, output) {
     mydata_1_predicted<-reactive({
         mydata_1_predicted <- forecast(as.numeric(mydata_1()$Value), h=12)
         mydata_1_predicted <- data.frame(Date = seq(mdy('06/30/2017'), 
-                                                   by = 'months', length.out = 12),
-                                        Forecast = mydata_1_predicted$mean,
-                                        Hi_95 = mydata_1_predicted$upper[,2],
-                                        Lo_95 = mydata_1_predicted$lower[,2])
+                                                    by = 'months', length.out = 12),
+                                         Forecast = mydata_1_predicted$mean,
+                                         Hi_95 = mydata_1_predicted$upper[,2],
+                                         Lo_95 = mydata_1_predicted$lower[,2])
         mydata_1_xts <- xts(mydata_1_predicted, order.by = as.POSIXct(mydata_1_predicted$Date))
         mydata_1_predicted <- merge(mydata_1(), mydata_1_xts)
         mydata_1_predicted <- mydata_1_predicted[,c("Value", "Forecast", "Hi_95", "Lo_95")]
@@ -115,7 +129,6 @@ server <- function(input, output) {
             dyRangeSelector(height = 20)
     })
     output$timeline_1<-renderDygraph({ # Creating timeline for commodities
-        print(tail(mydata_1_predicted(),20))
         dygraph(mydata_1_predicted(), main=as.character(mydata_1()[1,3]), group = "commodities")%>%
             dyAxis("y", label = "Τιμή προϊόντος")%>%
             dySeries("Value", label = "Value") %>%
