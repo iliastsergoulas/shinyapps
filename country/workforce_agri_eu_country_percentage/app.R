@@ -9,6 +9,8 @@ library(shinythemes)
 library(ggplot2)
 library(directlabels)
 library(scales)
+library(shinydashboard)
+library(RPostgreSQL)
 
 mydata<-read.csv("./workforce_agri_country.csv", sep=",")
 mydata["percentage"]<-(mydata["workforce_size"]/mydata["population"])*100

@@ -15,6 +15,12 @@ library(directlabels)
 library(scales)
 library(shinydashboard)
 
+credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
+drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
+con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
+                 host = as.character(credentials$host), port = as.character(credentials$port), 
+                 user = as.character(credentials$user), password = as.character(credentials$password))
+mydata <- dbGetQuery(con, "SELECT * from agriculture.area_eu_country") # Get data
 coops <- readShapePoints("/home/iliastsergoulas/shapefiles/cooperatives/cooperatives.shp")
 coops_edited <- as.data.frame(coops)
 coops_per_region <- coops_edited[c("region", "id")]
