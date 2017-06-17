@@ -1,28 +1,32 @@
 # Data: Production from aquaculture excluding hatcheries and nurseries (1984-2007) 
-# This R script is created as a Shiny application to download raw data from Eurostat ((C) EuroGeographics for the administrative boundaries), 
-# process it and create plots and maps.
+# This R script is created as a Shiny application processing raw data from Eurostat ((C) EuroGeographics for the administrative boundaries), 
+# and creating plots and maps as get_eurostat("fish_aq_q", time_format = "raw")
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
 # Author: Ilias Tsergoulas, Website: www.agristats.eu
 
 library(shiny)
 library(googleVis)
 library(shinythemes)
-library(shinydashboard)
-library(eurostat)
-library(countrycode)
 library(ggplot2)
 library(directlabels)
 library(scales)
+library(shinydashboard)
+library(RPostgreSQL)
+library(countrycode)
 
 printMoney <- function(x){ # A function to show quantity as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show quantity with k decimal places
 
-mydata<-get_eurostat("fish_aq_q", time_format = "raw") # Downloading raw data from Eurostat
-mydata$geo<-as.character(mydata$geo)
-mydata<-mydata[which(mydata$unit=='TLW' & mydata$aquaenv=='TOTAL'& mydata$fishreg==0 & mydata$species=='F00'), ] # Filtering data
-mydata<-mydata[complete.cases(mydata),] # Removing null values
+credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
+drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
+con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
+                 host = as.character(credentials$host), port = as.character(credentials$port), 
+                 user = as.character(credentials$user), password = as.character(credentials$password))
+mydata <- dbGetQuery(con, "SELECT * from agriculture.aquaculture_production_eu_country_8407") # Get data
+dbDisconnect(con)
+dbUnloadDriver(drv)
 for (i in 1:nrow(mydata)) { # Replacing country codes in order to get correct country names
     if(as.character(mydata$geo[i])=="EL") {
         mydata$geo[i] <- "GR"}

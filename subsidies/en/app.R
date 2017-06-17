@@ -13,18 +13,24 @@ library(dygraphs)
 library(corrplot)
 library(xts)
 library(htmlwidgets)
+library(RPostgreSQL)
 
 valueFormatter<-"function formatValue(v) {
-var suffixes = ['', 'th', 'mil', 'bn', 'trn'];
+var suffixes = ['', 'χιλ', 'εκατ', 'δις', 'τρις'];
 if (v < 1000) return v;
 var magnitude = Math.ceil(String(Math.floor(v)).length / 3-1);
 if (magnitude > suffixes.length - 1)
 magnitude = suffixes.length - 1;
 return String(Math.round(v / Math.pow(10, magnitude * 3), 2)) +suffixes[magnitude]}"
 
-mydata<-read.csv("/home/iliastsergoulas/payments.csv", sep=",", encoding="UTF-8", stringsAsFactors = FALSE)
-#mydata<-mydata[which(mydata$category=='Πληρωμές ΕΤΑ 2007-2013'), ] # Filtering data
-#mydata<-mydata[c("date", "measure", "payment_amount")]
+credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
+drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
+con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
+                 host = as.character(credentials$host), port = as.character(credentials$port), 
+                 user = as.character(credentials$user), password = as.character(credentials$password))
+mydata <- dbGetQuery(con, "SELECT * from agriculture.payments") # Get data
+dbDisconnect(con)
+dbUnloadDriver(drv)
 mydata$date <- dmy(mydata$date) # Converting character to date
 lastdate=max(mydata$date)
 header <- dashboardHeader(title = paste0("Subsidies course (last update ",lastdate, ")"), 
@@ -32,8 +38,10 @@ header <- dashboardHeader(title = paste0("Subsidies course (last update ",lastda
 sidebar <- dashboardSidebar(sidebarMenu(
     selectInput('fund', 'Fund', choices = unique(mydata$fund)),
     uiOutput("slider_category"),
-    uiOutput("slider_measure")
-))
+    uiOutput("slider_measure")),
+    tags$footer(
+        tags$p("This application is based on processed data from Press Releases of Greek Payment Agency OPEKEPE. 
+               Website agristats.eu is not responsible for the quality of the data.")))
 frow1 <- fluidRow( # Creating row of two diagrams
     title = "Total",
     status="success",

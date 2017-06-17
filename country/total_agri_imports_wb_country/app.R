@@ -24,6 +24,8 @@ con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a c
                  host = as.character(credentials$host), port = as.character(credentials$port), 
                  user = as.character(credentials$user), password = as.character(credentials$password))
 mydata <- dbGetQuery(con, "SELECT * from agriculture.total_agri_imports_wb_country") # Get data
+dbDisconnect(con)
+dbUnloadDriver(drv)
 mydata$year<-as.character(mydata$year)
 names(mydata)[names(mydata)=="BM.GSR.AGRI.CD"] <- "total_agri_imports"
 mydata<-mydata[which(!is.na(mydata$total_agri_imports)),] # Filtering for NA values

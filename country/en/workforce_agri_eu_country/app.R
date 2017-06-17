@@ -1,27 +1,32 @@
 # Data: Agricultural Labour Input Statistics: absolute figures (1 000 annual work units)
-# This R script is created as a Shiny application to download raw data from Eurostat ((C) EuroGeographics for the administrative boundaries), 
-# process it and create plots and maps.
+# This R script is created as a Shiny application processing raw data from Eurostat ((C) EuroGeographics for the administrative boundaries), 
+# and creating plots and maps as get_eurostat("aact_ali01", time_format = "raw")
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
 # Author: Ilias Tsergoulas, Website: www.agristats.eu
 
 library(shiny)
 library(googleVis)
 library(shinythemes)
-library(eurostat)
-library(countrycode)
 library(ggplot2)
 library(directlabels)
 library(scales)
 library(shinydashboard)
+library(RPostgreSQL)
+library(countrycode)
 
 printMoney <- function(x){ # A function to show number as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show number with k decimal places
 
-mydata<-get_eurostat("aact_ali01", time_format = "raw") # Downloading raw data from Eurostat
-mydata$geo<-as.character(mydata$geo)
-mydata<-mydata[which(mydata$itm_newa=='40000'), ] # Filtering data
+credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
+drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
+con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
+                 host = as.character(credentials$host), port = as.character(credentials$port), 
+                 user = as.character(credentials$user), password = as.character(credentials$password))
+mydata <- dbGetQuery(con, "SELECT * from agriculture.workforce_agri_eu_country") # Get data
+dbDisconnect(con)
+dbUnloadDriver(drv)
 for (i in 1:nrow(mydata)) { # Replacing country codes in order to get correct country names
     if(as.character(mydata$geo[i])=="EL") {
         mydata$geo[i] <- "GR"}

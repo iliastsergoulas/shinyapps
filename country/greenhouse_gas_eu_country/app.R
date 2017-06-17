@@ -25,6 +25,8 @@ con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a c
                  host = as.character(credentials$host), port = as.character(credentials$port), 
                  user = as.character(credentials$user), password = as.character(credentials$password))
 mydata <- dbGetQuery(con, "SELECT * from agriculture.greenhouse_gas_eu_country") # Get data
+dbDisconnect(con)
+dbUnloadDriver(drv)
 for (i in 1:nrow(mydata)) { # Replacing country codes in order to get correct country names
     if(as.character(mydata$geo[i])=="EL") {
         mydata$geo[i] <- "GR"}

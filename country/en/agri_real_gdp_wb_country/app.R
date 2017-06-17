@@ -1,25 +1,31 @@
 # Data: Agriculture, Real GDP
-# This R script is created as a Shiny application to download raw data from World Bank through WDI package, 
-# process it and create plots and maps.
+# This R script is created as a Shiny application processing raw data downloaded from World Bank through WDI package, 
+# and creating plots and maps as WDI(country = "all", indicator = "NV.AGR.TOTL.ZG", extra = FALSE, cache = NULL)
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
 # Author: Ilias Tsergoulas, Website: www.agristats.eu
 
 library(shiny)
 library(googleVis)
 library(shinythemes)
-library(WDI)
-library(countrycode)
 library(ggplot2)
 library(directlabels)
 library(scales)
 library(shinydashboard)
+library(RPostgreSQL)
 
 printMoney <- function(x){ # A function to show number as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show number with k decimal places
 
-mydata<-WDI(country = "all", indicator = "NV.AGR.TOTL.ZG", extra = FALSE, cache = NULL) # Downloading raw data from World Bank
+credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
+drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
+con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
+                 host = as.character(credentials$host), port = as.character(credentials$port), 
+                 user = as.character(credentials$user), password = as.character(credentials$password))
+mydata <- dbGetQuery(con, "SELECT * from agriculture.agri_real_gdp_wb_country") # Get data
+dbDisconnect(con)
+dbUnloadDriver(drv)
 mydata$year<-as.character(mydata$year)
 names(mydata)[names(mydata)=="NV.AGR.TOTL.ZG"] <- "agri_real_gdp"
 mydata<-mydata[which(!is.na(mydata$agri_real_gdp)),] # Filtering for NA values
