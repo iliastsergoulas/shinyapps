@@ -22,7 +22,7 @@ drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
 con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
                  host = as.character(credentials$host), port = as.character(credentials$port), 
                  user = as.character(credentials$user), password = as.character(credentials$password))
-mydata <- dbGetQuery(con, "SELECT * from agriculture.agricultural_land_wb_country") # Get data
+mydata <- dbGetQuery(con, "SELECT * from agriculture.agri_econ_active_fem_population_wb_country") # Get data
 dbDisconnect(con)
 dbUnloadDriver(drv)
 mydata$year<-as.character(mydata$year)

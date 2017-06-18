@@ -52,7 +52,7 @@ mydata_filtered<-mydata_filtered[which(!endsWith(mydata_filtered$country, "Ameri
 mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "Africa")),]
 mydata_filtered<-mydata_filtered[which(!startsWith(mydata_filtered$country, "North Africa")),]
 
-meanvalue<-mean((aggregate(mydata_filtered$total_added_value, by=list(year=mydata_filtered$year), FUN=sum)$x)) # Mean value
+meanvalue<-mean((aggregate(mydata_filtered$total_added_value, by=list(year=mydata_filtered$year), FUN=mean)$x)) # Mean value
 topc<-mydata_filtered[which.max(mydata_filtered$total_added_value),] # Top country
 header <- dashboardHeader(title = "Προστιθέμενη αξία γεωργίας", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard

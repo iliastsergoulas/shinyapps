@@ -13,6 +13,7 @@ library(scales)
 library(shinydashboard)
 library(RPostgreSQL)
 library(countrycode)
+library(eurostat)
 
 printMoney <- function(x){ # A function to show number as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")

@@ -71,7 +71,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
             print("Source: World Bank"),
             selectInput('country', 'Country', choices = unique(mydata$country)), width='98%')),
     box(
-        title = "Ανά Year",
+        title = "Per Year",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 

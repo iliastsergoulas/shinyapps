@@ -18,7 +18,6 @@ printMoney <- function(x){ # A function to show number as currency
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show number with k decimal places
 
-mydata<-WDI(country = "all", indicator = "SL.AGR.EMPL.ZS", extra = FALSE, cache = NULL) # Downloading raw data from World Bank
 credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
 drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
 con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
