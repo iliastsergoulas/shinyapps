@@ -14,8 +14,17 @@ library(ggplot2)
 library(directlabels)
 library(scales)
 library(shinydashboard)
+library(RPostgreSQL)
+library(postGIStools)
 
-coops <- readShapePoints("/home/iliastsergoulas/shapefiles/cooperatives/cooperatives.shp")
+credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
+drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
+con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
+                 host = as.character(credentials$host), port = as.character(credentials$port), 
+                 user = as.character(credentials$user), password = as.character(credentials$password))
+coops <- get_postgis_query(con, "SELECT * FROM agriculture.cooperatives")
+dbDisconnect(con)
+dbUnloadDriver(drv)
 coops_edited <- as.data.frame(coops)
 coops_per_region <- coops_edited[c("region", "id")]
 coops_per_pref <- coops_edited[c("prefecture", "id")]

@@ -22,14 +22,20 @@ specify_decimal <- function(x, k) format(round(x, k), nsmall=k) # A function to 
 Quandl.api_key("KCo4sXzWEzSAb81ff3VP") # Setting API key to have unlimited access to databases
 data_codes<-c("COM/WLD_SUGAR_EU", "COM/WLD_SUGAR_WLD", "COM/WLD_SUGAR_US", # Setting wanted Quandl database codes
               "COM/COFFEE_BRZL", "COM/COFFEE_CLMB", "COM/WLD_COFFEE_ARABIC",
-              "COM/RICE_2", "COM/WLD_RICE_05", "COM/WLD_RICE_05_VNM") 
+              "COM/RICE_2", "COM/WLD_RICE_05", "COM/WLD_RICE_05_VNM",
+              "COM/BEEF_S", "COM/BEEF_C", "COM/WLD_BEEF",
+              "COM/WLD_BANANA_EU", "COM/WLD_BANANA_US", "COM/PBANSOP_USD") 
 # Setting Quandl codes respective description
 data_descr<-c("Sugar Price, EU, cents/kg", "Sugar Price, world, cents/kg", "Sugar Price, US, cents/kg", 
               "Coffee, Brazilian, Comp.", "Coffee, Colombian, NY lb.", "Coffee Price, Arabica, cents/kg",
-              "Rice, Long Grain Milled, No. 2 AR", "Rice Price, Thailand, 5%, $/mt", "Rice Price, Vietnamese, 5%, $/mt")
-data_product<-c("Sugar","Sugar","Sugar", 
-                "Coffee","Coffee","Coffee", 
-                "Rice","Rice","Rice")
+              "Rice, Long Grain Milled, No. 2 AR", "Rice Price, Thailand, 5%, $/mt", "Rice Price, Vietnamese, 5%, $/mt",
+              "Beef - Select 1", "Beef - Choice 1", "Beef,($/kg)",
+              "Banana, Europe,($/kg)", "Banana, US,($/kg)", "Bananas, Central American and Ecuador, FOB U.S. Ports, US$ per metric ton")
+data_product<-c("Ζάχαρη","Ζάχαρη","Ζάχαρη", 
+                "Καφές","Καφές","Καφές", 
+                "Ρύζι","Ρύζι","Ρύζι",
+                "Βοδινό", "Βοδινό", "Βοδινό",
+                "Μπανάνες", "Μπανάνες", "Μπανάνες")
 data_quandl<-data.frame(data_descr, data_codes, data_product) # Binding codes and description to dataframe
 
 header <- dashboardHeader(title = "Τιμές αγροτικών προϊόντων ", titleWidth=600) # Header of dashboard

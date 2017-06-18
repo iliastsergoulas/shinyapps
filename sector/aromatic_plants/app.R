@@ -1,4 +1,4 @@
-# Data: Eggs plants in Greece
+# Data: Aromatic plants in Greece
 # This R script is created as a Shiny application to process data 
 # from Greek Ministry of Agriculture and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
@@ -15,20 +15,16 @@ library(directlabels)
 library(scales)
 library(shinydashboard)
 library(RPostgreSQL)
+library(postGIStools)
 
 credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
 drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
 con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
                  host = as.character(credentials$host), port = as.character(credentials$port), 
                  user = as.character(credentials$user), password = as.character(credentials$password))
-strSQL = "SELECT ST_AsText(geom) AS wkt_geometry, * FROM agriculture.aromatic"
-dfQuery = dbGetQuery(con, strSQL)
-dfQuery$geom <- NULL
-row.names(dfQuery) = dfQuery$gid
-rWKT <- function (var1 , var2) {return (readWKT(var1, var2) @polygons)}
-spL <- mapply(rWKT, dfQuery$wkt_geometry, dfQuery$gid)
-spTemp <- SpatialPolygons(spL)
-plants <- SpatialPolygonsDataFrame(spTemp, dfQuery[-1])
+plants <- get_postgis_query(con, "SELECT * FROM agriculture.aromatic")
+dbDisconnect(con)
+dbUnloadDriver(drv)
 plants_list <- as.data.frame(plants)
 plants_list <- plants_list[c("business_n", "type", "website")]
 names(plants_list)<-c("Επωνυμία", "Κατηγορία", "Ιστότοπος")

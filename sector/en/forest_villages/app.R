@@ -11,8 +11,17 @@ library(rgdal)
 library(maptools)
 library(htmltools)
 library(shinydashboard)
+library(RPostgreSQL)
+library(postGIStools)
 
-plants <- readShapePoints("/home/itsergoulas/shapefiles/forest_villages/forest_villages.shp")
+credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
+drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
+con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
+                 host = as.character(credentials$host), port = as.character(credentials$port), 
+                 user = as.character(credentials$user), password = as.character(credentials$password))
+plants <- get_postgis_query(con, "SELECT * FROM agriculture.forest_villages")
+dbDisconnect(con)
+dbUnloadDriver(drv)
 header <- dashboardHeader(title = "Forest villages", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes

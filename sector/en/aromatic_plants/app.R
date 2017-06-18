@@ -1,4 +1,4 @@
-# Data: Eggs plants in Greece
+# Data: Aromatic plants in Greece
 # This R script is created as a Shiny application to process data 
 # from Greek Ministry of Agriculture and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
@@ -14,8 +14,17 @@ library(ggplot2)
 library(directlabels)
 library(scales)
 library(shinydashboard)
+library(RPostgreSQL)
+library(postGIStools)
 
-plants <- readShapePoints("/home/iliastsergoulas/shapefiles/aromatic/aromatic_plants.shp")
+credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
+drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
+con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
+                 host = as.character(credentials$host), port = as.character(credentials$port), 
+                 user = as.character(credentials$user), password = as.character(credentials$password))
+plants <- get_postgis_query(con, "SELECT * FROM agriculture.aromatic")
+dbDisconnect(con)
+dbUnloadDriver(drv)
 plants_list <- as.data.frame(plants)
 plants_list <- plants_list[c("business_n", "type_en", "website")]
 names(plants_list)<-c("Name", "Type", "Website")

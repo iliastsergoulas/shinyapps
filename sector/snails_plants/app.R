@@ -14,8 +14,15 @@ library(ggplot2)
 library(directlabels)
 library(scales)
 library(shinydashboard)
+library(RPostgreSQL)
+library(postGIStools)
 
-plants <- readShapePoints("/home/iliastsergoulas/shapefiles/snails/snails.shp")
+credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
+drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
+con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
+                 host = as.character(credentials$host), port = as.character(credentials$port), 
+                 user = as.character(credentials$user), password = as.character(credentials$password))
+plants <- get_postgis_query(con, "SELECT * FROM agriculture.snails_plants")
 plants_edited <- as.data.frame(plants)
 plants_per_region <- plants_edited[c("region_nam", "id")]
 plants_per_pref <- plants_edited[c("prefecture", "id")]
