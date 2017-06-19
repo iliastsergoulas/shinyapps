@@ -152,7 +152,6 @@ server <- function(input, output) {
         mydata[c("Χώρα", "Γεωργική απασχόληση (%)", "Έτος")]
     })
     output$summary <- renderDataTable({ # Creating summary by country
-        print(mydata_summary())
         mysummary <- data.frame(
             aggregate(employment~country, mydata_summary(), min),
             aggregate(employment~country, mydata_summary(), max),
