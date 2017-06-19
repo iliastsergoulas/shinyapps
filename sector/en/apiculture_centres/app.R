@@ -57,6 +57,7 @@ server <- function(input, output, session) {
                        popup = ~htmlEscape(name))
     })
     output$list <- renderDataTable({ # Creating summary by country
+        plants_list<-plants_list[c("name", "address", "telephone", "e-mail", "fax")]
         plants_list}, options = list(lengthMenu = c(5, 25, 50), pageLength = 10)
     )
 }
