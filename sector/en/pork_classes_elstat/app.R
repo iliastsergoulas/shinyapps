@@ -36,7 +36,7 @@ mydata_category<-aggregate(mydata_processed$value, by=list(mydata_processed$year
 mydata_category$pct_category<-mydata_category$x/mydata_category[which(mydata_category$Group.2=='Σύνολο'),]$x
 mydata_category<-mydata_category[which(mydata_category$Group.2!='Σύνολο'),]
 names(mydata_category)<-c("Year", "Class", "Holdings", "Percentage")
-header <- dashboardHeader(title = "Holdings per pork population class in Greece", titleWidth=650) # Header of dashboard
+header <- dashboardHeader(title = "Holdings per pork population class in Greece", titleWidth=750) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
     valueBoxOutput("mean_pork_population", width=6),

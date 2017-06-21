@@ -19,16 +19,15 @@ printMoney <- function(x){ # A function to show quantity as currency
 }
 specify_decimal <- function(x, k) format(round(x, k), nsmall=k, decimal.mark=",", big.mark=".") # A function to show quantity with k decimal places
 
-#credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
-#drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
-#con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
-                 #host = as.character(credentials$host), port = as.character(credentials$port), 
-                 #user = as.character(credentials$user), password = as.character(credentials$password))
-#mydata <- dbGetQuery(con, "SELECT * from agriculture.honey_production_minagric") # Get data
-mydata<-read.csv("C://Users/itsergoulas/Dropbox/Website/scripts to complete/beekeepers.csv", sep=",")
-#dbDisconnect(con)
-#dbUnloadDriver(drv)
-mydata_processed<-mydata[,c("Περιφέρεια", "Περιφερειακή.Ενότητα", "Έτος", "Αριθμός.μελισσοκόμων")]
+credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
+drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
+con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
+                 host = as.character(credentials$host), port = as.character(credentials$port), 
+                 user = as.character(credentials$user), password = as.character(credentials$password))
+mydata <- dbGetQuery(con, "SELECT * from agriculture.beekeepers") # Get data
+dbDisconnect(con)
+dbUnloadDriver(drv)
+mydata_processed<-mydata[,c("Περιφέρεια", "Περιφερειακή Ενότητα", "Έτος", "Αριθμός μελισσοκόμων")]
 names(mydata_processed)<-c("region", "prefecture", "year", "number_of_beekeepers")
 total_per_year<-aggregate(mydata_processed$number_of_beekeepers, 
                           by=list(year=as.character(mydata_processed$year)), FUN=sum, na.rm=TRUE)
