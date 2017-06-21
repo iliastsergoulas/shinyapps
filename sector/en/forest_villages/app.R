@@ -26,8 +26,17 @@ header <- dashboardHeader(title = "Forest villages", titleWidth=500) # Header of
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
     leafletOutput("map_points"))
+frow2 <- fluidRow(# Creating row of diagram and summary
+    title = "Στοιχεία δασικών χωριών",
+    status="success",
+    collapsible = TRUE,
+    theme = shinytheme("spacelab"), 
+    mainPanel(
+        dataTableOutput("list"),
+        width=550)
+)
 
-body <- dashboardBody(frow1) # Binding rows to body of dashboard
+body <- dashboardBody(frow1, frow2) # Binding rows to body of dashboard
 ui <- dashboardPage(header, sidebar, body, skin="green") # Binding elements of dashboard
 
 server <- function(input, output, session) {
@@ -42,5 +51,8 @@ server <- function(input, output, session) {
                            iconWidth = 20, iconHeight = 20, shadowWidth = 15, shadowHeight = 15),
                        popup = ~htmlEscape(name))
     })
+    output$list <- renderDataTable({ # Creating summary by country
+        plants_list}, options = list(lengthMenu = c(5, 25, 50), pageLength = 10)
+    )
 }
 shinyApp(ui, server)
