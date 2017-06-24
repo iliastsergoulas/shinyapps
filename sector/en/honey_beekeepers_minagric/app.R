@@ -69,7 +69,7 @@ frow3 <- fluidRow( # Creating row of two diagrams
             plotOutput("per_region"),
             print("Source: Ministry of Agricultural Development and Food"), width='98%')),
     box(
-        title = "Λήψη δεδομένων",
+        title = "Download data",
         status="success",
         collapsed = TRUE,
         theme = shinytheme("spacelab"), 

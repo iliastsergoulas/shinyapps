@@ -24,16 +24,16 @@ library(postGIStools)
 #dbUnloadDriver(drv)
 plants <- read.csv("C://Users/itsergoulas/Dropbox/Website/scripts to complete/honey_plants/honey_plants.csv", 
                    sep=";")
-names(plants)<-c("ID", "Business name", "Code", "Prefecture", "Region")
+names(plants)<-c("Α/Α", "Επωνυμία", "Κωδικός Έγκρισης", "Περιφερειακή Ενότητα", "Περιφέρεια")
 plants_edited <- as.data.frame(plants)
 plants_per_region <- plants_edited[c("region", "id")]
 plants_per_pref <- plants_edited[c("prefecture", "id")]
 
-header <- dashboardHeader(title = "Honey plants", titleWidth=500) # Header of dashboard
+header <- dashboardHeader(title = "Συσκευαστήρια μελιού", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Per region",
+        title = "Ανά Περιφέρεια",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -41,7 +41,7 @@ frow1 <- fluidRow( # Creating row of two diagrams
             plotOutput("regions", width="150%"))
         ),
     box(
-        title = "Per prefecture",
+        title = "Ανά Περιφερειακή Ενότητα",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -50,7 +50,7 @@ frow1 <- fluidRow( # Creating row of two diagrams
         ))
 )
 frow2 <- fluidRow( # Creating row of two diagrams
-    title = "Honey plants data",
+    title = "Στοιχεία συσκευαστηρίων",
     status="success",
     collapsible = TRUE,
     theme = shinytheme("spacelab"), 
@@ -65,7 +65,7 @@ server <- function(input, output, session) {
     output$regions<-renderPlot({ # Per region
         ggplot(plants_per_region, aes(x = factor(region))) + 
             geom_bar(stat="count", fill="steelblue",width=0.5, color="steelblue") + 
-            xlab("Region") + ylab("Number of plants") + 
+            xlab("Περιφέρεια") + ylab("Αριθμός μονάδων") + 
             theme(axis.text.x=element_text(angle=90, hjust=1)) + 
             geom_text(stat='count',aes(label=..count..),vjust=-1) + 
             theme(legend.title=element_blank()) + 
@@ -76,7 +76,7 @@ server <- function(input, output, session) {
     output$prefectures<-renderPlot({ # Per prefecture
         ggplot(plants_per_pref, aes(x = factor(prefecture))) + 
             geom_bar(stat="count", fill="steelblue") + 
-            xlab("Prefecture") + ylab("Number of plants") + 
+            xlab("Περιφερειακή ενότητα") + ylab("Αριθμός μονάδων") + 
             theme(axis.text.x=element_text(angle=90, hjust=1)) + 
             geom_text(stat='count',aes(label=..count..),vjust=-1) + 
             theme(legend.title=element_blank()) + 
