@@ -14,21 +14,14 @@ library(RWeka)
 library(rJava)
 library(RWekajars)
 
-# Setting twitter credentials
-credentials<-read.table("/home/iliastsergoulas/credentials.txt")
-setup_twitter_oauth(as.character(credentials[1,1]), as.character(credentials[2,1]), 
-                    as.character(credentials[3,1]), as.character(credentials[4,1]))
-# Retrieving the first 50 tweets from the timeline of the main agricultural press's users
-rdmTweets1 <- userTimeline("DaniNierenberg", n=50)
-rdmTweets2 <- userTimeline("FAOnews", n=50)
-rdmTweets3 <- userTimeline("mpaynspeaker", n=50)
-rdmTweets4 <- userTimeline("ASA_CSSA_SSSA", n=50)
-df1 <- do.call("rbind", lapply(rdmTweets1, as.data.frame))
-df2 <- do.call("rbind", lapply(rdmTweets2, as.data.frame))
-df3 <- do.call("rbind", lapply(rdmTweets3, as.data.frame))
-df4 <- do.call("rbind", lapply(rdmTweets4, as.data.frame))
-df <- rbind(df1, df2, df3, df4) # Creating a single dataframe with all the tweets
-myCorpus <- Corpus(VectorSource(df$text)) # Building a corpus
+credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
+drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
+con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
+                 host = as.character(credentials$host), port = as.character(credentials$port), 
+                 user = as.character(credentials$user), password = as.character(credentials$password))
+mydata <- dbGetQuery(con, "SELECT * from public.tweets_en") # Get data
+dbDisconnect(con)
+dbUnloadDriver(drv)
 # Creating matrix od tweets after "cleaning" them from anything unnecessary
 myDtm <- TermDocumentMatrix(myCorpus, control = 
             list(removePunctuation = TRUE, 
