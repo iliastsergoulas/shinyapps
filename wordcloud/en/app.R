@@ -22,6 +22,7 @@ con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a c
 mydata <- dbGetQuery(con, "SELECT * from public.tweets_en") # Get data
 dbDisconnect(con)
 dbUnloadDriver(drv)
+myCorpus <- Corpus(VectorSource(mydata$`0`)) # Building a corpus
 # Creating matrix od tweets after "cleaning" them from anything unnecessary
 myDtm <- TermDocumentMatrix(myCorpus, control = 
             list(removePunctuation = TRUE, 
