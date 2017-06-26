@@ -33,10 +33,10 @@ total_per_year<-aggregate(as.numeric(mydata_processed$value),
                           by=list(year=mydata_processed$year), FUN=sum, na.rm=TRUE)
 mean_value<-mean(total_per_year$x) # Mean value
 topyear<-total_per_year[which.max(total_per_year$x),] # Top country
-header <- dashboardHeader(title = "Παραγωγή μελιού, αριθμός κυψελών και συνολική αξία παραγωγής στην Ελλάδα", titleWidth=750) # Header of dashboard
+header <- dashboardHeader(title = "Honey production, beehives population and total value in Greece", titleWidth=750) # Header of dashboard
 sidebar <- dashboardSidebar(sidebarMenu(
-    selectInput('var_x', 'Χ', choices = c("Αριθμός κυψελών", "Παραγωγή μελιού (τν)", "Συνολική αξία παραγωγής")),
-    selectInput('var_y', 'Y', choices = c("Παραγωγή μελιού (τν)", "Αριθμός κυψελών", "Συνολική αξία παραγωγής"))))
+    selectInput('var_x', 'Χ', choices = c("Number of beehives", "Honey production (tn)", "Total value")),
+    selectInput('var_y', 'Y', choices = c("Honey production (tn)", "Number of beehives", "Total value"))))
 frow1 <- fluidRow( # Creating row of valueboxes
     valueBoxOutput("mean_value", width=6),
     valueBoxOutput("topyear", width=6)
@@ -46,18 +46,18 @@ frow2 <- fluidRow( # Creating row of two diagrams
     theme = shinytheme("spacelab"), 
     mainPanel(
         htmlOutput("motion_region"),
-        print("Πηγή: Υπουργείο Αγροτικής Ανάπτυξης και Τροφίμων"))
+        print("Source: Ministry of Agricultural Development and Food"))
 )
 frow3 <- fluidRow( # Creating row of two diagrams
     status="success",
     theme = shinytheme("spacelab"), 
     mainPanel(
         htmlOutput("motion_prefecture"),
-        print("Πηγή: Υπουργείο Αγροτικής Ανάπτυξης και Τροφίμων"))
+        print("Source: Ministry of Agricultural Development and Food"))
 )
 frow4 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Λήψη δεδομένων",
+        title = "Download data",
         status="success",
         collapsed = TRUE,
         theme = shinytheme("spacelab"), 
@@ -71,43 +71,43 @@ server <- function(input, output) {
         data_region<-aggregate(list(mydata$`Αριθμός κυψελών`,mydata$`Παραγωγή μελιού (τν)`, mydata$`Συνολική αξία παραγωγής`), 
                                by=list(mydata$Έτος, mydata$Περιφέρεια), 
                                FUN=sum, na.rm=TRUE)
-        names(data_region)<-c("Έτος", "Περιφέρεια", "Αριθμός κυψελών", "Παραγωγή μελιού (τν)", "Συνολική αξία παραγωγής")
-        data_region$`Αριθμός κυψελών`<-as.numeric(data_region$`Αριθμός κυψελών`)
+        names(data_region)<-c("Year", "Region", "Number of beehives", "Honey production (tn)", "Total value")
+        data_region$`Number of beehives`<-as.numeric(data_region$`Number of beehives`)
         data_region
     })
     data_prefecture <- reactive({ # Adding reactive data information
         data_prefecture<-aggregate(list(mydata$`Αριθμός κυψελών`,mydata$`Παραγωγή μελιού (τν)`, mydata$`Συνολική αξία παραγωγής`), 
                                by=list(mydata$Έτος, mydata$`Περιφερειακή Ενότητα`), 
                                FUN=sum, na.rm=TRUE)
-        names(data_prefecture)<-c("Έτος", "Περιφερειακή Ενότητα", "Αριθμός κυψελών", "Παραγωγή μελιού (τν)", "Συνολική αξία παραγωγής")
-        data_prefecture$`Αριθμός κυψελών`<-as.numeric(data_prefecture$`Αριθμός κυψελών`)
+        names(data_prefecture)<-c("Year", "Prefecture", "Number of beehives", "Honey production (tn)", "Total value")
+        data_prefecture$`Number of beehives`<-as.numeric(data_prefecture$`Number of beehives`)
         data_prefecture
     })
     output$per_year <- renderGvis({ # Creating chart
         gvisColumnChart(data_year(), options=list(colors="['#336600']", vAxis="{title:'Αριθμός μελισσοκόμων'}", 
-                        hAxis="{title:'Περιφέρεια'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
+                        hAxis="{title:'Region'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
     })
     output$motion_region<-renderGvis({
         gvisMotionChart(data_region(), xvar=input$var_x, yvar=input$var_y,
-                        idvar="Περιφέρεια", timevar="Έτος",
+                        idvar="Region", timevar="Year",
                         options=list(width=1100, height=500))
     })
     output$motion_prefecture<-renderGvis({
-        gvisMotionChart(data_prefecture(), xvar="Αριθμός κυψελών", yvar="Παραγωγή μελιού (τν)",
-                        idvar="Περιφερειακή Ενότητα", timevar="Έτος",
+        gvisMotionChart(data_prefecture(), xvar="Number of beehives", yvar="Honey production (tn)",
+                        idvar="Prefecture", timevar="Year",
                         options=list(width=1100, height=500))
     })
     output$mean_value <- renderValueBox({ # Filling valuebox
         valueBox(
-            paste0(specify_decimal(mean_value,2), " τόνοι"),
-            "Μέση παραγωγή μελιού ετησίως",
+            paste0(specify_decimal(mean_value,2), " tonnes"),
+            "Mean hoeny production annually",
             icon = icon("map"),
             color = "olive")
     })
     output$topyear <- renderValueBox({ # Filling valuebox
         valueBox(
             paste0(topyear$year," - ", printMoney(topyear$x)),
-            "Έτος με μέγιστη παραγωγή μελιού",
+            "Year with top honey production",
             icon = icon("globe"),
             color = "olive")
     })
