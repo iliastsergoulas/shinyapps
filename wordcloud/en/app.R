@@ -13,6 +13,7 @@ library(SnowballC)
 library(RWeka)
 library(rJava)
 library(RWekajars)
+library(RPostgreSQL)
 
 credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
 drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
