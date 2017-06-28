@@ -10,6 +10,7 @@ library(corrplot)
 library(Quandl)
 library(forecast)
 library(dygraphs)
+library(lubridate)
 
 printMoney <- function(x){ # A function to show number as currency
     format(x, digits=10, nsmall=2, decimal.mark=",", big.mark=".")
@@ -22,49 +23,76 @@ specify_decimal <- function(x, k) format(round(x, k), nsmall=k) # A function to 
 Quandl.api_key("KCo4sXzWEzSAb81ff3VP") # Setting API key to have unlimited access to databases
 data_codes<-c("COM/WLD_SUGAR_EU", "COM/WLD_SUGAR_WLD", "COM/WLD_SUGAR_US", # Setting wanted Quandl database codes
               "COM/COFFEE_BRZL", "COM/COFFEE_CLMB", "COM/WLD_COFFEE_ARABIC",
-              "COM/RICE_2", "COM/WLD_RICE_05", "COM/WLD_RICE_05_VNM",
+              "COM/WLD_RICE_05", "COM/WLD_RICE_25", "COM/WLD_RICE_05_VNM",
               "COM/BEEF_S", "COM/BEEF_C", "COM/WLD_BEEF",
-              "COM/WLD_BANANA_EU", "COM/WLD_BANANA_US", "COM/PBANSOP_USD") 
+              "COM/WLD_BANANA_EU", "COM/WLD_BANANA_US", "COM/PBANSOP_USD",
+              "COM/WLD_COCOA", "COM/WLD_COTTON_A_INDX", "COM/OATS", "COM/MILK",
+              "COM/EGGS", "COM/BUTTER", "COM/WLD_TOBAC_US","COM/WLD_ORANGE",
+              "COM/LM_PK602_TRIM", "COM/LM_PK602_BUTT", "COM/LM_PK602_SPARERIB", "COM/LM_PK602_BELLY", 
+              "COM/LM_PK602_PICNIC", "COM/LM_PK602_HAM", "COM/LM_PK602_JOWL", "COM/LM_PK602_LOIN", "COM/LM_PK602_VARIETY",
+              "COM/WLD_WHEAT_CANADI", "COM/WLD_WHEAT_US_HRW", "COM/WLD_WHEAT_US_SRW", "COM/PWHEAMT_USD",
+              "COM/WOOL", "COM/WOOL_60_62", "COM/WOOL_60", "COM/WOOL_58", "COM/WOOL_62",
+              "COM/WLD_LAMB", "COM/WLD_CHICKEN", "COM/PSHRI_USD", "COM/WLD_SHRIMP_MEX",
+              "COM/WLD_SUNFLOWER_OIL", "COM/WLD_GRNUT_OIL", "COM/WLD_COCONUT_OIL", "COM/WLD_RAPESEED_OIL", 
+              "COM/WLD_PALM_OIL", "COM/WLD_SOYBEAN_OIL", "COM/POLVOIL_USD",
+              "COM/WLD_TEA_KOLKATA", "COM/WLD_TEA_MOMBASA", "COM/WLD_TEA_COLOMBO", "COM/WLD_TEA_AVG",
+              "COM/WLD_IBEVERAGES", "COM/WLD_IGRAINS", "COM/WLD_IFOOD", "COM/WLD_IFERTILIZERS", "COM/WLD_IAGRICULTURE", "COM/WLD_IENERGY") 
 # Setting Quandl codes respective description
 data_descr<-c("Sugar Price, EU, cents/kg", "Sugar Price, world, cents/kg", "Sugar Price, US, cents/kg", 
               "Coffee, Brazilian, Comp.", "Coffee, Colombian, NY lb.", "Coffee Price, Arabica, cents/kg",
-              "Rice, Long Grain Milled, No. 2 AR", "Rice Price, Thailand, 5%, $/mt", "Rice Price, Vietnamese, 5%, $/mt",
+              "Rice, Thai 5% ,($/mt)", "Rice, Thai 25% ,($/mt)", "Rice, Viet Namese 5%,($/mt)",
               "Beef - Select 1", "Beef - Choice 1", "Beef,($/kg)",
-              "Banana, Europe,($/kg)", "Banana, US,($/kg)", "Bananas, Central American and Ecuador, FOB U.S. Ports, US$ per metric ton")
+              "Banana, Europe,($/kg)", "Banana, US,($/kg)", "Bananas, Central American and Ecuador, FOB U.S. Ports, US$ per metric ton",
+              "Cocoa,($/kg)","Cotton, A Index,($/kg)", "Oats, No. 2 milling, Mnpls; $ per bu", "Milk, Nonfat dry, Chicago",
+              "Eggs, large white, Chicago dozen", "Butter, AA Chicago, lb","Tobacco, US import u.v.,($/mt)",
+              "Orange,($/kg)", 
+              "USDA LM_PK602: Pork Trim", "USDA LM_PK602: Pork Butt", "USDA LM_PK602: Pork Sparerib", 
+              "USDA LM_PK602: Pork Belly", "USDA LM_PK602: Pork Picnic", "USDA LM_PK602: Pork Ham", 
+              "USDA LM_PK602: Pork Jowl", "USDA LM_PK602: Pork Loin", "USDA LM_PK602: Pork Variety", 
+              "Wheat, Canadian,($/mt)", "Wheat, US HRW,($/mt)", "Wheat, US SRW,($/mt)", "Wheat, No.1 Hard Red Winter ($/mt)",
+              "Wool, 64s", "Wool, 60-62s", "Wool, 60s", "Wool, 58s", "Wool, 62s",
+              "Corn gluten meal, Midwest, ton", "Corn gluten feed, Midwest, ton", "Maize,($/mt)", "Maize (corn), U.S. No.2 Yellow, FOB Gulf of Mexico, U.S. price, US$ per metric ton",
+              "Meat, sheep,($/kg)", "Meat, chicken,($/kg)", "Shrimp, shell-on headless, 26-30 count/pound, Mexican origin, $/kg", "Shirmps, Mexican,($/kg)",
+              "Sunflower oil,($/mt)", "Groundnut oil,($/mt)", "Coconut oil,($/mt)", "Rapeseed oil,($/mt)", "Palm oil,($/mt)",
+              "Soybean oil,($/mt)", "Olive Oil, extra virgin less than 1% free fatty acid,($/mt)",
+              "Tea, Kolkata,($/kg)", "Tea, Mombasa,($/kg)", "Tea, Colombo,($/kg)", "Tea, avg 3 auctions,($/kg)",
+              "Beverages Index", "Grains Index", "Food Index", "Fertilizers Index", "Agriculture Index", "Energy Index")
 data_product<-c("Sugar","Sugar","Sugar", 
                 "Coffee","Coffee","Coffee", 
                 "Rice","Rice","Rice",
                 "Beef", "Beef", "Beef",
-                "Banana", "Banana", "Banana")
+                "Bananas", "Bananas", "Bananas",
+                "Cocoa", "Cotton", "Oats","Milk",
+                "Eggs", "Butter", "Tobacco", "Oranges",
+                "Pork", "Pork", "Pork", "Pork", "Pork",
+                "Pork", "Pork", "Pork", "Pork",
+                "Wheat", "Wheat", "Wheat", "Wheat",
+                "Wool", "Wool", "Wool", "Wool", "Wool",
+                "Corn", "Corn", "Corn", "Corn",
+                "Meat", "Meat", "Shrimps", "Shrimps",
+                "Oils", "Oils", "Oils", "Oils", "Oils", "Oils", "Oils",
+                "Tea", "Tea", "Tea", "Tea",
+                "Indexes", "Indexes", "Indexes", "Indexes", "Indexes", "Indexes")
 data_quandl<-data.frame(data_descr, data_codes, data_product) # Binding codes and description to dataframe
 
-header <- dashboardHeader(title = "Prices of agricultural commodities (Source: Quandl)", titleWidth=600) # Header of dashboard
-sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
+header <- dashboardHeader(title = "Agricultural commodities prices ", titleWidth=600) # Header of dashboard
+sidebar <- dashboardSidebar(sidebarMenu(
+    selectInput('commodity', 'Προϊόν', choices = unique(data_quandl$data_product)),
+    tags$footer(
+        tags$p("This application is based on Quandl data."))))
 frow1 <- fluidRow( # Creating row of two diagrams
-    title = "Total view",
+    title = "Total",
     status="success",
     collapsible = TRUE, 
-    mainPanel(
-        dygraphOutput("view"),
-        selectInput('commodity', 'Commodity', choices = unique(data_quandl$data_product)), width='98%')
+    mainPanel(dygraphOutput("view"), width='98%')
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     status="success",
     collapsible = TRUE, 
-    mainPanel(dygraphOutput("timeline_1"), width='98%')
-)
-frow3 <- fluidRow( # Creating row of two diagrams
-    status="success",
-    collapsible = TRUE, 
-    mainPanel(dygraphOutput("timeline_2"), width='98%')
-)
-frow4 <- fluidRow( # Creating row of two diagrams
-    status="success",
-    collapsible = TRUE, 
-    mainPanel(dygraphOutput("timeline_3"),width='98%')
+    mainPanel(uiOutput("plots"), width='98%')
 )
 
-body <- dashboardBody(frow1, frow2, frow3, frow4) # Binding rows to body of dashboard
+body <- dashboardBody(frow1, frow2) # Binding rows to body of dashboard
 ui <- dashboardPage(header, sidebar, body, skin="yellow") # Binding elements of dashboard
 
 server <- function(input, output) {
@@ -72,7 +100,7 @@ server <- function(input, output) {
         data_filtered<-as.data.frame(data_quandl[which(data_quandl$data_product==input$commodity),])
         mydata<-data.frame(Date= character(0), Value= character(0), Description=character(0))
         for (i in 1:nrow(data_filtered)){
-            temp<-Quandl(as.character(data_filtered[i,2]))
+            temp<-Quandl(as.character(data_filtered[i,2]), collapse = "monthly")
             temp$Description<-as.character(data_filtered[i,1])
             colnames(temp)<-c("Date", "Value", "Description")
             mydata<-rbind(mydata, temp)
@@ -82,44 +110,56 @@ server <- function(input, output) {
     mydata_multiple<- reactive({ # Reshaping mydata dataframe
         unique_descriptions<-unique(mydata()$Description)
         mydata_multiple<-reshape(mydata(), direction = "wide", idvar = "Date", timevar = "Description")
-        colnames(mydata_multiple)<-c("Date", unique_descriptions[1], unique_descriptions[2], unique_descriptions[3])
+        #colnames(mydata_multiple)<-c("Date", unique_descriptions[1], unique_descriptions[2], unique_descriptions[3])
         mydata_multiple<-xts(mydata_multiple, order.by=as.POSIXct(mydata_multiple$Date))
         mydata_multiple<-mydata_multiple[,-c(1)]
     })
-    mydata_1 <- reactive({
-        mydata_1_product <- unique(mydata()$Description)[1]
-        mydata_1<-mydata()[which(mydata()$Description==mydata_1_product),]
-        mydata_1<-xts(mydata_1, order.by=as.POSIXct(mydata_1$Date))
-    }) 
-    mydata_2 <- reactive({
-        mydata_2_product <- unique(mydata()$Description)[2]
-        mydata_2<-mydata()[which(mydata()$Description==mydata_2_product),]
-        mydata_2<-xts(mydata_2, order.by=as.POSIXct(mydata_2$Date))
-    }) 
-    mydata_3 <- reactive({
-        mydata_3_product <- unique(mydata()$Description)[3]
-        mydata_3<-mydata()[which(mydata()$Description==mydata_3_product),]
-        mydata_3<-xts(mydata_3, order.by=as.POSIXct(mydata_3$Date))
-    }) 
     output$view <- renderDygraph({ # Creating chart
-        dygraph(mydata_multiple(), main="Comparing commodities' prices", group = "commodities")%>%
-        dyAxis("y", label = "Commodity Price")%>%
-        dyRangeSelector(height = 20)
+        #combined <- cbind(mydata_multiple(), actual=mydata_multiple())
+        dygraph(mydata_multiple(), main="Commodities prices", group = "commodities")%>%
+            dyAxis("y", label = "Commodity price")%>%
+            dyRangeSelector(height = 20)
     })
-    output$timeline_1<-renderDygraph({ # Creating timeline for commodities
-        dygraph(mydata_1()$Value, main=mydata_1()[1,3], group = "commodities")%>%
-        dyAxis("y", label = "Commodity Price")%>%
-        dyRangeSelector(height = 20)
+    mylength<-reactive({
+        mylength<-length(unique(mydata()$Description))
     })
-    output$timeline_2<-renderDygraph({ # Creating timeline for commodities
-        dygraph(mydata_2()$Value, main=mydata_2()[1,3], group = "commodities")%>%
-        dyAxis("y", label = "Commodity Price")%>%
-        dyRangeSelector(height = 20)
+    output$plots <- renderUI({
+        createPlots()
+        plot_output_list <- lapply(1:mylength(), function(i) {
+            plotname <- paste("plot", i, sep="")
+            dygraphOutput(plotname)
+        })
+        # Convert the list to a tagList - this is necessary for the list of items
+        # to display properly.
+        do.call(tagList, plot_output_list)
     })
-    output$timeline_3<-renderDygraph({ # Creating timeline for commodities
-        dygraph(mydata_3()$Value, main=mydata_3()[1,3], group = "commodities")%>%
-        dyAxis("y", label = "Commodity Price")%>%
-        dyRangeSelector(height = 20)
+    createPlots <- reactive ({
+        # Call renderPlot for each one. Plots are only actually generated when they
+        # are visible on the web page.
+        for (i in 1:mylength()) {
+            # Need local so that each item gets its own number. Without it, the value
+            # of i in the renderPlot() will be the same across all instances, because
+            # of when the expression is evaluated.
+            local({
+                my_i <- i
+                plotname=paste("plot", my_i, sep="")
+                mydata_product <- unique(mydata()$Description)[my_i]
+                mydata_ts<-mydata()[which(mydata()$Description==mydata_product),]
+                mydata_ts<-xts(mydata_ts, order.by=as.POSIXct(mydata_ts$Date))
+                mydata_predicted <- forecast(as.numeric(mydata_ts$Value), h=24)
+                mydata_predicted <- data.frame(Date = seq(mdy('06/30/2017'), by = 'months', length.out = 24),
+                                               Forecast = mydata_predicted$mean,Hi_95 = mydata_predicted$upper[,2],
+                                               Lo_95 = mydata_predicted$lower[,2])
+                mydata_xts <- xts(mydata_predicted, order.by = as.POSIXct(mydata_predicted$Date))
+                mydata_predicted <- merge(mydata_ts, mydata_xts)
+                mydata_predicted <- mydata_predicted[,c("Value", "Forecast", "Hi_95", "Lo_95")]
+                output[[plotname]] <- renderDygraph({ # Creating timeline for commodities
+                    dygraph(mydata_predicted, main=mydata_ts[1,3], group = "commodities")%>%
+                        dyAxis("y", label = "Commodity price")%>%
+                        dyRangeSelector(height = 20)
+                })
+            })
+        }
     })
 }
 shinyApp(ui, server)
