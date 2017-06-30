@@ -14,20 +14,18 @@ library(shinydashboard)
 library(RPostgreSQL)
 library(postGIStools)
 
-#credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
-#drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
-#con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
-                 #host = as.character(credentials$host), port = as.character(credentials$port), 
-                 #user = as.character(credentials$user), password = as.character(credentials$password))
-#plants <- get_postgis_query(con, "SELECT * FROM agriculture.honey_plants")
-#dbDisconnect(con)
-#dbUnloadDriver(drv)
-plants <- read.csv("C://Users/itsergoulas/Dropbox/Website/scripts to complete/honey_plants/honey_plants.csv", 
-                   sep=";")
-names(plants)<-c("ID", "Business name", "Code", "Prefecture", "Region")
+credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
+drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
+con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
+                 host = as.character(credentials$host), port = as.character(credentials$port), 
+                 user = as.character(credentials$user), password = as.character(credentials$password))
+plants <- get_postgis_query(con, "SELECT * FROM agriculture.honey_plants")
+dbDisconnect(con)
+dbUnloadDriver(drv)
 plants_edited <- as.data.frame(plants)
 plants_per_region <- plants_edited[c("region", "id")]
 plants_per_pref <- plants_edited[c("prefecture", "id")]
+names(plants)<-c("ID", "Business name", "Code", "Prefecture", "Region")
 
 header <- dashboardHeader(title = "Honey plants", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard

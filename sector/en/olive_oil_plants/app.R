@@ -19,19 +19,19 @@ drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
 con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
                  host = as.character(credentials$host), port = as.character(credentials$port), 
                  user = as.character(credentials$user), password = as.character(credentials$password))
-plants <- get_postgis_query(con, "SELECT * FROM agriculture.honey_plants")
+plants <- get_postgis_query(con, "SELECT * FROM agriculture.olive_oil_plants")
 dbDisconnect(con)
 dbUnloadDriver(drv)
 plants_edited <- as.data.frame(plants)
-plants_per_region <- plants_edited[c("region", "id")]
-plants_per_pref <- plants_edited[c("prefecture", "id")]
-names(plants)<-c("Α/Α", "Επωνυμία", "Κωδικός Έγκρισης", "Περιφερειακή Ενότητα", "Περιφέρεια")
+plants_per_region <- plants_edited[c("region", "approval_code")]
+plants_per_pref <- plants_edited[c("prefecture", "approval_code")]
+names(plants)<-c("Business name", "Code", "Prefecture", "Region")
 
-header <- dashboardHeader(title = "Συσκευαστήρια μελιού", titleWidth=500) # Header of dashboard
+header <- dashboardHeader(title = "Olive oil plants", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Ανά Περιφέρεια",
+        title = "Per region",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -39,7 +39,7 @@ frow1 <- fluidRow( # Creating row of two diagrams
             plotOutput("regions", width="150%"))
         ),
     box(
-        title = "Ανά Περιφερειακή Ενότητα",
+        title = "Per prefecture",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -48,7 +48,7 @@ frow1 <- fluidRow( # Creating row of two diagrams
         ))
 )
 frow2 <- fluidRow( # Creating row of two diagrams
-    title = "Στοιχεία συσκευαστηρίων",
+    title = "Olive oil plants data",
     status="success",
     collapsible = TRUE,
     theme = shinytheme("spacelab"), 
@@ -63,7 +63,7 @@ server <- function(input, output, session) {
     output$regions<-renderPlot({ # Per region
         ggplot(plants_per_region, aes(x = factor(region))) + 
             geom_bar(stat="count", fill="steelblue",width=0.5, color="steelblue") + 
-            xlab("Περιφέρεια") + ylab("Αριθμός μονάδων") + 
+            xlab("Region") + ylab("Number of plants") + 
             theme(axis.text.x=element_text(angle=90, hjust=1)) + 
             geom_text(stat='count',aes(label=..count..),vjust=-1) + 
             theme(legend.title=element_blank()) + 
@@ -74,7 +74,7 @@ server <- function(input, output, session) {
     output$prefectures<-renderPlot({ # Per prefecture
         ggplot(plants_per_pref, aes(x = factor(prefecture))) + 
             geom_bar(stat="count", fill="steelblue") + 
-            xlab("Περιφερειακή ενότητα") + ylab("Αριθμός μονάδων") + 
+            xlab("Prefecture") + ylab("Number of plants") + 
             theme(axis.text.x=element_text(angle=90, hjust=1)) + 
             geom_text(stat='count',aes(label=..count..),vjust=-1) + 
             theme(legend.title=element_blank()) + 

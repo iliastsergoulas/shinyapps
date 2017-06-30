@@ -83,19 +83,15 @@ server <- function(input, output) {
         data_prefecture$`Αριθμός κυψελών`<-as.numeric(data_prefecture$`Αριθμός κυψελών`)
         data_prefecture
     })
-    output$per_year <- renderGvis({ # Creating chart
-        gvisColumnChart(data_year(), options=list(colors="['#336600']", vAxis="{title:'Αριθμός μελισσοκόμων'}", 
-                        hAxis="{title:'Περιφέρεια'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
-    })
     output$motion_region<-renderGvis({
         gvisMotionChart(data_region(), xvar=input$var_x, yvar=input$var_y,
                         idvar="Περιφέρεια", timevar="Έτος",
-                        options=list(width=1100, height=500))
+                        options=list(width=1000, height=500))
     })
     output$motion_prefecture<-renderGvis({
         gvisMotionChart(data_prefecture(), xvar="Αριθμός κυψελών", yvar="Παραγωγή μελιού (τν)",
                         idvar="Περιφερειακή Ενότητα", timevar="Έτος",
-                        options=list(width=1100, height=500))
+                        options=list(width=1000, height=500))
     })
     output$mean_value <- renderValueBox({ # Filling valuebox
         valueBox(

@@ -1,4 +1,4 @@
-# Data: Honey plant units in Greece
+# Data: Olive oil plant units in Greece
 # This R script is created as a Shiny application to process and map data, as supplied 
 # by Greek Ministry of Agricultural Production and Food.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
@@ -19,15 +19,15 @@ drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
 con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
                  host = as.character(credentials$host), port = as.character(credentials$port), 
                  user = as.character(credentials$user), password = as.character(credentials$password))
-plants <- get_postgis_query(con, "SELECT * FROM agriculture.honey_plants")
+plants <- get_postgis_query(con, "SELECT * FROM agriculture.olive_oil_plants")
 dbDisconnect(con)
 dbUnloadDriver(drv)
 plants_edited <- as.data.frame(plants)
-plants_per_region <- plants_edited[c("region", "id")]
-plants_per_pref <- plants_edited[c("prefecture", "id")]
-names(plants)<-c("Α/Α", "Επωνυμία", "Κωδικός Έγκρισης", "Περιφερειακή Ενότητα", "Περιφέρεια")
+plants_per_region <- plants_edited[c("region", "approval_code")]
+plants_per_pref <- plants_edited[c("prefecture", "approval_code")]
+names(plants)<-c("Επωνυμία", "Κωδικός Έγκρισης", "Περιφέρεια", "Περιφερειακή Ενότητα")
 
-header <- dashboardHeader(title = "Συσκευαστήρια μελιού", titleWidth=500) # Header of dashboard
+header <- dashboardHeader(title = "Τυποποιητήρια ελαιολάδου", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of two diagrams
     box(
@@ -48,7 +48,7 @@ frow1 <- fluidRow( # Creating row of two diagrams
         ))
 )
 frow2 <- fluidRow( # Creating row of two diagrams
-    title = "Στοιχεία συσκευαστηρίων",
+    title = "Στοιχεία τυποποιητηρίων",
     status="success",
     collapsible = TRUE,
     theme = shinytheme("spacelab"), 
