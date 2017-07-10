@@ -1,5 +1,5 @@
 # This R script is created as a Shiny application based on processed data from OPEKEPE's announcements 
-# about Fisheries Programme.
+# about Agricultural Development, Fisheries, Direct Payments and Market Measures.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
 # Author: Ilias Tsergoulas, Website: www.agristats.eu
 
@@ -39,6 +39,7 @@ sidebar <- dashboardSidebar(sidebarMenu(
     selectInput('fund', 'Ταμείο', choices = unique(mydata$fund)),
     uiOutput("slider_category"),
     uiOutput("slider_measure")),
+    selectInput('period', 'Ορίζοντας πρόβλεψης (μήνες)', choices = c("6", "12", "18", "24", "30", "36"), selected='12'),
     tags$footer(tags$p("Η παρούσα εφαρμογή βασίζεται σε επεξεργασμένα δεδομένα από Δελτία Τύπου του ΟΠΕΚΕΠΕ. 
                Το agristats.eu δε φέρει καμία ευθύνη για την ποιότητα των δεδομένων.")))
 frow1 <- fluidRow( # Creating row of two diagrams
@@ -90,6 +91,13 @@ server <- function(input, output) {
         data_measure<-mutate(data_measure, total=cumsum(payment_amount))
         data_measure<-data_measure[c("date", "total")]
         data_measure<-xts(data_measure, order.by=as.POSIXct(data_measure$date))
+        data_measure_predicted <- forecast(as.numeric(data_measure$Value), h=as.numeric(input$period))
+        data_measure_predicted <- data.frame(Date = seq(mdy('06/30/2017'), by = 'months', length.out = as.numeric(input$period)),
+                                       Forecast = data_measure_predicted$mean,Hi_95 = data_measure_predicted$upper[,2],
+                                       Lo_95 = data_measure_predicted$lower[,2])
+        data_measure_xts <- xts(data_measure_predicted, order.by = as.POSIXct(data_measure_predicted$Date))
+        data_measure_predicted <- merge(data_measure, data_measure_xts)
+        data_measure <- data_measure_predicted[,c("Value", "Forecast", "Hi_95", "Lo_95")]
         data_measure
     })
     output$view_total <- renderDygraph({ # Creating chart

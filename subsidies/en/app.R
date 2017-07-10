@@ -39,6 +39,7 @@ sidebar <- dashboardSidebar(sidebarMenu(
     selectInput('fund', 'Fund', choices = unique(mydata$fund)),
     uiOutput("slider_category"),
     uiOutput("slider_measure")),
+    selectInput('period', 'Prediction period (months)', choices = c("6", "12", "18", "24", "30", "36"), selected='12'),
     tags$footer(
         tags$p("This application is based on processed data from Press Releases of Greek Payment Agency OPEKEPE. 
                Website agristats.eu is not responsible for the quality of the data.")))

@@ -69,11 +69,12 @@ data_product<-c("Ζάχαρη","Ζάχαρη","Ζάχαρη",
                 "Δείκτες", "Δείκτες", "Δείκτες", "Δείκτες", "Δείκτες", "Δείκτες")
 data_quandl<-data.frame(data_descr, data_codes, data_product) # Binding codes and description to dataframe
 
-header <- dashboardHeader(title = "Τιμές αγροτικών προϊόντων ", titleWidth=600) # Header of dashboard
+header <- dashboardHeader(title = "Τιμές αγροτικών προϊόντων ", titleWidth=1000) # Header of dashboard
 sidebar <- dashboardSidebar(sidebarMenu(
     selectInput('commodity', 'Προϊόν', choices = unique(data_quandl$data_product)),
-    tags$footer(
-        tags$p("Η παρούσα εφαρμογή βασίζεται σε δεδομένα του ιστοτόπου Quandl."))))
+    selectInput('period', 'Ορίζοντας πρόβλεψης (μήνες)', 
+                choices = c("6", "12", "18", "24", "30", "36"), selected='12')),
+    tags$footer(tags$p("Η παρούσα εφαρμογή βασίζεται σε δεδομένα του ιστοτόπου Quandl.")))
 frow1 <- fluidRow( # Creating row of two diagrams
     title = "Συνολικά",
     status="success",
@@ -140,8 +141,8 @@ server <- function(input, output) {
                 mydata_product <- unique(mydata()$Description)[my_i]
                 mydata_ts<-mydata()[which(mydata()$Description==mydata_product),]
                 mydata_ts<-xts(mydata_ts, order.by=as.POSIXct(mydata_ts$Date))
-                mydata_predicted <- forecast(as.numeric(mydata_ts$Value), h=24)
-                mydata_predicted <- data.frame(Date = seq(mdy('06/30/2017'), by = 'months', length.out = 24),
+                mydata_predicted <- forecast(as.numeric(mydata_ts$Value), h=as.numeric(input$period))
+                mydata_predicted <- data.frame(Date = seq(mdy('06/30/2017'), by = 'months', length.out = as.numeric(input$period)),
                                     Forecast = mydata_predicted$mean,Hi_95 = mydata_predicted$upper[,2],
                                     Lo_95 = mydata_predicted$lower[,2])
                 mydata_xts <- xts(mydata_predicted, order.by = as.POSIXct(mydata_predicted$Date))

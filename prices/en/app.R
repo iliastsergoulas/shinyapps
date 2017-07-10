@@ -71,9 +71,10 @@ data_quandl<-data.frame(data_descr, data_codes, data_product) # Binding codes an
 
 header <- dashboardHeader(title = "Agricultural commodities prices ", titleWidth=600) # Header of dashboard
 sidebar <- dashboardSidebar(sidebarMenu(
-    selectInput('commodity', 'Προϊόν', choices = unique(data_quandl$data_product)),
-    tags$footer(
-        tags$p("This application is based on Quandl data."))))
+    selectInput('commodity', 'Product', choices = unique(data_quandl$data_product)),
+    selectInput('period', 'Prediction period (months)', 
+                choices = c("6", "12", "18", "24", "30", "36"), selected='12')),
+    tags$footer(tags$p("This application is based on Quandl data.")))
 frow1 <- fluidRow( # Creating row of two diagrams
     title = "Total",
     status="success",
@@ -130,6 +131,7 @@ server <- function(input, output) {
     createPlots <- reactive ({
         # Call renderPlot for each one. Plots are only actually generated when they
         # are visible on the web page.
+        last_date<-mydata()
         for (i in 1:mylength()) {
             # Need local so that each item gets its own number. Without it, the value
             # of i in the renderPlot() will be the same across all instances, because
@@ -140,8 +142,8 @@ server <- function(input, output) {
                 mydata_product <- unique(mydata()$Description)[my_i]
                 mydata_ts<-mydata()[which(mydata()$Description==mydata_product),]
                 mydata_ts<-xts(mydata_ts, order.by=as.POSIXct(mydata_ts$Date))
-                mydata_predicted <- forecast(as.numeric(mydata_ts$Value), h=24)
-                mydata_predicted <- data.frame(Date = seq(mdy('06/30/2017'), by = 'months', length.out = 24),
+                mydata_predicted <- forecast(as.numeric(mydata_ts$Value), h=as.numeric(input$period))
+                mydata_predicted <- data.frame(Date = seq(mdy('06/30/2017'), by = 'months', length.out = as.numeric(input$period)),
                                                Forecast = mydata_predicted$mean,Hi_95 = mydata_predicted$upper[,2],
                                                Lo_95 = mydata_predicted$lower[,2])
                 mydata_xts <- xts(mydata_predicted, order.by = as.POSIXct(mydata_predicted$Date))
