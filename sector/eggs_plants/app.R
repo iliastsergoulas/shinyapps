@@ -61,7 +61,7 @@ server <- function(input, output, session) {
             addProviderTiles("OpenStreetMap.Mapnik",
                              options = providerTileOptions(noWrap = TRUE)
             ) %>%
-            addMarkers(data = plants, 
+            addMarkers(data = plants, clusterOptions = markerClusterOptions(),
                        icon = ~ icons(
                            iconUrl = "./egg.ico",
                            iconWidth = 20, iconHeight = 20, shadowWidth = 15, shadowHeight = 15),
