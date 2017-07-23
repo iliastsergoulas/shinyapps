@@ -32,6 +32,7 @@ mydata <- dbGetQuery(con, "SELECT * from agriculture.payments") # Get data
 dbDisconnect(con)
 dbUnloadDriver(drv)
 mydata$date <- dmy(mydata$date) # Converting character to date
+mydata<-mydata[order(mydata$date),]
 lastdate=max(mydata$date)
 header <- dashboardHeader(title = paste0("Πορεία Προγραμμάτων Επιδότησης (τελευταία ημερομηνία ενημέρωσης ",lastdate, ")"), 
                           titleWidth=1000) # Header of dashboard
@@ -91,13 +92,13 @@ server <- function(input, output) {
         data_measure<-mutate(data_measure, total=cumsum(payment_amount))
         data_measure<-data_measure[c("date", "total")]
         data_measure<-xts(data_measure, order.by=as.POSIXct(data_measure$date))
-        data_measure_predicted <- forecast(as.numeric(data_measure$Value), h=as.numeric(input$period))
+        data_measure_predicted <- forecast(as.numeric(data_measure$total), h=as.numeric(input$period))
         data_measure_predicted <- data.frame(Date = seq(mdy('06/30/2017'), by = 'months', length.out = as.numeric(input$period)),
                                        Forecast = data_measure_predicted$mean,Hi_95 = data_measure_predicted$upper[,2],
                                        Lo_95 = data_measure_predicted$lower[,2])
         data_measure_xts <- xts(data_measure_predicted, order.by = as.POSIXct(data_measure_predicted$Date))
         data_measure_predicted <- merge(data_measure, data_measure_xts)
-        data_measure <- data_measure_predicted[,c("Value", "Forecast", "Hi_95", "Lo_95")]
+        data_measure <- data_measure_predicted[,c("total", "Forecast", "Hi_95", "Lo_95")]
         data_measure
     })
     output$view_total <- renderDygraph({ # Creating chart

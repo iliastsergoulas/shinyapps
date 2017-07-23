@@ -1,4 +1,4 @@
-# Data: Eggs plants in Greece
+# Data: Quality products (PDO/PGI) in Greece
 # This R script is created as a Shiny application to process data 
 # from Greek Ministry of Agriculture and create plots and maps.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
@@ -22,21 +22,21 @@ drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
 con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
                  host = as.character(credentials$host), port = as.character(credentials$port), 
                  user = as.character(credentials$user), password = as.character(credentials$password))
-plants <- get_postgis_query(con, "SELECT * FROM agriculture.eggs")
+plants <- get_postgis_query(con, "SELECT * FROM agriculture.quality_products")
 dbDisconnect(con)
 dbUnloadDriver(drv)
 plants_edited <- as.data.frame(plants)
-plants_per_region <- plants_edited[c("region_nam", "id")]
+plants_per_region <- plants_edited[c("region", "id")]
 plants_per_pref <- plants_edited[c("prefecture", "id")]
 
-header <- dashboardHeader(title = "Μονάδες τυποποίησης και συσκευασίας αυγών", titleWidth=500) # Header of dashboard
+header <- dashboardHeader(title = "PDO/PGI products in Greece", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
     leafletOutput("map_points")
 )
 frow2 <- fluidRow( # Creating row of two diagrams
     box(
-        title = "Ανά Περιφέρεια",
+        title = "Per region",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -44,7 +44,7 @@ frow2 <- fluidRow( # Creating row of two diagrams
             plotOutput("regions", width="150%"))
         ),
     box(
-        title = "Ανά Περιφερειακή Ενότητα",
+        title = "Per prefecture",
         status="success",
         collapsible = TRUE,
         theme = shinytheme("spacelab"), 
@@ -61,16 +61,16 @@ server <- function(input, output, session) {
             addProviderTiles("OpenStreetMap.Mapnik",
                              options = providerTileOptions(noWrap = TRUE)
             ) %>%
-            addMarkers(data = plants, clusterOptions = markerClusterOptions(),
-                       icon = ~ icons(
-                           iconUrl = "./egg.ico",
-                           iconWidth = 20, iconHeight = 20, shadowWidth = 15, shadowHeight = 15),
-                       popup = ~htmlEscape(business_n))
+            addMarkers(data = plants_edited, clusterOptions = markerClusterOptions(),
+                       #icon = ~ icons(
+                           #iconUrl = "./egg.ico",
+                           #iconWidth = 20, iconHeight = 20, shadowWidth = 15, shadowHeight = 15),
+                       popup = ~htmlEscape(name))
     })
     output$regions<-renderPlot({ # Per region
-        ggplot(plants_per_region, aes(x = factor(region_nam))) + 
+        ggplot(plants_per_region, aes(x = factor(region))) + 
             geom_bar(stat="count", fill="steelblue",width=0.5, color="steelblue") + 
-            xlab("Περιφέρεια") + ylab("Αριθμός μονάδων") + 
+            xlab("Region") + ylab("Number of products") + 
             theme(axis.text.x=element_text(angle=90, hjust=1)) + 
             geom_text(stat='count',aes(label=..count..),vjust=-1) + 
             theme(legend.title=element_blank()) + 
@@ -81,7 +81,7 @@ server <- function(input, output, session) {
     output$prefectures<-renderPlot({ # Per prefecture
         ggplot(plants_per_pref, aes(x = factor(prefecture))) + 
             geom_bar(stat="count", fill="steelblue") + 
-            xlab("Περιφερειακή ενότητα") + ylab("Αριθμός μονάδων") + 
+            xlab("Prefecture") + ylab("Number of products") + 
             theme(axis.text.x=element_text(angle=90, hjust=1)) + 
             geom_text(stat='count',aes(label=..count..),vjust=-1) + 
             theme(legend.title=element_blank()) + 
