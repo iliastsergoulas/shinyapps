@@ -16,7 +16,7 @@ library(htmlwidgets)
 library(RPostgreSQL)
 
 valueFormatter<-"function formatValue(v) {
-var suffixes = ['', 'χιλ', 'εκατ', 'δις', 'τρις'];
+var suffixes = ['', 'K', 'M', 'B', 'T'];
 if (v < 1000) return v;
 var magnitude = Math.ceil(String(Math.floor(v)).length / 3-1);
 if (magnitude > suffixes.length - 1)
@@ -32,6 +32,7 @@ mydata <- dbGetQuery(con, "SELECT * from agriculture.payments") # Get data
 dbDisconnect(con)
 dbUnloadDriver(drv)
 mydata$date <- dmy(mydata$date) # Converting character to date
+mydata<-mydata[order(mydata$date),]
 lastdate=max(mydata$date)
 header <- dashboardHeader(title = paste0("Subsidies course (last update ",lastdate, ")"), 
                           titleWidth=1000) # Header of dashboard
