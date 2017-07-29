@@ -19,13 +19,13 @@ drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
 con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
                  host = as.character(credentials$host), port = as.character(credentials$port), 
                  user = as.character(credentials$user), password = as.character(credentials$password))
-mydata <- dbGetQuery(con, "SELECT * from agriculture.forest_areas") # Get data
+mydata <- dbGetQuery(con, "SELECT * from agriculture.reforestable") # Get data
 dbDisconnect(con)
 dbUnloadDriver(drv)
 #plants <- readShapePoly("C://Users/itsergoulas/Desktop/mydata.shp")
 plants<-ms_simplify(plants)
 
-header <- dashboardHeader(title = "Δασικές περιοχές", titleWidth=500) # Header of dashboard
+header <- dashboardHeader(title = "Reforestable areas", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
 frow1 <- fluidRow( # Creating row of valueboxes
     leafletOutput("map_points")
