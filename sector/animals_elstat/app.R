@@ -43,7 +43,7 @@ frow1 <- fluidRow( # Creating row of two diagrams
         mainPanel(
             htmlOutput("timeline_category"),
             print("Πηγή: ΕΛΣΤΑΤ"),
-            selectInput('variable_type', 'Μεταβλητή', choices = unique(mydata_processed$variable_type)),
+            selectInput('variable_type_category', 'Μεταβλητή', choices = unique(mydata_processed$variable_type)),
             selectInput('animal_category', 'Κατηγορία', choices = unique(mydata_processed$variable)), width='98%')),
     box(
         title = "Πορεία ζωικού πληθυσμού ανά έτος",
@@ -53,7 +53,7 @@ frow1 <- fluidRow( # Creating row of two diagrams
         mainPanel(
             htmlOutput("timeline_year"),
             print("Πηγή: ΕΛΣΤΑΤ"),
-            selectInput('variable_type', 'Μεταβλητή', choices = unique(mydata_processed$variable_type)),
+            selectInput('variable_type_year', 'Μεταβλητή', choices = unique(mydata_processed$variable_type)),
             selectInput('year', 'Έτος', choices = unique(mydata_processed$year)), width='98%'))
 )
 frow2 <- fluidRow( # Creating row of two diagrams
@@ -66,9 +66,10 @@ frow2 <- fluidRow( # Creating row of two diagrams
             dataTableOutput("summary"),
             width=550,
             print("Πηγή: ΕΛΣΤΑΤ"),
+            selectInput('variable_type_synopsis', 'Μεταβλητή', choices = unique(mydata_processed$variable_type)),
             sliderInput("myyearsummary", "Έτος:",min=min(as.numeric(mydata_processed$year)), 
                         max=max(as.numeric(mydata_processed$year)), 
-                        value=c(min(as.numeric(mydata_processed$year))+1,max(as.numeric(mydata_processed$year))-1), sep=""))),
+                        value=c(min(as.numeric(mydata_processed$year)),max(as.numeric(mydata_processed$year))), sep=""))),
     box(
         title = "Λήψη δεδομένων",
         status="success",
@@ -82,14 +83,14 @@ ui <- dashboardPage(header, sidebar, body, skin="green") # Binding elements of d
 server <- function(input, output) {
     mydata_processed_timeline_category<-reactive({ # Filtering data by chosen category
         mydata_processed_timeline_category<-mydata_processed[which(mydata_processed$variable==input$animal_category & 
-                                            mydata_processed$variable_type==input$variable_type),]
+                                            mydata_processed$variable_type==input$variable_type_category),]
         mydata_processed_timeline_category<-aggregate(mydata_processed_timeline_category$value,
                                                       by=list(mydata_processed_timeline_category$year), 
                                                       FUN=sum, na.rm=TRUE,na.action=NULL)
     })
     mydata_processed_timeline_year<-reactive({ # Filtering data by chosen region
         mydata_processed_timeline_year<-mydata_processed[which(mydata_processed$year==input$year & 
-                                            mydata_processed$variable_type==input$variable_type),]
+                                            mydata_processed$variable_type==input$variable_type_year),]
         mydata_processed_timeline_year<-aggregate(mydata_processed_timeline_year$value,
                                                     by=list(mydata_processed_timeline_year$variable), 
                                                     FUN=sum, na.rm=TRUE, na.action=NULL)
@@ -97,7 +98,7 @@ server <- function(input, output) {
     mydata_summary<-reactive({ # Subsetting data according to year interval
         mydata_summary<-mydata_processed[which(mydata_processed$year>=input$myyearsummary[1] & 
                         mydata_processed$year<=input$myyearsummary[2] & 
-                        mydata_processed$variable_type==input$variable_type),] 
+                        mydata_processed$variable_type==input$variable_type_synopsis),] 
     })
     output$timeline_category<-renderGvis({ # Creating timeline per category
         gvisColumnChart(mydata_processed_timeline_category(), options=list(colors="['#336600']", vAxis="{title:'Πληθυσμός'}", 
@@ -106,10 +107,6 @@ server <- function(input, output) {
     output$timeline_year<-renderGvis({ # Creating timeline per type
         gvisColumnChart(mydata_processed_timeline_year(), options=list(colors="['#336600']", vAxis="{title:'Πληθυσμός'}", 
                         hAxis="{title:'Ζωικό είδος'}",backgroundColor="#d9ffb3", width=550, height=500, legend='none'))
-    })
-    output$motion<-renderGvis({
-        gvisMotionChart(mydata_category, xvar="Αριθμός εκμεταλλεύσεων", yvar="Ποσοστό",
-                        idvar="Κατηγορία", timevar="Έτος")
     })
     output$summary <- renderDataTable({ # Creating summary by
         mysummary <- data.frame(
