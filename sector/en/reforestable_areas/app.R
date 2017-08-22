@@ -1,6 +1,6 @@
-# Data: Forest areas in Greece
-# This R script is created as a Shiny application to process data 
-# from Corine 2012 and create an interactive map.
+# Data: Reforestable areas in Greece
+# This R script is created as a Shiny application to process data from Greek 
+# Ministry of Agricultural Development and Food and create an interactive map.
 # The code is available under MIT license, as stipulated in https://github.com/iliastsergoulas/shinyapps/blob/master/LICENSE.
 # Author: Ilias Tsergoulas, Website: www.agristats.eu
 
@@ -13,17 +13,16 @@ library(htmltools)
 library(shinydashboard)
 library(RPostgreSQL)
 library(rmapshaper)
+library(postGIStools)
 
 credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
 drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
 con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
                  host = as.character(credentials$host), port = as.character(credentials$port), 
                  user = as.character(credentials$user), password = as.character(credentials$password))
-mydata <- dbGetQuery(con, "SELECT * from agriculture.reforestable") # Get data
+mydata <- get_postgis_query(con, "SELECT ST_SimplifyPreserveTopology(geom,0.5) AS geom FROM agriculture.reforestable",geom_name = "geom") # Get data
 dbDisconnect(con)
 dbUnloadDriver(drv)
-#plants <- readShapePoly("C://Users/itsergoulas/Desktop/mydata.shp")
-plants<-ms_simplify(plants)
 
 header <- dashboardHeader(title = "Reforestable areas", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
@@ -39,7 +38,7 @@ server <- function(input, output, session) {
             addProviderTiles("OpenStreetMap.Mapnik", 
                              options = providerTileOptions(noWrap = TRUE)
             ) %>%
-            addPolygons(data = plants,opacity = 0.5, fillOpacity = 0.2)
+            addPolygons(data = mydata,opacity = 0.2, fillOpacity = 0.2)
     })
 }
 

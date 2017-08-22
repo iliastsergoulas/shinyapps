@@ -13,17 +13,18 @@ library(htmltools)
 library(shinydashboard)
 library(RPostgreSQL)
 library(rmapshaper)
+library(postGIStools)
 
 credentials<-read.csv("/home/iliastsergoulas/dbcredentials.csv")
 drv <- dbDriver("PostgreSQL") # loads the PostgreSQL driver
 con <- dbConnect(drv, dbname = as.character(credentials$database), # creates a connection to the postgres database
                  host = as.character(credentials$host), port = as.character(credentials$port), 
                  user = as.character(credentials$user), password = as.character(credentials$password))
-mydata <- dbGetQuery(con, "SELECT * from agriculture.forest_areas") # Get data
+coniferous <- get_postgis_query(con, "SELECT ST_SimplifyPreserveTopology(geom,500) AS geom from agriculture.corine_coniferous",geom_name = "geom")
+broadleaved <- get_postgis_query(con, "SELECT ST_SimplifyPreserveTopology(geom,500) AS geom from agriculture.corine_broadleaved",geom_name = "geom")
+mixedforests <- get_postgis_query(con, "SELECT ST_SimplifyPreserveTopology(geom,500) AS geom from agriculture.corine_mixedforests",geom_name = "geom")
 dbDisconnect(con)
 dbUnloadDriver(drv)
-#plants <- readShapePoly("C://Users/itsergoulas/Desktop/mydata.shp")
-plants<-ms_simplify(plants)
 
 header <- dashboardHeader(title = "Forest areas", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
@@ -38,8 +39,13 @@ server <- function(input, output, session) {
         leaflet() %>%
             addProviderTiles("OpenStreetMap.Mapnik", 
                              options = providerTileOptions(noWrap = TRUE)
-            ) %>%
-            addPolygons(data = plants,opacity = 0.5, fillOpacity = 0.2)
+            ) %>% 
+            addPolygons(data = coniferous, group="Coniferous", color = "#008d4c", 
+                        weight = 1, opacity = 0.5) %>% 
+            addPolygons(data = broadleaved, group="Broad-leaved", color = "#24570a", 
+                        weight = 1, opacity = 0.5) %>% 
+            addPolygons(data = mixedforests, group="Mixed forests", color = "#b0c220", 
+                        weight = 1, opacity = 0.5)
     })
 }
 

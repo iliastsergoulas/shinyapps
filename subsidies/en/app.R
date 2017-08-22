@@ -61,23 +61,21 @@ frow2 <- fluidRow( # Creating row of two diagrams
         dygraphOutput("view"),width='98%')
 )
 frow3 <- fluidRow(# Creating row of diagram and summary
-    box(
-        title = "Data synopsis per Measure",
-        status="success",
-        collapsible = TRUE,
-        theme = shinytheme("spacelab"), 
-        mainPanel(
-            dataTableOutput("summary"),width=550)),
-
-    box(
-        title = "Download data",
-        status="success",
-        collapsed = TRUE,
-        theme = shinytheme("spacelab"), 
-        mainPanel(downloadButton("downloadData")))
+    title = "Data synopsis per Measure",
+    status="success",
+    collapsible = TRUE,
+    theme = shinytheme("spacelab"), 
+    mainPanel(
+        dataTableOutput("summary"),width=550))
+frow4 <- fluidRow(# Creating row of diagram and summary
+    title = "Download data",
+    status="success",
+    collapsed = TRUE,
+    theme = shinytheme("spacelab"), 
+    mainPanel(downloadButton("downloadData"))
 )
 
-body <- dashboardBody(frow1, frow2, frow3) # Binding rows to body of dashboard
+body <- dashboardBody(frow1, frow2, frow3, frow4) # Binding rows to body of dashboard
 ui <- dashboardPage(header, sidebar, body, skin="green") # Binding elements of dashboard
 
 server <- function(input, output) {

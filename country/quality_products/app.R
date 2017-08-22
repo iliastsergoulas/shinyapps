@@ -62,9 +62,6 @@ server <- function(input, output, session) {
                              options = providerTileOptions(noWrap = TRUE)
             ) %>%
             addMarkers(data = plants_edited, clusterOptions = markerClusterOptions(),
-                       #icon = ~ icons(
-                           #iconUrl = "./egg.ico",
-                           #iconWidth = 20, iconHeight = 20, shadowWidth = 15, shadowHeight = 15),
                        popup = ~htmlEscape(name))
     })
     output$regions<-renderPlot({ # Per region
