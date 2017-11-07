@@ -57,7 +57,7 @@ server <- function(input, output) {
     output$motion_region<-renderGvis({
         gvisMotionChart(data_region(), xvar="Αριθμός κυψελών", yvar="Παραγωγή μελιού (τν)",
                         idvar="Περιφέρεια", timevar="Έτος",
-                        options=list(width=1000, height=500))
+                        options=list(width=800, height=300))
     })
 }
 shinyApp(ui, server)
