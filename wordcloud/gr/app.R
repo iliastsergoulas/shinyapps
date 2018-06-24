@@ -76,15 +76,16 @@ m <- as.matrix(myDtm) # Converting to matrix
 v <- sort(rowSums(m), decreasing=TRUE) # Calculating frequency of words
 myNames <- names(v) # Getting words
 d <- data.frame(word=myNames, freq=v) # Creating dataframe with each word and its frequency
+png("twittercloudgr.png", width=600,height=600)
 ui <- fluidPage( # Creating shiny app's UI
     theme = shinytheme("spacelab"), 
     mainPanel(plotOutput("view"))
 )
 server <- function(input, output) {
     output$view <- renderPlot({ # Creating wordcloud
-        png("twittercloud.png", width=600,height=600)
         wordcloud(d$word, d$freq, min.freq=2, max.words=50, scale=c(3,.5), 
                   rot.per=.5,colors=brewer.pal(8, "Dark2"))
+        dev.off()
     })
 }
 shinyApp(ui, server)
