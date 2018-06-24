@@ -76,7 +76,10 @@ m <- as.matrix(myDtm) # Converting to matrix
 v <- sort(rowSums(m), decreasing=TRUE) # Calculating frequency of words
 myNames <- names(v) # Getting words
 d <- data.frame(word=myNames, freq=v) # Creating dataframe with each word and its frequency
-png("/srv/shiny-server/shinyapps/wordcloud/twitterclouden.png", width=600,height=600)
+script.dir <- getSrcDirectory(function(x) {x})
+print(script.dir)
+setwd(script.dir)
+png("../twitterclouden.png", width=400,height=400)
 wordcloud(d$word, d$freq, min.freq=2, max.words=50, scale=c(3,.5), 
           rot.per=.5,colors=brewer.pal(8, "Dark2"))
 dev.off()
@@ -86,7 +89,7 @@ ui <- fluidPage( # Creating shiny app's UI
 )
 server <- function(input, output) {
     output$view <- renderPlot({ # Creating wordcloud
-        wordcloud(d$word, d$freq, min.freq=3, max.words=100, scale=c(10,.5), 
+        wordcloud(d$word, d$freq, min.freq=2, max.words=50, scale=c(3,.5), 
                   rot.per=.5,colors=brewer.pal(8, "Dark2"))
     })
 }
