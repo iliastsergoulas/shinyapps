@@ -25,6 +25,7 @@ plants <- get_postgis_query(con, "SELECT * FROM agriculture.wineries")
 plants_edited <- as.data.frame(plants)
 plants_per_region <- plants_edited[c("region_nam", "id")]
 plants_per_pref <- plants_edited[c("prefecture", "id")]
+mydata <- plants[c("name", "prefecture","address")]
 
 header <- dashboardHeader(title = "Οινοποιεία", titleWidth=500) # Header of dashboard
 sidebar <- dashboardSidebar(disable = TRUE)# Disabling sidebar of dashboard
@@ -49,7 +50,14 @@ frow2 <- fluidRow( # Creating row of two diagrams
             plotOutput("prefectures",  width="150%")
         ))
 )
-body <- dashboardBody(frow1, frow2) # Binding rows to body of dashboard
+frow3 <- fluidRow( # Creating row of two diagrams
+   box(
+        title = "Λήψη δεδομένων",
+        status="success",
+        collapsed = TRUE,
+        theme = shinytheme("spacelab"), 
+        mainPanel(downloadButton("downloadData"))))
+body <- dashboardBody(frow1, frow2, frow3) # Binding rows to body of dashboard
 ui <- dashboardPage(header, sidebar, body, skin="green") # Binding elements of dashboard
 
 server <- function(input, output, session) {
@@ -85,6 +93,11 @@ server <- function(input, output, session) {
             theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=20)) +
             theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=14)
         )  
+    })
+    output$downloadData <- downloadHandler( # Creating download button
+        filename = function() { paste('mydata', '.csv', sep='') },
+        content = function(file) {
+            write.csv(mydata, file)
     })
 }
 

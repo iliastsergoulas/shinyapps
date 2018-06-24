@@ -82,6 +82,7 @@ ui <- fluidPage( # Creating shiny app's UI
 )
 server <- function(input, output) {
     output$view <- renderPlot({ # Creating wordcloud
+        png("/srv/shiny-server/shinyapps/wordcloud/twittercloudgr.png", width=600,height=600)
         wordcloud(d$word, d$freq, min.freq=3, max.words=100, scale=c(10,.5), 
                   rot.per=.5,colors=brewer.pal(8, "Dark2"))
     })
